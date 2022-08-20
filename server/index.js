@@ -63,11 +63,8 @@ io.on("connection", (socket) => {
       gameState.isGaming = false;
       clearInterval(timerId);
       timeMicroSec = 0;
-      console.log(gameState)
       lastState = deepCopy(gameState );
-      console.log(initialGameState);
       gameState = deepCopy(initialGameState )
-      console.log(gameState);
     }
   });
 
