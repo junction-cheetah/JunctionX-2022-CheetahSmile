@@ -58,6 +58,15 @@ a:visited {
   right: 30px;
 }
 
+#timer {
+  position: absolute;
+  color: #171717;
+  font-size: 3em;
+  font-weight: bold;
+  top: 30px;
+  left: 30px;
+}
+
 #youtube,
 #skillshare,
 #youtube-card,
