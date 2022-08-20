@@ -45,9 +45,11 @@ function onEnd() {
 function propagationNewLayer(newLayerData) {
   socket.emit("newLayer", newLayerData);
 }
+
 function propagationToplayer(topLayerPosition) {
   socket.emit("topLayer", topLayerPosition);
 }
+
 function propagationCameraPosition(height) {
   socket.emit("cameraHeight", height);
 }
@@ -78,6 +80,7 @@ let mspeedX = 0.02;
 let mspeedY = 0.02;
 let moveSpeed = 0.05;
 let turn = 1;
+let boxStep;
 
 const scoreElement = document.getElementById("score");
 const instructionsElement = document.getElementById("instructions");
@@ -220,7 +223,7 @@ function startGame(isOriginalStart = true) {
     addLayer(0, 0, originalBoxSize, originalBoxSize);
 
     // First layer
-    addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+    addLayer(-10.1, 0, originalBoxSize, originalBoxSize, "x");
   }
 
   //카메라도 제일 밑에서 다시 시작
@@ -239,7 +242,10 @@ function addLayer(x, z, width, depth, direction) {
   layer.direction = direction;
   stack.push(layer);
   propagationNewLayer({
-    position: { x: x, z: z },
+    position: {
+      x: x,
+      z: z,
+    },
     width: width,
     depth: depth,
   });
@@ -382,6 +388,7 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
 
     if (scoreElement) scoreElement.innerText = stack.length - 1;
     addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
+    boxStep = newWidth;
   } else {
     missedTheSpot(isOrigin);
   }
@@ -444,10 +451,10 @@ function animation(time) {
         topLayer.threejs.position = fetchedTopLayerPosition;
         topLayer.cannonjs.position = fetchedTopLayerPosition;
       }
-
+      turnRange = 10;
       if (
-        topLayer.threejs.position[topLayer.direction] > 10 - stack.length - 1 ||
-        topLayer.threejs.position[topLayer.direction] <= -10
+        topLayer.threejs.position[topLayer.direction] > turnRange ||
+        topLayer.threejs.position[topLayer.direction] < -turnRange
       ) {
         // If the box went beyond the stack then show up the fail screen
         // missedTheSpot();
