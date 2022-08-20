@@ -78,7 +78,7 @@ export default function Achievement() {
 const Main = styled.main`
   width: 100%;
   min-height: 100%;
-  padding: 48px 0;
+  padding: 48px 16px;
   background: url('/background.png') repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
