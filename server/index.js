@@ -21,19 +21,13 @@ var accessUsers = [];
 var nowUser = "";
 var sessionId = "";
 var teamName = "";
+var notReady = true;
+
+const boxHeight = 1; // 각 박스의 높이
+const originalBoxSize = 3; // 처음 박스의 시작 크기
 
 var initialGameState = {
-  stack: [
-    {
-      position: {
-        x: 0,
-        y: 0,
-        z: 0,
-      },
-      width: 0,
-      depth: 0,
-    },
-  ],
+  stack: [],
   nowUser: "",
   nowUserIndex: 0,
   timeMicroSec: 0,
@@ -46,10 +40,10 @@ var initialGameState = {
     },
     width: 0,
     depth: 0,
-    direction: 0,
-    speed: 0.007,
+    direction: "x",
     turn: 1,
   },
+  speed: 0.007,
   cameraHeight: 4,
 };
 
@@ -87,13 +81,8 @@ io.on("connection", (socket) => {
     io.emit("stacked", { newStack, nowUser, stack: gameState.stack });
   });
   socket.on("topLayer", (topLayer) => {
-    gameState.topLayer = topLayer;
+    gameState.topLayer = { ...gameState.topLayer, ...topLayer };
     io.emit("topLayerReceive", topLayer);
-  });
-
-  socket.on("cameraHeight", (cameraHeight) => {
-    gameState.cameraHeight = cameraHeight;
-    io.emit("cameraHeightReceive", cameraHeight);
   });
 
   // All in Server
@@ -102,6 +91,17 @@ io.on("connection", (socket) => {
     io.emit("receiveEventPropagation", data);
   });
 
+  socket.on("init", (forced = false) => {
+    init(forced);
+  });
+
+  function init(forced) {
+    if (forced || notReady) {
+      gameState = deepCopy(initialGameState);
+      addLayer(0, 0, originalBoxSize, originalBoxSize);
+      addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+    }
+  }
   socket.on("start", (data) => {
     makeGameStart(data);
   });
@@ -125,83 +125,139 @@ io.on("connection", (socket) => {
   });
 
   function tick() {
-    clock()
+    clock();
     setTurn();
-    animation()
+    animation();
   }
 
-  function clock(){
-    prevTimeMicroSec = timeMicroSec++
+  function clock() {
+    prevTimeMicroSec = timeMicroSec++;
   }
 
   function setTurn() {
-    if (topLayer.position[topLayer.direction] > 10) topLayer.turn *= -1;
+    if (Math.abs(topLayer.position[topLayer.direction]) > 10)
+      topLayer.turn *= -1;
   }
 
-  function animation(){
+  function animation() {
+    const timeScale = 1;
 
-        const timeScale = 1
-        topLayer = stack[stack.length - 1];
+    topLayer = gameState.topLayer;
+    const previousLayer = stack[stack.length - 2];
 
-        const previousLayer = stack[stack.length - 2];
+    if (gameState.isGaming) {
+      topLayer.position[topLayer.direction] += speed * timeScale * turn;
+    }
 
-        // The top level box should move if the game has not ended AND
-        // it's either NOT in autopilot or it is in autopilot and the box did not yet reach the robot position
-        const boxShouldMove =
-          !gameEnded &&
-          (!autopilot ||
-            (autopilot &&
-              topLayer.threejs.position[topLayer.direction] <
-                previousLayer.threejs.position[topLayer.direction] +
-                  robotPrecision));
+    if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
+      camera.position.y += speed * timeScale;
+      skyObjects.position.y += speed * timeScale;
+    }
+  }
 
-        if (boxShouldMove) {
-          if (isMyTurn || autopilot) {
-            // Keep the position visible on UI and the position in the model in sync
-            topLayer.threejs.position[topLayer.direction] +=
-              speed * timeScale * turn;
-            topLayer.cannonjs.position[topLayer.direction] +=
-              speed * timeScale * turn;
-            if (isMyTurn && !autopilot) {
-              dispatchToplayer({
-                position: topLayer.threejs.position,
-                width: topLayer.threejs.width,
-                depth: topLayer.threejs.depth,
-              });
-              // dispatchToplayer({
-              //   poistion: topLayer.threejs.position,
-              //   width: topLayer.width,
-              //   height: topLayer.depth,
-              // });
-            }
-            // console.log(topLayer.threejs.position);
-          } else {
-            fetchTopLayer(topLayer);
-            // topLayer.threejs.position = fetchedTopLayerPosition;
-            // topLayer.cannonjs.position = fetchedTopLayerPosition;
-          }
-        } else {
-          // If it shouldn't move then is it because the autopilot reached the correct position?
-          // Because if so then next level is coming
-          if (autopilot) {
-            splitBlockAndAddNextOneIfOverlaps();
-            setRobotPrecision();
-          }
-        }
+  //오토파일럿 로직 자동 계산
+  function splitBlockAndAddNextOneIfOverlaps() {
+    if (!isGaming) return;
 
-        // 4 is the initial camera height
-        if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
-          if (isMyTurn || autopilot) {
-            camera.position.y += speed * timeScale;
-            dispatchCameraPosition(camera.position.y);
-          } else {
-            camera.position.y = fecthedCameraPosition;
-          }
-          skyObjects.position.y += speed * timeScale;
-        }
-        updatePhysics(timeScale);
-        renderer.render(scene, camera);
-      
+    const stack = gameState.stack;
+    const topLayer = gameState.topLayer;
+
+    const previousLayer = stack[stack.length - 2];
+
+    const direction = topLayer.direction;
+
+    const size = direction == "x" ? topLayer.width : topLayer.depth;
+
+    const delta =
+      topLayer.position[direction] - previousLayer.position[direction];
+    const overhangSize = Math.abs(delta);
+    const overlap = size - overhangSize;
+
+    if (overlap > 0) {
+      cutBox(topLayer, overlap, size, delta);
+
+      const overhangShift = (overlap / 2 + overhangSize / 2) * Math.sign(delta);
+      const overhangX =
+        direction == "x"
+          ? topLayer.position.x + overhangShift
+          : topLayer.position.x;
+      const overhangZ =
+        direction == "z"
+          ? topLayer.position.z + overhangShift
+          : topLayer.position.z;
+      const overhangWidth = direction == "x" ? overhangSize : topLayer.width;
+      const overhangDepth = direction == "z" ? overhangSize : topLayer.depth;
+
+      addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
+
+      // Next layer
+      const nextX = direction == "x" ? topLayer.threejs.position.x : -10;
+      const nextZ = direction == "z" ? topLayer.threejs.position.z : -10;
+      const newWidth = topLayer.width; // New layer has the same size as the cut top layer
+      const newDepth = topLayer.depth; // New layer has the same size as the cut top layer
+      const nextDirection = direction == "x" ? "z" : "x";
+
+      if (scoreElement) scoreElement.innerText = stack.length - 1;
+      addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
+    } else {
+      endGame();
+    }
+  }
+
+  function setGameState(updateObject) {
+    gameState = { ...gameState, updateObject };
+  }
+
+  function setTopLayer(updateObject) {
+    gameState.topLayer = { ...gameState.topLayer, updateObject };
+  }
+
+  function addLayer(nextX, nextZ, newWidth, newDepth, nextDirection = "z") {
+    const y = boxHeight * stackData.length; // 박스 높이 * 스택 갯수
+    const layer = {
+      position: { x: nextX, y: y, z: nextZ },
+      width,
+      depth,
+      direction,
+    }; //현재 레이어에 넣는 새로운 박스 만들기
+    gameState.stack.push(layer);
+    setTopLayer(layer);
+
+    io.emit("addLayer", {
+      x: nextX,
+      y: y,
+      z: nextZ,
+      width: newWidth,
+      depth: newDepth,
+      direction: nextDirection,
+    });
+  }
+
+  function cutBox(topLayer, overlap, size, delta) {
+    const direction = topLayer.direction;
+    const newWidth = direction == "x" ? overlap : topLayer.width;
+    const newDepth = direction == "z" ? overlap : topLayer.depth;
+
+    // Update metadata
+    topLayer.width = newWidth;
+    topLayer.depth = newDepth;
+    topLayer.position[direction] -= delta / 2;
+
+    io.emit("cutBox", { topLayer, overlap, size, delta });
+  }
+  function addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth) {
+    io.emit("addOverhang", {
+      overhangX,
+      overhangZ,
+      overhangWidth,
+      overhangDepth,
+    });
+  }
+
+  function endGame() {
+    stack.pop();
+    gameState.isGaming = false;
+    io.emit("end");
   }
 });
 

@@ -7,9 +7,12 @@ var globalGameState = {};
 var isMyTurn = globalGameState.nowUser == myEmail;
 
 var fetchedTopLayerData = globalGameState.topLayer;
-var fecthedCameraPosition = globalGameState.cameraHeight;
-var stack = globalGameState.stack;
+var stackData = globalGameState.stack;
+
+var stack = [];
 var topLayer;
+
+var autopilot = true; //오토파일럿 처음부터 시작
 
 socket.on("stacked", function (msg) {
   console.log("stacked");
@@ -23,34 +26,20 @@ socket.on("timer", function (time) {
 });
 
 socket.on("started", function () {
-  startGame(false);
+  autopilot = false;
+});
+socket.on("end", function () {
+fireEndProcess()
 });
 
 socket.on("topLayerReceive", function (topLayerData) {
   fetchedTopLayerData = topLayerData;
-});
-socket.on("cameraHeightReceive", function (cameraHeight) {
-  fecthedCameraPosition = cameraHeight;
 });
 
 function onStack() {
   socket.emit("stack", {
     clientTime: timer,
   });
-}
-
-function onStart() {
-  console.log("START");
-  socket.emit("start", "");
-}
-
-function onEnd() {
-  console.log("END");
-  socket.emit("end", "");
-}
-
-function dispatchNewLayer(newLayerData) {
-  socket.emit("newLayer", newLayerData);
 }
 
 function dispatchToplayer(topLayerData) {
@@ -81,10 +70,23 @@ socket.on("gameState", function (gameState) {
   if (topLayer) fetchTopLayer(topLayer, gameState.topLayer);
 });
 
+socket.on("cutBox", ({ topLayer, overlap, size, delta }) => {
+  cutBox(topLayer, overlap, size, delta);
+});
+socket.on("addOverhang", ({ overhangX, overhangZ, overhangWidth, overhangDepth}) => {
+  addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
+});
+socket.on("addLayer", ({ x, y, z, width, depth, direction }) => {
+  addLayer(x, y, z, width, depth, direction);
+});
+
 function setGameState(updateObject) {
   socket.emit("setGameState", updateObject);
 }
 
+function serverInit(forced = false) {
+  socket.emit("init", forced);
+}
 
 function fetchTopLayer(topLayerObject, topLayerData) {
   topLayerObject.threejs.position = topLayerData.position;
@@ -105,14 +107,13 @@ window.focus(); // Capture keys right away (by default focus is on editor)
 let camera, scene, renderer; // ThreeJS globals
 let world; // CannonJs world
 let lastTime; // 에니메이션의 마지막 끝난 시간
-let stack; // 위에 쌓이는 박스
 let overhangs; // 떨어질 박스들
-let autopilot; //오토파일럿
-let gameEnded; //게임끝
+let gameEnded = !gameState.isGaming; //게임끝
 let robotPrecision; // 오토파일럿의 정확도
-let turn = 1; //박스 튕겨서 돌아오는 속도(방향값)
 const boxHeight = 1; // 각 박스의 높이
 const originalBoxSize = 3; // 처음 박스의 시작 크기
+let speed = globalGameState.speed;
+let turn = globalGameState.topLayer.turn;
 
 // 배경 비주얼관련 변수
 let skyObjects;
@@ -123,8 +124,6 @@ let skyD = 12.9;
 let starR = 0.7;
 let mspeedX = 0.02;
 let mspeedY = 0.02;
-let speed = globalGameState.topLayer.speed;
-let turn = globalGameState.topLayer.turn;
 let turnRange = 10;
 let boxStep;
 
@@ -141,12 +140,11 @@ function setRobotPrecision() {
 //초기화 코드 셋업
 init();
 
-function init() {
-  autopilot = true; //오토파일럿 처음부터 시작
-  gameEnded = false; //게임끝 불린변수
+function init(forced=false) {
   lastTime = 0; //게임 시간
   stack = []; // 스택 배열 만들기
   overhangs = []; // 떨어진 것들 배열 만들기
+
   setRobotPrecision(); // 오토파일럿의 정확도를 파악하는 함수
 
   // CannonJS 물리엔진 초기셋팅
@@ -169,25 +167,13 @@ function init() {
     100 // far plane
   );
 
-  // // If you want to use perspective camera instead, uncomment these lines
-  // camera = new THREE.PerspectiveCamera(
-  //   45, // field of view
-  //   aspect, // aspect ratio
-  //   1, // near plane
-  //   100 // far plane
-  // );
-
   camera.position.set(4, 4, 4); //카메라 초기 위치
 
   camera.lookAt(0, 0, 0); //카메라 가운데 보기
 
   scene = new THREE.Scene();
 
-  // 바닥 처음 고정된 박스
-  addLayer(0, 0, originalBoxSize, originalBoxSize);
-
-  // 처음 쌓이는 레이어 1층(x축 -10 방향에서 리스폰)
-  addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+  serverInit()
 
   //비주얼라이제이션 (조명 및 배경)
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -226,17 +212,11 @@ function init() {
 }
 
 //처음시작하는 스테이지 - 게임 스타트 함수
-function startGame(isOriginalStart = true) {
-  //초기 게임스타트 변수가 참일때 시작
-  if (isOriginalStart) {
-    onStart();
-  }
+function fireGameStart() {
 
-  //게임 스타트시 모든 게임 전역 변수 초기화
-  autopilot = false;
-  gameEnded = false;
+  socket.emit("start");
+
   lastTime = 0;
-  stack = [];
   overhangs = [];
 
   //게임 스타트시 HTML스코어 관련 초기화
@@ -258,12 +238,7 @@ function startGame(isOriginalStart = true) {
       const mesh = scene.children.find((c) => c.type == "Mesh");
       scene.remove(mesh);
     }
-
-    // 바닥 박스 고정
-    addLayer(0, 0, originalBoxSize, originalBoxSize);
-
-    // 처음 쌓이는 박스 (-10.1 x축으로)
-    addLayer(-10.1, 0, originalBoxSize, originalBoxSize, "x");
+    serverInit()
   }
 
   //카메라도 제일 밑에서 다시 시작
@@ -276,24 +251,16 @@ function startGame(isOriginalStart = true) {
 }
 
 //레이어 추가하는 함수 (x좌표, z좌표, 층고높이, 방향(x/z))
-function addLayer(x, z, width, depth, direction) {
-  const y = boxHeight * stack.length; // 박스 높이 * 스택 갯수
+function addLayer(x,y, z, width, depth, direction) {
+  const y = boxHeight * stackData.length; // 박스 높이 * 스택 갯수
   const layer = generateBox(x, y, z, width, depth, false); //현재 레이어에 넣는 새로운 박스 만들기
   layer.direction = direction;
   stack.push(layer);
-  dispatchNewLayer({
-    position: {
-      x: x,
-      z: z,
-    },
-    width: width,
-    depth: depth,
-  });
 }
 
 //바닥에 떨어지는 박스 (x,z방향, 너비, 층고높이)
 function addOverhang(x, z, width, depth) {
-  const y = boxHeight * (stack.length - 1); // 박스 높이 * 스택 갯수(현재높이를 포함하지 않아 -1)
+  const y = boxHeight * (stackData.length - 1); // 박스 높이 * 스택 갯수(현재높이를 포함하지 않아 -1)
   const overhang = generateBox(x, y, z, width, depth, true);
   overhangs.push(overhang); //오버행배열에 현재 오버행 박스 넣기
 }
@@ -358,7 +325,7 @@ function cutBox(topLayer, overlap, size, delta) {
 
 //게임 리트라이
 function retry() {
-  startGame();
+  fireGameStart();
   return;
 }
 
@@ -381,56 +348,24 @@ window.addEventListener("keydown", function (event) {
 
 //이벤트가 참일 때
 function eventHandler(isOrigin = true) {
-  if (autopilot) startGame(); //오토파일럿이 참일때 게임 스타트
+  if (autopilot) fireGameStart(); //오토파일럿이 참일때 게임 스타트
   else splitBlockAndAddNextOneIfOverlaps(isOrigin); //아니면 오토파일럿 시작
 }
 //오토파일럿 로직 자동 계산
 function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
-  if (gameEnded) return;
-
-  if (isOrigin) {
-    onStack();
-  }
-
-  if (isMyTurn && !isOrigin) {
-    //다시 이벤트가 들어오면 리턴
-    return;
-  }
-  console.log("NEXT-splited");
+  if (!autopilot) return;
 
   topLayer = stack[stack.length - 1];
-
   const previousLayer = stack[stack.length - 2];
-
   const direction = topLayer.direction;
-
   const size = direction == "x" ? topLayer.width : topLayer.depth;
-
-  //나의 턴이 아닐 때 오토파일럿 재생중
-  if (!isMyTurn) {
-    fetchTopLayer(topLayer);
-  }
   const delta =
     topLayer.threejs.position[direction] -
     previousLayer.threejs.position[direction];
   const overhangSize = Math.abs(delta);
   const overlap = size - overhangSize;
-  console.log(overlap);
-  if (overlap > 0 || !isOrigin) {
-    cutBox(topLayer, overlap, size, delta);
 
-    // Overhang
-    const overhangShift = (overlap / 2 + overhangSize / 2) * Math.sign(delta);
-    const overhangX =
-      direction == "x"
-        ? topLayer.threejs.position.x + overhangShift
-        : topLayer.threejs.position.x;
-    const overhangZ =
-      direction == "z"
-        ? topLayer.threejs.position.z + overhangShift
-        : topLayer.threejs.position.z;
-    const overhangWidth = direction == "x" ? overhangSize : topLayer.width;
-    const overhangDepth = direction == "z" ? overhangSize : topLayer.depth;
+  if (overlap > 0 ) {
 
     addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
 
@@ -443,17 +378,13 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
 
     if (scoreElement) scoreElement.innerText = stack.length - 1;
     addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
-  } else {
-    missedTheSpot(isOrigin);
-  }
+  } 
 }
 
-//쌓지 못하는 경우 - 게임 탈락 함수
-function missedTheSpot(isOrigin = true) {
-  if (isOrigin) {
-    onEnd();
-  }
 
+
+//쌓지 못하는 경우 - 게임 탈락 함수
+function fireEndProcess() {
   topLayer = stack[stack.length - 1];
   // Turn to top layer into an overhang and let it fall down
   addOverhang(
@@ -464,8 +395,6 @@ function missedTheSpot(isOrigin = true) {
   );
   world.remove(topLayer.cannonjs);
   scene.remove(topLayer.threejs);
-
-  gameEnded = true;
   if (resultsElement && !autopilot) resultsElement.style.display = "flex";
 }
 
@@ -478,62 +407,45 @@ function animation(time) {
 
     // The top level box should move if the game has not ended AND
     // it's either NOT in autopilot or it is in autopilot and the box did not yet reach the robot position
-    const boxShouldMove =
-      !gameEnded &&
-      (!autopilot ||
-        (autopilot &&
-          topLayer.threejs.position[topLayer.direction] <
-            previousLayer.threejs.position[topLayer.direction] +
-              robotPrecision));
+    const isMovedByAuto =
+      autopilot &&
+      topLayer.threejs.position[topLayer.direction] <
+        previousLayer.threejs.position[topLayer.direction] + robotPrecision;
 
     //
-    if (boxShouldMove) {
-      if (isMyTurn || autopilot) {
-        // Keep the position visible on UI and the position in the model in sync
-        topLayer.threejs.position[topLayer.direction] +=
-          speed * timePassed * turn;
-        topLayer.cannonjs.position[topLayer.direction] +=
-          speed * timePassed * turn;
-        if (isMyTurn && !autopilot) {
-          dispatchToplayer({
-            position: topLayer.threejs.position,
-            width: topLayer.threejs.width,
-            depth: topLayer.threejs.depth,
-          });
-          // dispatchToplayer({
-          //   poistion: topLayer.threejs.position,
-          //   width: topLayer.width,
-          //   height: topLayer.depth,
-          // });
-        }
-        // console.log(topLayer.threejs.position);
-      } else {
-        fetchTopLayer(topLayer);
-        // topLayer.threejs.position = fetchedTopLayerPosition;
-        // topLayer.cannonjs.position = fetchedTopLayerPosition;
-      }
-    } else {
-      // If it shouldn't move then is it because the autopilot reached the correct position?
-      // Because if so then next level is coming
-      if (autopilot) {
-        splitBlockAndAddNextOneIfOverlaps();
-        setRobotPrecision();
-      }
+    if (isMovedByAuto) {
+      // Keep the position visible on UI and the position in the model in sync
+      topLayer.threejs.position[topLayer.direction] +=
+        speed * timePassed * turn;
+      topLayer.cannonjs.position[topLayer.direction] +=
+        speed * timePassed * turn;
     }
-
-    // 4 is the initial camera height
-    if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
-      if (isMyTurn || autopilot) {
-        camera.position.y += speed * timePassed;
-        dispatchCameraPosition(camera.position.y);
-      } else {
-        camera.position.y = fecthedCameraPosition;
-      }
-      skyObjects.position.y += speed * timePassed;
+  } else {
+    // If it shouldn't move then is it because the autopilot reached the correct position?
+    // Because if so then next level is coming
+    if (autopilot) {
+      splitBlockAndAddNextOneIfOverlaps();
+      setRobotPrecision();
     }
-    updatePhysics(timePassed);
-    renderer.render(scene, camera);
   }
+
+  // 4 is the initial camera height
+  if (camera.position.y < boxHeight * (stackData.length - 2) + 4) {
+    if (autopilot) {
+      camera.position.y += speed * timePassed;
+      dispatchCameraPosition(camera.position.y);
+    } else {
+      camera.position.y = globalGameState.cameraHeight;
+    }
+    skyObjects.position.y += speed * timePassed;
+  }
+  updatePhysics(timePassed);
+  renderer.render(scene, camera);
+  updateStarsPosition();
+  lastTime = time;
+}
+
+function updateStarsPosition() {
   for (let i = 1; i < 4; i++) {
     if (i == 1) {
       star[i].position.x += mspeedX;
@@ -563,12 +475,10 @@ function animation(time) {
     }
   }
   skyObjects.rotation.y = Math.PI * 1.25;
-  lastTime = time;
 }
 
 function updatePhysics(timePassed) {
   world.step(timePassed / 1000); // Step the physics world
-
   // Copy coordinates from Cannon.js to Three.js
   overhangs.forEach((element) => {
     element.threejs.position.copy(element.cannonjs.position);
