@@ -45,7 +45,11 @@ export default function Home() {
 const Main = styled.main`
   width: 100%;
   height: 100%;
-  background-color: #9dbdec;
+  background: url('/background.png') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 
   display: flex;
   flex-direction: column;
@@ -59,8 +63,6 @@ const Main = styled.main`
     font-weight: 900;
     line-height: 1.5;
 
-    -webkit-backdrop-filter: blur(30px);
-    backdrop-filter: blur(30px);
     text-shadow: 0 0 2px #fff;
 
     margin-bottom: 70px;
