@@ -1,7 +1,5 @@
 const socket = io("ws://15.164.221.178:8000/");
 
-
-
 var timer = 0;
 var myEmail = "dodo4114@naver.com";
 
@@ -58,7 +56,7 @@ socket.on("receiveEventPropagation", function (data) {
   }
 });
 
-var fetchedTopLayerData;;
+var fetchedTopLayerData;
 socket.on("gameState", function (gameState) {
   globalGameState = gameState;
   fetchedTopLayerData = gameState.topLayer;
@@ -134,6 +132,12 @@ function init() {
 
   setRobotPrecision(); // 오토파일럿의 정확도를 파악하는 함수
 
+  if (world) {
+    // CannonJS 초기화 전 게임에 있던 캐논 바디들 삭제
+    while (world.bodies.length > 0) {
+      world.remove(world.bodies[0]);
+    }
+  }
   // CannonJS 물리엔진 초기셋팅
   world = new CANNON.World();
   world.gravity.set(0, -20, 0); //박스 떨어지는 중력(밑으로y)
@@ -163,7 +167,7 @@ function init() {
   // addLayer(0, 0, 0, originalBoxSize, originalBoxSize);
   // addLayer(-10, boxHeight, 0, originalBoxSize, originalBoxSize, "x");
 
-  serverInit();
+  // serverInit();
 
   //비주얼라이제이션 (조명 및 배경)
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -316,7 +320,7 @@ function cutBox(topLayer, overlap, size, delta) {
 
 //게임 리트라이
 function retry() {
-  serverInit(true)
+  serverInit(true);
   fireGameStart();
   return;
 }
@@ -394,7 +398,7 @@ function animation(time) {
 
   topLayerObject = stack[stack.length - 1];
   var topLayerData = fetchedTopLayerData;
-  console.log(fetchedTopLayerData)
+  console.log(fetchedTopLayerData);
   if (topLayerObject && topLayerData) {
     topLayerObject.threejs.position.x = topLayerData.position.x;
     topLayerObject.threejs.position.y = topLayerData.position.y;
