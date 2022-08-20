@@ -57,7 +57,6 @@ function setGameState(updateObject) {
 function setTopLayer(updateObject) {
   gameState.topLayer = { ...gameState.topLayer, ...updateObject };
   console.log("TOPLAYER");
-  console.log(gameState.topLayer);
 }
 
 io.on("connection", (socket) => {
@@ -162,12 +161,11 @@ io.on("connection", (socket) => {
 
     topLayerObject = gameState.topLayer;
     const stack = gameState.stack;
-    const previousLayer = stack[stack.length - 2];
     const speed = gameState.speed;
 
     const turn = gameState.topLayer.turn;
-console.log(gameState)
     if (gameState.isGaming) {
+    
       gameState.topLayer.position[topLayerObject.direction] +=
         speed * timeScale * turn;
     }
@@ -189,7 +187,7 @@ console.log(gameState)
     const direction = topLayer.direction;
 
     const size = direction == "x" ? topLayer.width : topLayer.depth;
-    console.log(previousLayer);
+
     if (!previousLayer) return;
     const delta =
       topLayer.position[direction] - previousLayer.position[direction];
@@ -210,7 +208,7 @@ console.log(gameState)
           : topLayer.position.z;
       const overhangWidth = direction == "x" ? overhangSize : topLayer.width;
       const overhangDepth = direction == "z" ? overhangSize : topLayer.depth;
-      console.log(overhangX);
+
       addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
 
       // Next layer

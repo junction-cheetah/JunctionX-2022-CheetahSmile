@@ -454,8 +454,6 @@ function animation(time) {
         console.log("autopilot");
       } else {
         camera.position.y = globalGameState.cameraHeight;
-        // console.log("CAMERA");
-        // console.log(camera.position);
       }
       skyObjects.position.y += speed * timePassed;
     }
