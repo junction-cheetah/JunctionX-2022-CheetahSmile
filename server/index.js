@@ -58,7 +58,7 @@ function setGameState(updateObject) {
 }
 
 function setTopLayer(updateObject) {
-  gameState.topLayer = { ...gameState.topLayer, updateObject };
+  gameState.topLayer = { ...gameState.topLayer, ...updateObject };
 }
 
 io.on("connection", (socket) => {

@@ -247,10 +247,13 @@ function fireGameStart() {
 
 //레이어 추가하는 함수 (x좌표, z좌표, 층고높이, 방향(x/z))
 function addLayer(x, y, z, width, depth, direction) {
+  console.log(y)
   const layer = generateBox(x, y, z, width, depth, false); //현재 레이어에 넣는 새로운 박스 만들기
   layer.direction = direction;
   stack.push(layer);
-  console.log(layer)
+  console.log(layer.threejs.position.y )
+  console.log(layer.threejs.position)
+  console.log(layer.threejs)
 }
 
 //바닥에 떨어지는 박스 (x,z방향, 너비, 층고높이)
