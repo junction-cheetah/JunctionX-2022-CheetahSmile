@@ -135,8 +135,8 @@ io.on("connection", (socket) => {
   }
 
   function setTurn() {
-    if (Math.abs(topLayer.position[topLayer.direction]) > 10)
-      topLayer.turn *= -1;
+    if (Math.abs(gameState.topLayer.position[topLayer.direction]) > 10)
+      gameState.topLayer.turn *= -1;
   }
 
   function animation() {
