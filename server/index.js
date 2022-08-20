@@ -50,6 +50,7 @@ function setGameState(updateObject) {
 
 function setTopLayer(updateObject) {
   gameState.topLayer = { ...gameState.topLayer, ...updateObject };
+  console.log("TOPLAYER");
   console.log(gameState.topLayer);
 }
 
