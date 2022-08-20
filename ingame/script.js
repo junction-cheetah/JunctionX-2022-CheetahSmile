@@ -1,9 +1,13 @@
 const socket = io("ws://15.164.221.178:8000/");
 var stackData = [];
 var timer = 0;
-var isMyTurn = true;
-// var fetchedTopLayerPosition = { position: [0, 0, 0], width: 0, depth: 0 };
-var fetchedTopLayerPosition = [0, 0, 0];
+var isMyTurn = false;
+var fetchedTopLayerData = {
+  position: new THREE.Vector3([0, 0, 0]),
+  width: 0,
+  depth: 0,
+};
+// var fetchedTopLayerPosition = [0, 0, 0];
 var fecthedCameraPosition = 4;
 
 socket.on("stacked", function (msg) {
@@ -21,8 +25,8 @@ socket.on("timer", function (time) {
 socket.on("started", function () {
   startGame(false);
 });
-socket.on("topLayerReceive", function (topLayerPositionData) {
-  fetchedTopLayerPosition = topLayerPositionData;
+socket.on("topLayerReceive", function (topLayerData) {
+  fetchedTopLayerData = topLayerData;
 });
 socket.on("cameraHeightReceive", function (cameraHeight) {
   fecthedCameraPosition = cameraHeight;
@@ -48,8 +52,8 @@ function propagationNewLayer(newLayerData) {
   socket.emit("newLayer", newLayerData);
 }
 
-function propagationToplayer(topLayerPosition) {
-  socket.emit("topLayer", topLayerPosition);
+function propagationToplayer(topLayerData) {
+  socket.emit("topLayer", topLayerData);
 }
 
 function propagationCameraPosition(height) {
@@ -59,6 +63,19 @@ function propagationCameraPosition(height) {
 function fetchNewLayer(newLayerData) {}
 
 function fetchNewLayer(newLayerData) {}
+
+function fetchTopLayer(topLayerInput) {
+  console.log(fetchedTopLayerData);
+  topLayerInput.threejs.position = fetchedTopLayerData.position;
+  topLayerInput.threejs.width = fetchedTopLayerData.width;
+  topLayerInput.threejs.depth = fetchedTopLayerData.depth;
+
+  topLayerInput.cannonjs.position.x = fetchedTopLayerData.position.x;
+  topLayerInput.cannonjs.position.y = fetchedTopLayerData.position.y;
+  topLayerInput.cannonjs.position.z = fetchedTopLayerData.position.z;
+  topLayerInput.cannonjs.width = fetchedTopLayerData.width;
+  topLayerInput.cannonjs.depth = fetchedTopLayerData.depth;
+}
 
 window.focus(); // Capture keys right away (by default focus is on editor)
 
@@ -357,11 +374,16 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
   }
 
   const topLayer = stack[stack.length - 1];
+
   const previousLayer = stack[stack.length - 2];
 
   const direction = topLayer.direction;
 
   const size = direction == "x" ? topLayer.width : topLayer.depth;
+
+  if (!isMyTurn) {
+    fetchTopLayer(topLayer);
+  }
   const delta =
     topLayer.threejs.position[direction] -
     previousLayer.threejs.position[direction];
@@ -406,6 +428,7 @@ function missedTheSpot(isOrigin = true) {
   if (isOrigin) {
     onEnd();
   }
+
   const topLayer = stack[stack.length - 1];
   // Turn to top layer into an overhang and let it fall down
   addOverhang(
@@ -451,7 +474,11 @@ function animation(time) {
         topLayer.cannonjs.position[topLayer.direction] +=
           speed * timePassed * turn;
         if (isMyTurn && !autopilot) {
-          propagationToplayer(topLayer.threejs.position);
+          propagationToplayer({
+            position: topLayer.threejs.position,
+            width: topLayer.threejs.width,
+            depth: topLayer.threejs.depth,
+          });
           // propagationToplayer({
           //   poistion: topLayer.threejs.position,
           //   width: topLayer.width,
@@ -460,8 +487,7 @@ function animation(time) {
         }
         // console.log(topLayer.threejs.position);
       } else {
-        topLayer.threejs.position = fetchedTopLayerPosition;
-        topLayer.cannonjs.position = fetchedTopLayerPosition;
+        fetchTopLayer(topLayer);
         // topLayer.threejs.position = fetchedTopLayerPosition;
         // topLayer.cannonjs.position = fetchedTopLayerPosition;
       }
