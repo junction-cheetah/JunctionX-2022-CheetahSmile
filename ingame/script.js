@@ -3,12 +3,12 @@ var stackData = [];
 var timer = 0;
 var isMyTurn = true;
 // var fetchedTopLayerPosition = { position: [0, 0, 0], width: 0, depth: 0 };
-var fetchedTopLayerPosition = [0,0,0]
+var fetchedTopLayerPosition = [0, 0, 0];
 var fecthedCameraPosition = 4;
 
 socket.on("stacked", function (msg) {
   stackData = msg.stack;
-  console.log("stacked")
+  console.log("stacked");
   eventHandler(false);
 });
 
@@ -82,6 +82,7 @@ let mspeedX = 0.02;
 let mspeedY = 0.02;
 let moveSpeed = 0.05;
 let turn = 1;
+let turnRange = 10;
 let boxStep;
 
 const scoreElement = document.getElementById("score");
@@ -351,8 +352,8 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
     onStack();
   }
 
-  if (isMyTurn && !isOrigin){
-    return
+  if (isMyTurn && !isOrigin) {
+    return;
   }
 
   const topLayer = stack[stack.length - 1];
@@ -402,7 +403,6 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
 
 //쌓지 못하는 경우 - 게임 탈락 함수
 function missedTheSpot(isOrigin = true) {
-  console.log("HIHIHIH");
   if (isOrigin) {
     onEnd();
   }
@@ -465,11 +465,7 @@ function animation(time) {
         // topLayer.threejs.position = fetchedTopLayerPosition;
         // topLayer.cannonjs.position = fetchedTopLayerPosition;
       }
-      turnRange = 10;
-      if (
-        topLayer.threejs.position[topLayer.direction] > turnRange ||
-        topLayer.threejs.position[topLayer.direction] < -turnRange
-      ) {
+      if (topLayer.threejs.position[topLayer.direction] > 10) {
         // If the box went beyond the stack then show up the fail screen
         // missedTheSpot();
         turn *= -1;
