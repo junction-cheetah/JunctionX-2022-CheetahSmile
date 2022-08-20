@@ -34,7 +34,7 @@ var initialGameState = {
   timeMicroSec: 0,
   isGaming: false,
   topLayer: {
-    postion: { x: 0, y: 0, z: 0 },
+    position: { x: 0, y: 0, z: 0 },
     width: 0,
     depth: 0,
     turn: 1,
