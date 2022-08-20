@@ -18,25 +18,22 @@ export default function Home() {
 
   // login
   const login = () => {
-    // TODO: cognito
-    // window.open(
-    //   'https://<domain>.auth.<region>.amazoncognito.com/login?response_type=token&client_id=<client_id>&redirect_uri=<redirection_url>',
-    //   '_self'
-    // );
-    localStorage.setItem('cheetahToken', 'test');
-    setToken('test');
+    window.open(
+      'https://cobuilding.auth.ap-northeast-2.amazoncognito.com/login?client_id=2jkdlb41uc8gvv3krs0uldaplf&response_type=code&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://cobuilding.vercel.app/',
+      '_self'
+    );
   };
   useEffect(() => {
-    const newToken = router.asPath.split('access_token=')[1];
+    const newToken = router.asPath.split('code=')[1];
     if (newToken) {
-      localStorage.setItem('cheetahToken', newToken);
+      localStorage.setItem('aws-google-oauth-token', newToken);
       setToken(newToken);
     }
   }, [router, setToken]);
 
   return (
     <>
-      <NextSeo title="Home" description="TODO" />
+      <NextSeo title="Co-Building" description="TODO" />
       <Main onClick={() => (isAuthenticated ? goToLobby() : null)}>
         <h1>
           BUILD <br /> YOUR <br /> POTENTIAL

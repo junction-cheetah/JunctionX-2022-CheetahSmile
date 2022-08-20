@@ -23,7 +23,7 @@ export default function Lobby() {
 
   const [_, setToken] = useAuth();
   const logout = () => {
-    localStorage.removeItem('cheetahToken');
+    localStorage.removeItem('aws-google-oauth-token');
     setToken(null);
   };
 
