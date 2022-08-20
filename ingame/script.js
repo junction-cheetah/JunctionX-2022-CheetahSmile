@@ -1,17 +1,17 @@
 const socket = io("ws://15.164.221.178:8000/");
-var stackData = [];
+
 var timer = 0;
-var isMyTurn = false;
-var fetchedTopLayerData = {
-  position: new THREE.Vector3([0, 0, 0]),
-  width: 0,
-  depth: 0,
-};
-// var fetchedTopLayerPosition = [0, 0, 0];
-var fecthedCameraPosition = 4;
+var myEmail = "dodo4114@naver.com";
+
+var globalGameState = {};
+var isMyTurn = globalGameState.nowUser == myEmail;
+
+var fetchedTopLayerData = globalGameState.topLayer;
+var fecthedCameraPosition = globalGameState.cameraHeight;
+var stack = globalGameState.stack;
+var topLayer;
 
 socket.on("stacked", function (msg) {
-  stackData = msg.stack;
   console.log("stacked");
   eventHandler(false);
 });
@@ -25,6 +25,7 @@ socket.on("timer", function (time) {
 socket.on("started", function () {
   startGame(false);
 });
+
 socket.on("topLayerReceive", function (topLayerData) {
   fetchedTopLayerData = topLayerData;
 });
@@ -48,33 +49,55 @@ function onEnd() {
   socket.emit("end", "");
 }
 
-function propagationNewLayer(newLayerData) {
+function dispatchNewLayer(newLayerData) {
   socket.emit("newLayer", newLayerData);
 }
 
-function propagationToplayer(topLayerData) {
+function dispatchToplayer(topLayerData) {
   socket.emit("topLayer", topLayerData);
 }
 
-function propagationCameraPosition(height) {
+function dispatchCameraPosition(height) {
   socket.emit("cameraHeight", height);
 }
 
-function fetchNewLayer(newLayerData) {}
+function dispatchCameraPosition(eventName, eventBody) {
+  socket.emit("dispatchEventPropagation", {
+    name: eventName,
+    body: eventBody,
+  });
+}
 
-function fetchNewLayer(newLayerData) {}
+socket.on("receiveEventPropagation", function (data) {
+  var eventName = data.name;
+  var eventBody = data.body;
+  if (eventName == "exampleEvent") {
+    // do something
+  }
+});
 
-function fetchTopLayer(topLayerInput) {
-  console.log(fetchedTopLayerData);
-  topLayerInput.threejs.position = fetchedTopLayerData.position;
-  topLayerInput.threejs.width = fetchedTopLayerData.width;
-  topLayerInput.threejs.depth = fetchedTopLayerData.depth;
+socket.on("gameState", function (gameState) {
+  globalGameState = gameState;
+  if (topLayer) fetchTopLayer(topLayer, gameState.topLayer);
+});
 
-  topLayerInput.cannonjs.position.x = fetchedTopLayerData.position.x;
-  topLayerInput.cannonjs.position.y = fetchedTopLayerData.position.y;
-  topLayerInput.cannonjs.position.z = fetchedTopLayerData.position.z;
-  topLayerInput.cannonjs.width = fetchedTopLayerData.width;
-  topLayerInput.cannonjs.depth = fetchedTopLayerData.depth;
+function setGameState(updateObject) {
+  socket.emit("setGameState", updateObject);
+}
+
+
+function fetchTopLayer(topLayerObject, topLayerData) {
+  topLayerObject.threejs.position = topLayerData.position;
+  topLayerObject.threejs.width = topLayerData.width;
+  topLayerObject.threejs.depth = topLayerData.depth;
+
+  topLayerObject.cannonjs.position.x = topLayerData.position.x;
+  topLayerObject.cannonjs.position.y = topLayerData.position.y;
+  topLayerObject.cannonjs.position.z = topLayerData.position.z;
+  topLayerObject.cannonjs.width = topLayerData.width;
+  topLayerObject.cannonjs.depth = topLayerData.depth;
+
+  topLayerObject.direction = topLayerData.direction;
 }
 
 window.focus(); // Capture keys right away (by default focus is on editor)
@@ -97,8 +120,8 @@ let skyD = 12.9;
 let starR = 0.7;
 let mspeedX = 0.02;
 let mspeedY = 0.02;
-let moveSpeed = 0.05;
-let turn = 1;
+let speed = globalGameState.topLayer.speed;
+let turn = globalGameState.topLayer.turn;
 let turnRange = 10;
 let boxStep;
 
@@ -209,8 +232,8 @@ function init() {
 }
 
 //처음시작하는 스테이지 - 게임 스타트 함수
-function startGame(isOriginalStart = true) {
-  if (isOriginalStart) {
+function startGame(isOriginal = true) {
+  if (isOriginal) {
     onStart();
   }
 
@@ -261,7 +284,7 @@ function addLayer(x, z, width, depth, direction) {
   const layer = generateBox(x, y, z, width, depth, false);
   layer.direction = direction;
   stack.push(layer);
-  propagationNewLayer({
+  dispatchNewLayer({
     position: {
       x: x,
       z: z,
@@ -362,6 +385,7 @@ function eventHandler(isOrigin = true) {
   else splitBlockAndAddNextOneIfOverlaps(isOrigin);
 }
 
+
 function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
   if (gameEnded) return;
 
@@ -372,8 +396,9 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
   if (isMyTurn && !isOrigin) {
     return;
   }
+  console.log("NEXT-splited");
 
-  const topLayer = stack[stack.length - 1];
+  topLayer = stack[stack.length - 1];
 
   const previousLayer = stack[stack.length - 2];
 
@@ -429,7 +454,7 @@ function missedTheSpot(isOrigin = true) {
     onEnd();
   }
 
-  const topLayer = stack[stack.length - 1];
+  topLayer = stack[stack.length - 1];
   // Turn to top layer into an overhang and let it fall down
   addOverhang(
     topLayer.threejs.position.x,
@@ -446,13 +471,11 @@ function missedTheSpot(isOrigin = true) {
 const clock = new THREE.Clock();
 
 function animation(time) {
-  const elapsedTime = clock.getElapsedTime();
   delta = clock.getDelta();
 
   if (lastTime) {
     const timePassed = time - lastTime;
-    const topLayer = stack[stack.length - 1];
-    const speed = 0.007;
+    topLayer = stack[stack.length - 1];
 
     const previousLayer = stack[stack.length - 2];
 
@@ -474,12 +497,12 @@ function animation(time) {
         topLayer.cannonjs.position[topLayer.direction] +=
           speed * timePassed * turn;
         if (isMyTurn && !autopilot) {
-          propagationToplayer({
+          dispatchToplayer({
             position: topLayer.threejs.position,
             width: topLayer.threejs.width,
             depth: topLayer.threejs.depth,
           });
-          // propagationToplayer({
+          // dispatchToplayer({
           //   poistion: topLayer.threejs.position,
           //   width: topLayer.width,
           //   height: topLayer.depth,
@@ -490,11 +513,6 @@ function animation(time) {
         fetchTopLayer(topLayer);
         // topLayer.threejs.position = fetchedTopLayerPosition;
         // topLayer.cannonjs.position = fetchedTopLayerPosition;
-      }
-      if (topLayer.threejs.position[topLayer.direction] > 10) {
-        // If the box went beyond the stack then show up the fail screen
-        // missedTheSpot();
-        turn *= -1;
       }
     } else {
       // If it shouldn't move then is it because the autopilot reached the correct position?
@@ -509,7 +527,7 @@ function animation(time) {
     if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
       if (isMyTurn || autopilot) {
         camera.position.y += speed * timePassed;
-        propagationCameraPosition(camera.position.y);
+        dispatchCameraPosition(camera.position.y);
       } else {
         camera.position.y = fecthedCameraPosition;
       }
