@@ -2,11 +2,13 @@ const socket = io("ws://15.164.221.178:8000/");
 var stackData = [];
 var timer = 0;
 var isMyTurn = true;
-var fetchedTopLayerPosition = [0, 0, 0];
+// var fetchedTopLayerPosition = { position: [0, 0, 0], width: 0, depth: 0 };
+var fetchedTopLayerPosition = [0,0,0]
 var fecthedCameraPosition = 4;
 
 socket.on("stacked", function (msg) {
   stackData = msg.stack;
+  console.log("stacked")
   eventHandler(false);
 });
 
@@ -20,10 +22,10 @@ socket.on("started", function () {
   startGame(false);
 });
 socket.on("topLayerReceive", function (topLayerPositionData) {
-  topLayerPosition = topLayerPositionData;
+  fetchedTopLayerPosition = topLayerPositionData;
 });
 socket.on("cameraHeightReceive", function (cameraHeight) {
-  fetchedTopLayerPosition = cameraHeight;
+  fecthedCameraPosition = cameraHeight;
 });
 
 function onStack() {
@@ -349,6 +351,10 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
     onStack();
   }
 
+  if (isMyTurn && !isOrigin){
+    return
+  }
+
   const topLayer = stack[stack.length - 1];
   const previousLayer = stack[stack.length - 2];
 
@@ -360,8 +366,8 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
     previousLayer.threejs.position[direction];
   const overhangSize = Math.abs(delta);
   const overlap = size - overhangSize;
-
-  if (overlap > 0) {
+  console.log(overlap);
+  if (overlap > 0 || !isOrigin) {
     cutBox(topLayer, overlap, size, delta);
 
     // Overhang
@@ -396,6 +402,7 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
 
 //쌓지 못하는 경우 - 게임 탈락 함수
 function missedTheSpot(isOrigin = true) {
+  console.log("HIHIHIH");
   if (isOrigin) {
     onEnd();
   }
@@ -445,11 +452,18 @@ function animation(time) {
           speed * timePassed * turn;
         if (isMyTurn && !autopilot) {
           propagationToplayer(topLayer.threejs.position);
+          // propagationToplayer({
+          //   poistion: topLayer.threejs.position,
+          //   width: topLayer.width,
+          //   height: topLayer.depth,
+          // });
         }
         // console.log(topLayer.threejs.position);
       } else {
         topLayer.threejs.position = fetchedTopLayerPosition;
         topLayer.cannonjs.position = fetchedTopLayerPosition;
+        // topLayer.threejs.position = fetchedTopLayerPosition;
+        // topLayer.cannonjs.position = fetchedTopLayerPosition;
       }
       turnRange = 10;
       if (
