@@ -3,6 +3,7 @@ import Link from 'next/link';
 import QRCode from 'qrcode';
 import { useEffect } from 'react';
 import styled from '@emotion/styled';
+import Image from 'next/future/image';
 
 export default function Room({ sessionId }) {
   useEffect(() => {
@@ -21,6 +22,29 @@ export default function Room({ sessionId }) {
           <br />
           <span>핀란 드가자</span>
         </Team>
+
+        <Players>
+          <div className="player">
+            <Image src="/polygon.svg" width={80} height={80} alt="" />
+            <p>jyp930</p>
+          </div>
+          <div className="player">
+            <Image src="/polygon.svg" width={80} height={80} alt="" />
+            <p>jyp930</p>
+          </div>
+          <div className="player">
+            <Image src="/polygon.svg" width={80} height={80} alt="" />
+            <p>jyp930</p>
+          </div>
+          <div className="player">
+            <Image src="/polygon.svg" width={80} height={80} alt="" />
+            <p>jyp930</p>
+          </div>
+          <div className="player">
+            <Image src="/polygon.svg" width={80} height={80} alt="" />
+            <p>jyp930</p>
+          </div>
+        </Players>
 
         <Link href={{ pathname: '/game', query: { session: sessionId } }}>
           <a>Start!</a>
@@ -88,10 +112,35 @@ const Main = styled.main`
 
 const Team = styled.p`
   text-align: center;
-  margin: 22px 0 32px;
+  margin: 22px 0 28px;
 
   opacity: 0.7;
+  color: #0267ff;
   text-shadow: 0 0 2px #0267ff;
   font-weight: bold;
-  color: #0267ff;
+`;
+
+const Players = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 32px;
+
+  .player {
+    position: relative;
+
+    p {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      color: #0267ff;
+      text-shadow: 0 0 2px #0267ff;
+      font-size: 12px;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
 `;

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="75.802" height="77.643" viewBox="0 0 75.802 77.643">
+    <defs>
+        <filter id="33qpmenoqa" x="0" y="0" width="75.802" height="77.643" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+            <feFlood flood-color="#fff" flood-opacity=".161"/>
+            <feComposite operator="in" in2="blur"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g style="filter:url(#33qpmenoqa)">
+        <path data-name="패스 1" d="m1436.428 68.2-19.19 11.266-20.487 42.026 39.678 15.351L1463.552 118l-8.452-30.493z" transform="translate(-1392.25 -63.7)" style="fill:rgba(255,255,255,.53)"/>
+    </g>
+</svg>
