@@ -27,7 +27,8 @@ var initialGameState = {
   nowUserIndex: 0,
   timeMicroSec: 0,
   isGaming: false,
-  topLayer  : [0,0,0]
+  topLayer: [0, 0, 0],
+  cameraHeight:4,
 };
 
 function deepCopy(object) {
@@ -80,6 +81,10 @@ io.on("connection", (socket) => {
   socket.on("topLayer", (topLayer) => {
     gameState.topLayer = topLayer;
     io.emit("topLayerReceive", topLayer);
+  });
+  socket.on("cameraHeight", (cameraHeight) => {
+    gameState.cameraHeight = cameraHeight;
+    io.emit("cameraHeightReceive", cameraHeight);
   });
 });
 server.listen(8000, "0.0.0.0", () => {
