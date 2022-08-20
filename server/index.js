@@ -144,6 +144,7 @@ io.on("connection", (socket) => {
     const timeScale = 1;
 
     topLayer = gameState.topLayer;
+    const stack = gameState.stack;
     const previousLayer = stack[stack.length - 2];
 
     if (gameState.isGaming) {
