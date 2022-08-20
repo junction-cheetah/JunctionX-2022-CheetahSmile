@@ -57,9 +57,11 @@ io.on("connection", (socket) => {
       gameState.isGaming = false;
       clearInterval(timerId);
       timeMicroSec = 0;
-
+      console.log(gameState)
       lastState = { ...gameState };
+      console.log(initialGameState);
       gameState = { ...initialGameState };
+      console.log(gameState);
     }
   });
 
