@@ -22,7 +22,7 @@ var sessionId = "";
 var teamName = "";
 
 var initialGameState = {
-  stack: stack,
+  stack: [],
   nowUser: "",
   nowUserIndex: 0,
   timeMicroSec: 0,
@@ -40,7 +40,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("start", (msg) => {
-    if (!isGaming) {
+    if (!gameState.isGaming) {
       console.log("GAME START");
       io.emit("started", msg);
       gameState.isGaming = true;
@@ -51,20 +51,20 @@ io.on("connection", (socket) => {
   });
 
   socket.on("end", (msg) => {
-    if (isGaming) {
+    if (gameState.isGaming) {
       console.log("GAME END");
       io.emit("end", msg);
       gameState.isGaming = false;
       clearInterval(timerId);
-      timeMicroSec = 0;s
+      timeMicroSec = 0;
     }
   });
 
   socket.on("stack", (msg) => {
     var newStack = { ...msg, serverTime: timeMicroSec / 1000 };
     changeNowUser();
-    stack.push(newStack);
-    console.log(stack);
+    gameState.stack.push(newStack);
+    console.log(gameState.stack);
     io.emit("stacked", { newStack, nowUser });
   });
 });
