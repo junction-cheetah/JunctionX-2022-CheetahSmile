@@ -42,10 +42,6 @@ function onStack() {
   });
 }
 
-function dispatchToplayer(topLayerData) {
-  socket.emit("topLayer", topLayerData);
-}
-
 function dispatchCameraPosition(height) {
   socket.emit("cameraHeight", height);
 }
@@ -67,7 +63,8 @@ socket.on("receiveEventPropagation", function (data) {
 
 socket.on("gameState", function (gameState) {
   globalGameState = gameState;
-  if (topLayer) fetchTopLayer(topLayer, gameState.topLayer);
+  console.log(globalGameState);
+  fetchTopLayer(topLayer, gameState.topLayer);
 });
 
 socket.on("cutBox", ({ topLayer, overlap, size, delta }) => {
@@ -273,7 +270,7 @@ function addOverhang(x, z, width, depth) {
 
 //박스 만들어내는 함수(좌표,너비,층고높이, 떨어지는지 유무)
 function generateBox(x, y, z, width, depth, falls) {
-  console.log("GEN")
+  console.log("GEN");
   // ThreeJS 비주얼
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
   const material = new THREE.MeshStandardMaterial({
@@ -451,9 +448,9 @@ function animation(time) {
     }
     updatePhysics(timePassed);
   }
-    renderer.render(scene, camera);
-    updateStarsPosition();
-    lastTime = time;
+  renderer.render(scene, camera);
+  updateStarsPosition();
+  lastTime = time;
 }
 
 function updateStarsPosition() {

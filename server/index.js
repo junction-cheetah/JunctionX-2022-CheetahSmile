@@ -53,6 +53,16 @@ function deepCopy(object) {
 
 var gameState = deepCopy(initialGameState);
 
+
+
+  function setGameState(updateObject) {
+    gameState = { ...gameState, updateObject };
+  }
+
+  function setTopLayer(updateObject) {
+    gameState.topLayer = { ...gameState.topLayer, updateObject };
+  }
+
 io.on("connection", (socket) => {
   console.log("a user connected");
   socket.broadcast.emit("hi");
@@ -81,8 +91,9 @@ io.on("connection", (socket) => {
     console.log(gameState.stack);
     io.emit("stacked", { newStack, nowUser, stack: gameState.stack });
   });
+
   socket.on("topLayer", (topLayer) => {
-    console.log("topLayer");
+    // console.log("topLayer");
     gameState.topLayer = { ...gameState.topLayer, ...topLayer };
     io.emit("topLayerReceive", topLayer);
   });
@@ -103,7 +114,8 @@ io.on("connection", (socket) => {
     if (forced || notReady) {
       gameState = deepCopy(initialGameState);
       addLayer(0, 0, originalBoxSize, originalBoxSize);
-      addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+      setTopLayer(
+      addLayer(-10, 0, originalBoxSize, originalBoxSize, "x"))
     }
   }
   socket.on("start", (data) => {
@@ -117,6 +129,7 @@ io.on("connection", (socket) => {
       console.log("GAME START");
       io.emit("started", msg);
       gameState.isGaming = true;
+      
       timerId = setInterval(() => {
         io.emit("timer", timeMicroSec / 1000);
         tick();
@@ -131,6 +144,7 @@ io.on("connection", (socket) => {
   });
 
   function tick() {
+      gameState.isGaming = true;
     clock();
     setTurn();
     animation();
@@ -145,6 +159,7 @@ io.on("connection", (socket) => {
     if (Math.abs(topLayer.position[topLayer.direction]) > 10)
       gameState.topLayer.turn *= -1;
   }
+
 
   function animation() {
     const timeScale = 1;
@@ -214,14 +229,6 @@ io.on("connection", (socket) => {
     }
   }
 
-  function setGameState(updateObject) {
-    gameState = { ...gameState, updateObject };
-  }
-
-  function setTopLayer(updateObject) {
-    gameState.topLayer = { ...gameState.topLayer, updateObject };
-  }
-
   function addLayer(nextX, nextZ, newWidth, newDepth, nextDirection = "z") {
     const y = boxHeight * gameState.stack.length; // 박스 높이 * 스택 갯수
     const layer = {
@@ -241,6 +248,7 @@ io.on("connection", (socket) => {
       depth: newDepth,
       direction: nextDirection,
     });
+    return layer;
   }
 
   function cutBox(topLayer, overlap, size, delta) {
