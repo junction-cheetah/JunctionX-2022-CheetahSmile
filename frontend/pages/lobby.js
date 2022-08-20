@@ -49,19 +49,13 @@ export default function Lobby() {
         {!open && (
           <>
             <button onClick={() => setOpen(true)}>
-              <Image src="/icons/people.svg" width={31} height={20} alt="" />
+              <Image src="/icons/people.svg" width={30} height={23} alt="" />
               <span>Create Room</span>
             </button>
             <Link href="/ranking">
               <a>
-                <Image src="/icons/trophy.svg" width={31} height={20} alt="" />
+                <Image src="/icons/trophy.svg" width={30} height={30} alt="" />
                 <span>Ranking</span>
-              </a>
-            </Link>
-            <Link href="/achievement">
-              <a>
-                <Image src="/icons/people.svg" width={31} height={20} alt="" />
-                <span>Achievement</span>
               </a>
             </Link>
           </>
@@ -109,14 +103,15 @@ const Main = styled.main`
   }
 
   span {
+    width: 120px;
+    text-align: left;
     opacity: 0.7;
     font-size: 18px;
     font-weight: bold;
-    text-align: center;
     color: #0267ff;
     text-shadow: 0 0 3px #0267ff;
 
-    margin-left: 4px;
+    margin-left: 16px;
   }
 `;
 
@@ -124,12 +119,10 @@ const ModalContent = styled.div`
   width: 320px;
   max-width: 100%;
   height: 300px;
-  background: white;
   border-radius: 20px;
 
   /* From https://css.glass */
   background: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(6.7px);
   -webkit-backdrop-filter: blur(6.7px);
 
