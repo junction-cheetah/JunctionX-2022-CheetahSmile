@@ -1,9 +1,12 @@
 const socket = io("ws://15.164.221.178:8000/");
 var stackData = [];
 var timer = 0;
+var isMyTurn = true;
+var topLayerPosition;
 
 socket.on("stacked", function (msg) {
   stackData = msg.stack;
+  eventHandler()
 });
 
 const timerElement = document.getElementById("timer");
@@ -12,6 +15,15 @@ socket.on("timer", function (time) {
   if (timerElement) timerElement.innerText = timer;
   console.log(time);
 });
+
+
+socket.on("started", function () {
+  startGame()
+});;
+socket.on("topLayerReceive", function (topLayerPositionData) {
+  topLayerPosition = topLayerPositionData;
+});;
+
 function onStack() {
   socket.emit("stack", { clientTime: timer });
 }
@@ -23,6 +35,18 @@ function onStart() {
 function onEnd() {
   console.log("END");
   socket.emit("end", "");
+}
+
+
+function propagationNewLayer(newLayerData) {
+  socket.emit("newLayer", newLayerData);
+}
+function propagationToplayer(topLayerPosition){
+  socket.emit("topLayer", topLayerPosition);
+}
+
+function fetchNewLayer (newLayerData){
+
 }
 
 window.focus(); // Capture keys right away (by default focus is on editor)
@@ -204,6 +228,11 @@ function addLayer(x, z, width, depth, direction) {
   const layer = generateBox(x, y, z, width, depth, false);
   layer.direction = direction;
   stack.push(layer);
+  propagationNewLayer({
+    position:{x:x,z:z},
+    width: width,
+    depth: depth,
+  })
 }
 
 function addOverhang(x, z, width, depth) {
@@ -385,9 +414,15 @@ function animation(time) {
               robotPrecision));
 
     if (boxShouldMove) {
-      // Keep the position visible on UI and the position in the model in sync
-      topLayer.threejs.position[topLayer.direction] += speed * timePassed;
-      topLayer.cannonjs.position[topLayer.direction] += speed * timePassed;
+      if (isMyTurn){
+        // Keep the position visible on UI and the position in the model in sync
+        topLayer.threejs.position[topLayer.direction] += speed * timePassed;
+        topLayer.cannonjs.position[topLayer.direction] += speed * timePassed;
+        propagationToplayer(topLayer.threejs.position.toArray());
+      } else{
+       topLayer.threejs.position.fromArray(patchedToplayerPosition)
+       topLayer.cannonjs.position.fromArray(patchedToplayerPosition);
+      }
 
       // If the box went beyond the stack then show up the fail screen
       if (topLayer.threejs.position[topLayer.direction] > 10) {
