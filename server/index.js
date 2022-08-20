@@ -22,6 +22,7 @@ var nowUser = "";
 var sessionId = "";
 var teamName = "";
 var notReady = true;
+var accessUserNumber = 0;
 
 const boxHeight = 1; // 각 박스의 높이
 const originalBoxSize = 3; // 처음 박스의 시작 크기
@@ -64,9 +65,11 @@ function setTopLayer(updateObject) {
 io.on("connection", (socket) => {
   console.log("a user connected");
   socket.broadcast.emit("hi");
+  accessUserNumber++
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
+    accessUserNumber--;
   });
 
   socket.on("end", (msg) => {
