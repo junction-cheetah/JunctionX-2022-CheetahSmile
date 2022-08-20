@@ -210,7 +210,7 @@ io.on("connection", (socket) => {
       const overhangWidth = direction == "x" ? overhangSize : topLayer.width;
       const overhangDepth = direction == "z" ? overhangSize : topLayer.depth;
 
-      // addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
+      addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
 
       // Next layer
       const nextX = direction == "x" ? topLayer.position.x : -10;
@@ -219,7 +219,7 @@ io.on("connection", (socket) => {
       const newDepth = topLayer.depth; // New layer has the same size as the cut top layer
       const nextDirection = direction == "x" ? "z" : "x";
 
-      // addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
+      addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
     } else {
       endGame();
     }
@@ -260,6 +260,7 @@ io.on("connection", (socket) => {
 
     io.emit("cutBox", { topLayer, overlap, size, delta });
   }
+
   function addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth) {
     io.emit("addOverhang", {
       overhangX,

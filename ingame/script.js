@@ -307,15 +307,15 @@ function cutBox(topLayer, overlap, size, delta) {
   topLayer.threejs.scale[direction] = overlap / size;
   topLayer.threejs.position[direction] -= delta / 2;
 
-  // Update CannonJS model
-  topLayer.cannonjs.position[direction] -= delta / 2;
+  // // Update CannonJS model
+  // topLayer.cannonjs.position[direction] -= delta / 2;
 
-  // CannonJS 잘릴 박스를 리사이즈할 수 없어서 새로운 박스로 대체
-  const shape = new CANNON.Box(
-    new CANNON.Vec3(newWidth / 2, boxHeight / 2, newDepth / 2)
-  );
-  topLayer.cannonjs.shapes = [];
-  topLayer.cannonjs.addShape(shape);
+  // // CannonJS 잘릴 박스를 리사이즈할 수 없어서 새로운 박스로 대체
+  // const shape = new CANNON.Box(
+  //   new CANNON.Vec3(newWidth / 2, boxHeight / 2, newDepth / 2)
+  // );
+  // topLayer.cannonjs.shapes = [];
+  // topLayer.cannonjs.addShape(shape);
 }
 
 //게임 리트라이
@@ -388,7 +388,7 @@ function fireEndProcess() {
     topLayerObject.width,
     topLayerObject.depth
   );
-  world.remove(topLayerObject.cannonjs);
+  // world.remove(topLayerObject.cannonjs);
   scene.remove(topLayerObject.threejs);
   if (resultsElement && !autopilot) resultsElement.style.display = "flex";
 }
@@ -407,11 +407,11 @@ function animation(time) {
     topLayerObject.threejs.width = topLayerData.width;
     topLayerObject.threejs.depth = topLayerData.depth;
 
-    topLayerObject.cannonjs.position["x"] = topLayerData.position.x;
-    topLayerObject.cannonjs.position["y"] = topLayerData.position.y;
-    topLayerObject.cannonjs.position["z"] = topLayerData.position.z;
-    topLayerObject.cannonjs.width = topLayerData.width;
-    topLayerObject.cannonjs.depth = topLayerData.depth;
+    // topLayerObject.cannonjs.position["x"] = topLayerData.position.x;
+    // topLayerObject.cannonjs.position["y"] = topLayerData.position.y;
+    // topLayerObject.cannonjs.position["z"] = topLayerData.position.z;
+    // topLayerObject.cannonjs.width = topLayerData.width;
+    // topLayerObject.cannonjs.depth = topLayerData.depth;
 
     topLayerObject.direction = topLayerData.direction;
   }
@@ -439,8 +439,8 @@ function animation(time) {
       turn = globalGameState.topLayer.turn;
       topLayerObject.threejs.position[topLayerObject.direction] +=
         speed * timePassed * turn;
-      topLayerObject.cannonjs.position[topLayerObject.direction] +=
-        speed * timePassed * turn;
+      // topLayerObject.cannonjs.position[topLayerObject.direction] +=
+      //   speed * timePassed * turn;
     } else {
       // If it shouldn't move then is it because the autopilot reached the correct position?
       // Because if so then next level is coming
