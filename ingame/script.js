@@ -421,18 +421,18 @@ function animation(time) {
         topLayer.cannonjs.position[topLayer.direction] +=
           speed * timePassed * turn;
         propagationToplayer(topLayer.threejs.position.toArray());
+        console.log(topLayer.threejs.position);
       } else {
         topLayer.threejs.position.fromArray(patchedToplayerPosition);
         topLayer.cannonjs.position.fromArray(patchedToplayerPosition);
       }
 
       if (
-        topLayer.threejs.position[topLayer.direction] > 10 ||
-        topLayer.threejs.position[topLayer.direction] < -10
+        topLayer.threejs.position[topLayer.direction] > 10 - stack.length - 1 ||
+        topLayer.threejs.position[topLayer.direction] <= -10
       ) {
         // If the box went beyond the stack then show up the fail screen
         // missedTheSpot();
-        console.log("OUT");
         turn *= -1;
       }
     } else {
@@ -481,7 +481,6 @@ function animation(time) {
     }
   }
   skyObjects.rotation.y = Math.PI * 1.25;
-
   lastTime = time;
 }
 
