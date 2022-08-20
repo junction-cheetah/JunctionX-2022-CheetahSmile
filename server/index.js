@@ -73,6 +73,8 @@ server.listen(8000, "0.0.0.0", () => {
 });
 
 function changeNowUser() {
-  gameState.nowUserIndex = Math.floor((nowUserIndex + 1) / accessUsers.length);
-  gameState.nowUser = accessUsers[nowUserIndex];
+  gameState.nowUserIndex = Math.floor(
+    (gameState.nowUserIndex + 1) / accessUsers.length
+  );
+  gameState.nowUser = accessUsers[gameState.nowUserIndex];
 }
