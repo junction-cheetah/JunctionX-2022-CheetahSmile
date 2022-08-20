@@ -1,7 +1,7 @@
 const socket = io("ws://15.164.221.178:8000/");
 var stackData = [];
 var timer = 0;
-var isMyTurn = false;
+var isMyTurn = true;
 var fetchedTopLayerData = {
   position: new THREE.Vector3([0, 0, 0]),
   width: 0,
@@ -81,14 +81,17 @@ window.focus(); // Capture keys right away (by default focus is on editor)
 
 let camera, scene, renderer; // ThreeJS globals
 let world; // CannonJs world
-let lastTime; // Last timestamp of animation
-let stack; // Parts that stay solid on top of each other
-let overhangs; // Overhanging parts that fall down
-const boxHeight = 1; // Height of each layer
-const originalBoxSize = 3; // Original width and height of a box
-let autopilot;
-let gameEnded;
-let robotPrecision; // Determines how precise the game is on autopilot
+let lastTime; // 에니메이션의 마지막 끝난 시간
+let stack; // 위에 쌓이는 박스
+let overhangs; // 떨어질 박스들
+let autopilot; //오토파일럿
+let gameEnded; //게임끝
+let robotPrecision; // 오토파일럿의 정확도
+let turn = 1; //박스 튕겨서 돌아오는 속도(방향값)
+const boxHeight = 1; // 각 박스의 높이
+const originalBoxSize = 3; // 처음 박스의 시작 크기
+
+// 배경 비주얼관련 변수
 let skyObjects;
 let star = [];
 let star1, star2, star3;
@@ -98,36 +101,35 @@ let starR = 0.7;
 let mspeedX = 0.02;
 let mspeedY = 0.02;
 let moveSpeed = 0.05;
-let turn = 1;
-let turnRange = 10;
-let boxStep;
 
+// HTML에 보내는 스코어
 const scoreElement = document.getElementById("score");
 const instructionsElement = document.getElementById("instructions");
 const resultsElement = document.getElementById("results");
 
-init();
-
-// Determines how precise the game is on autopilot
+// 오토파일럿의 정확도를 파악하는 함수
 function setRobotPrecision() {
   robotPrecision = Math.random() * 1 - 0.5;
 }
 
+//초기화 코드 셋업
+init();
+
 function init() {
-  autopilot = true;
-  gameEnded = false;
-  lastTime = 0;
-  stack = [];
-  overhangs = [];
-  setRobotPrecision();
+  autopilot = true; //오토파일럿 처음부터 시작
+  gameEnded = false; //게임끝 불린변수
+  lastTime = 0; //게임 시간
+  stack = []; // 스택 배열 만들기
+  overhangs = []; // 떨어진 것들 배열 만들기
+  setRobotPrecision(); // 오토파일럿의 정확도를 파악하는 함수
 
-  // Initialize CannonJS
+  // CannonJS 물리엔진 초기셋팅
   world = new CANNON.World();
-  world.gravity.set(0, -20, 0); // Gravity pulls things down
+  world.gravity.set(0, -20, 0); //박스 떨어지는 중력(밑으로y)
   world.broadphase = new CANNON.NaiveBroadphase();
-  world.solver.iterations = 40;
+  world.solver.iterations = 40; //중력부여 횟수
 
-  // Initialize ThreeJs
+  //ThreeJs 초기화 셋팅
   const aspect = window.innerWidth / window.innerHeight;
   const width = 5;
   const height = width / aspect;
@@ -149,32 +151,30 @@ function init() {
   //   100 // far plane
   // );
 
-  camera.position.set(4, 4, 4);
-  camera.lookAt(0, 0, 0);
+  camera.position.set(4, 4, 4); //카메라 초기 위치
+
+  camera.lookAt(0, 0, 0); //카메라 가운데 보기
 
   scene = new THREE.Scene();
 
-  // Foundation
+  // 바닥 처음 고정된 박스
   addLayer(0, 0, originalBoxSize, originalBoxSize);
 
-  // First layer
+  // 처음 쌓이는 레이어 1층(x축 -10 방향에서 리스폰)
   addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
 
-  // Set up lights
+  //비주얼라이제이션 (조명 및 배경)
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
   scene.add(ambientLight);
 
   const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
   dirLight.position.set(10, 20, 0);
   scene.add(dirLight);
-
   //Sky object
   skyObjects = new THREE.Group();
-
   //Texture
   const textureLoader = new THREE.TextureLoader();
   const starTexture = textureLoader.load("/textures/star.png");
-
   for (let i = 1; i < 4; i++) {
     star[i] = new THREE.Mesh(
       new THREE.PlaneGeometry(starR, starR),
@@ -187,18 +187,9 @@ function init() {
     star[i].position.set(0, i - 2, i - 2);
     skyObjects.add(star[i]);
   }
-  // const plane = new THREE.Mesh(
-  //   new THREE.PlaneGeometry(skyW, skyD),
-  //   new THREE.MeshBasicMaterial({
-  //     wireframe: true,
-  //     side: THREE.DoubleSide,
-  //   })
-  // );
-  // // plane.rotation.x = Math.PI / 2;
-  // skyObjects.add(plane);
   scene.add(skyObjects);
 
-  // Set up renderer
+  // ThreeJS 렌더러 초기설정
   renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true,
@@ -210,28 +201,31 @@ function init() {
 
 //처음시작하는 스테이지 - 게임 스타트 함수
 function startGame(isOriginalStart = true) {
+  //초기 게임스타트 변수가 참일때 시작
   if (isOriginalStart) {
     onStart();
   }
 
+  //게임 스타트시 모든 게임 전역 변수 초기화
   autopilot = false;
   gameEnded = false;
   lastTime = 0;
   stack = [];
   overhangs = [];
 
+  //게임 스타트시 HTML스코어 관련 초기화
   if (instructionsElement) instructionsElement.style.display = "none";
   if (resultsElement) resultsElement.style.display = "none";
   if (scoreElement) scoreElement.innerText = 0;
 
   if (world) {
-    // Remove every object from world
+    // CannonJS 초기화 전 게임에 있던 캐논 바디들 삭제
     while (world.bodies.length > 0) {
       world.remove(world.bodies[0]);
     }
   }
 
-  //씬에서 기존 게임에 있던 메쉬들 초기화
+  //ThreeJS 씬에서 기존 게임에 있던 메쉬들 초기화
   if (scene) {
     // Remove every Mesh from the scene
     while (scene.children.find((c) => c.type == "Mesh")) {
@@ -239,10 +233,10 @@ function startGame(isOriginalStart = true) {
       scene.remove(mesh);
     }
 
-    // Foundation
+    // 바닥 박스 고정
     addLayer(0, 0, originalBoxSize, originalBoxSize);
 
-    // First layer
+    // 처음 쌓이는 박스 (-10.1 x축으로)
     addLayer(-10.1, 0, originalBoxSize, originalBoxSize, "x");
   }
 
@@ -255,12 +249,12 @@ function startGame(isOriginalStart = true) {
   }
 }
 
-//레이어 추가하는 함수
+//레이어 추가하는 함수 (x좌표, z좌표, 층고높이, 방향(x/z))
 function addLayer(x, z, width, depth, direction) {
-  const y = boxHeight * stack.length; // Add the new box one layer higher
-  const layer = generateBox(x, y, z, width, depth, false);
+  const y = boxHeight * stack.length; // 박스 높이 * 스택 갯수
+  const layer = generateBox(x, y, z, width, depth, false); //현재 레이어에 넣는 새로운 박스 만들기
   layer.direction = direction;
-  stack.push(layer);
+  stack.push(layer); //스택에 현재 레이어 넣기
   propagationNewLayer({
     position: {
       x: x,
@@ -271,32 +265,31 @@ function addLayer(x, z, width, depth, direction) {
   });
 }
 
+//바닥에 떨어지는 박스 (x,z방향, 너비, 층고높이)
 function addOverhang(x, z, width, depth) {
-  const y = boxHeight * (stack.length - 1); // Add the new box one the same layer
+  const y = boxHeight * (stack.length - 1); // 박스 높이 * 스택 갯수(현재높이를 포함하지 않아 -1)
   const overhang = generateBox(x, y, z, width, depth, true);
-  overhangs.push(overhang);
+  overhangs.push(overhang); //오버행배열에 현재 오버행 박스 넣기
 }
 
-//박스 만들어내는 함수
+//박스 만들어내는 함수(좌표,너비,층고높이, 떨어지는지 유무)
 function generateBox(x, y, z, width, depth, falls) {
-  // ThreeJS
+  // ThreeJS 비주얼
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
-  // const color = new THREE.Color(`hsl(${30 + stack.length * 4}, 100%, 50%)`);
   const material = new THREE.MeshStandardMaterial({
     color: "#cdcdcd",
   });
-  material.wireframeLinewidth = 10.0;
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.set(x, y, z);
   scene.add(mesh);
 
-  // CannonJS
+  // CannonJS 물리 떨어지는..
   const shape = new CANNON.Box(
     new CANNON.Vec3(width / 2, boxHeight / 2, depth / 2)
   );
-  let mass = falls ? 5 : 0; // If it shouldn't fall then setting the mass to zero will keep it stationary
-  mass *= width / originalBoxSize; // Reduce mass proportionately by size
-  mass *= depth / originalBoxSize; // Reduce mass proportionately by size
+  let mass = falls ? 5 : 0; //떨어지는지 유무로 박스에 질량 넣기
+  mass *= width / originalBoxSize; // 현재 박스 비율로 질량 줄이기
+  mass *= depth / originalBoxSize; // 현재 박스 비율로 질량 줄이기
   const body = new CANNON.Body({
     mass,
     shape,
@@ -312,7 +305,7 @@ function generateBox(x, y, z, width, depth, falls) {
   };
 }
 
-//박스 자르는 함수
+//박스 자르는 함수(탑레이어,쌓인 박스크기, 잘릴 박스크기, 전보다 이동한 차이값)
 function cutBox(topLayer, overlap, size, delta) {
   const direction = topLayer.direction;
   const newWidth = direction == "x" ? overlap : topLayer.width;
@@ -329,7 +322,7 @@ function cutBox(topLayer, overlap, size, delta) {
   // Update CannonJS model
   topLayer.cannonjs.position[direction] -= delta / 2;
 
-  // Replace shape to a smaller one (in CannonJS you can't simply just scale a shape)
+  // CannonJS 잘릴 박스를 리사이즈할 수 없어서 새로운 박스로 대체
   const shape = new CANNON.Box(
     new CANNON.Vec3(newWidth / 2, boxHeight / 2, newDepth / 2)
   );
@@ -343,25 +336,29 @@ function retry() {
   return;
 }
 
+//이벤트 들어왔을 때
 window.addEventListener("mousedown", eventHandler);
 window.addEventListener("touchstart", eventHandler);
 window.addEventListener("keydown", function (event) {
   if (event.key == " ") {
+    //시작
     event.preventDefault();
     eventHandler();
     return;
   }
   if (event.key == "R" || event.key == "r") {
+    //리트라이
     event.preventDefault();
     retry();
   }
 });
 
+//이벤트가 참일 때
 function eventHandler(isOrigin = true) {
-  if (autopilot) startGame();
-  else splitBlockAndAddNextOneIfOverlaps(isOrigin);
+  if (autopilot) startGame(); //오토파일럿이 참일때 게임 스타트
+  else splitBlockAndAddNextOneIfOverlaps(isOrigin); //아니면 오토파일럿 시작
 }
-
+//오토파일럿 로직 자동 계산
 function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
   if (gameEnded) return;
 
@@ -370,6 +367,7 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
   }
 
   if (isMyTurn && !isOrigin) {
+    //다시 이벤트가 들어오면 리턴
     return;
   }
 
@@ -381,6 +379,7 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
 
   const size = direction == "x" ? topLayer.width : topLayer.depth;
 
+  //나의 턴이 아닐 때 오토파일럿 재생중
   if (!isMyTurn) {
     fetchTopLayer(topLayer);
   }
@@ -417,7 +416,6 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
 
     if (scoreElement) scoreElement.innerText = stack.length - 1;
     addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
-    boxStep = newWidth;
   } else {
     missedTheSpot(isOrigin);
   }
@@ -429,7 +427,7 @@ function missedTheSpot(isOrigin = true) {
     onEnd();
   }
 
-  const topLayer = stack[stack.length - 1];
+  const topLayer = stack[stack.length - 1]; //전에 탑레이어의 객체를 가져온다
   // Turn to top layer into an overhang and let it fall down
   addOverhang(
     topLayer.threejs.position.x,
@@ -443,18 +441,14 @@ function missedTheSpot(isOrigin = true) {
   gameEnded = true;
   if (resultsElement && !autopilot) resultsElement.style.display = "flex";
 }
-const clock = new THREE.Clock();
 
 function animation(time) {
-  const elapsedTime = clock.getElapsedTime();
-  delta = clock.getDelta();
-
   if (lastTime) {
-    const timePassed = time - lastTime;
+    const timePassed = time - lastTime; //델타타임
     const topLayer = stack[stack.length - 1];
     const speed = 0.007;
 
-    const previousLayer = stack[stack.length - 2];
+    const previousLayer = stack[stack.length - 2]; //전 레이어
 
     // The top level box should move if the game has not ended AND
     // it's either NOT in autopilot or it is in autopilot and the box did not yet reach the robot position
@@ -466,6 +460,7 @@ function animation(time) {
             previousLayer.threejs.position[topLayer.direction] +
               robotPrecision));
 
+    //
     if (boxShouldMove) {
       if (isMyTurn || autopilot) {
         // Keep the position visible on UI and the position in the model in sync
@@ -492,6 +487,11 @@ function animation(time) {
         // topLayer.cannonjs.position = fetchedTopLayerPosition;
       }
       if (topLayer.threejs.position[topLayer.direction] > 10) {
+        // If the box went beyond the stack then show up the fail screen
+        // missedTheSpot();
+        turn *= -1;
+      }
+      if (topLayer.threejs.position[topLayer.direction] < -10) {
         // If the box went beyond the stack then show up the fail screen
         // missedTheSpot();
         turn *= -1;
