@@ -1,11 +1,11 @@
-var canvas = document.querySelector('canvas');
-const image = document.getElementById('source');
+var canvas = document.querySelector("canvas");
+const image = document.getElementById("source");
 var img = new Image();
-img.src = 'star.png';
+img.src = "star.png";
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
-var c = canvas.getContext('2d');
+var c = canvas.getContext("2d");
 
 c.imageSmoothingEnabled = false;
 console.log(canvas);
