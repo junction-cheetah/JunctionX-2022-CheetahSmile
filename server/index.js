@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 
 var timeMicroSec = 0;
 var timerId;
-var stack = [];
+var lastState;
 var accessUsers = [];
 var nowUser = "";
 var sessionId = "";
@@ -57,6 +57,9 @@ io.on("connection", (socket) => {
       gameState.isGaming = false;
       clearInterval(timerId);
       timeMicroSec = 0;
+
+      lastState = gameState;
+      gameState = initialGameState;
     }
   });
 
@@ -65,7 +68,7 @@ io.on("connection", (socket) => {
     changeNowUser();
     gameState.stack.push(newStack);
     console.log(gameState.stack);
-    io.emit("stacked", { newStack, nowUser,stack:gameState.stack });
+    io.emit("stacked", { newStack, nowUser, stack: gameState.stack });
   });
 });
 server.listen(8000, "0.0.0.0", () => {
