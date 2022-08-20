@@ -138,10 +138,18 @@ io.on("connection", (socket) => {
   });
 
   function tick() {
-    gameState.isGaming = true;
-    clock();
-    setTurn();
-    animation();
+
+    try{
+
+      gameState.isGaming = true;
+      clock();
+      setTurn();
+      animation();
+    } catch(e) {
+      console.log(e)
+      init(true)
+
+    }
   }
 
   function clock() {

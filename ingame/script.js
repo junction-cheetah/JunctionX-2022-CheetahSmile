@@ -70,11 +70,13 @@ socket.on("gameState", function (gameState) {
 });
 
 socket.on("cutBox", ({ topLayer, overlap, size, delta }) => {
-  cutBox(topLayer, overlap, size, delta);
+  cutBox(topLayerObject, overlap, size, delta);
 });
 socket.on(
   "addOverhang",
   ({ overhangX, overhangZ, overhangWidth, overhangDepth }) => {
+
+    console.log("ADD OVER HANG")
     addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
   }
 );
