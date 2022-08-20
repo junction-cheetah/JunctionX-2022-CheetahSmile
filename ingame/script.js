@@ -6,7 +6,7 @@ var topLayerPosition;
 
 socket.on("stacked", function (msg) {
   stackData = msg.stack;
-  eventHandler()
+  eventHandler();
 });
 
 const timerElement = document.getElementById("timer");
@@ -16,38 +16,37 @@ socket.on("timer", function (time) {
   console.log(time);
 });
 
-
 socket.on("started", function () {
-  startGame()
-});;
+  startGame();
+});
 socket.on("topLayerReceive", function (topLayerPositionData) {
   topLayerPosition = topLayerPositionData;
-});;
+});
 
 function onStack() {
-  socket.emit("stack", { clientTime: timer });
+  socket.emit("stack", {
+    clientTime: timer,
+  });
 }
 
 function onStart() {
   console.log("START");
   socket.emit("start", "");
 }
+
 function onEnd() {
   console.log("END");
   socket.emit("end", "");
 }
 
-
 function propagationNewLayer(newLayerData) {
   socket.emit("newLayer", newLayerData);
 }
-function propagationToplayer(topLayerPosition){
+function propagationToplayer(topLayerPosition) {
   socket.emit("topLayer", topLayerPosition);
 }
 
-function fetchNewLayer (newLayerData){
-
-}
+function fetchNewLayer(newLayerData) {}
 
 window.focus(); // Capture keys right away (by default focus is on editor)
 
@@ -70,6 +69,7 @@ let starR = 0.7;
 let mspeedX = 0.02;
 let mspeedY = 0.02;
 let moveSpeed = 0.05;
+let turn = 1;
 
 const scoreElement = document.getElementById("score");
 const instructionsElement = document.getElementById("instructions");
@@ -229,10 +229,10 @@ function addLayer(x, z, width, depth, direction) {
   layer.direction = direction;
   stack.push(layer);
   propagationNewLayer({
-    position:{x:x,z:z},
+    position: { x: x, z: z },
     width: width,
     depth: depth,
-  })
+  });
 }
 
 function addOverhang(x, z, width, depth) {
@@ -394,12 +394,12 @@ const clock = new THREE.Clock();
 
 function animation(time) {
   const elapsedTime = clock.getElapsedTime();
+  delta = clock.getDelta();
 
   if (lastTime) {
     const timePassed = time - lastTime;
     const topLayer = stack[stack.length - 1];
-    const speed = 0.005 * (4 - topLayer.width);
-    // console.log(time);
+    const speed = 0.007;
 
     const previousLayer = stack[stack.length - 2];
 
@@ -414,19 +414,26 @@ function animation(time) {
               robotPrecision));
 
     if (boxShouldMove) {
-      if (isMyTurn){
+      if (isMyTurn) {
         // Keep the position visible on UI and the position in the model in sync
-        topLayer.threejs.position[topLayer.direction] += speed * timePassed;
-        topLayer.cannonjs.position[topLayer.direction] += speed * timePassed;
+        topLayer.threejs.position[topLayer.direction] +=
+          speed * timePassed * turn;
+        topLayer.cannonjs.position[topLayer.direction] +=
+          speed * timePassed * turn;
         propagationToplayer(topLayer.threejs.position.toArray());
-      } else{
-       topLayer.threejs.position.fromArray(patchedToplayerPosition)
-       topLayer.cannonjs.position.fromArray(patchedToplayerPosition);
+      } else {
+        topLayer.threejs.position.fromArray(patchedToplayerPosition);
+        topLayer.cannonjs.position.fromArray(patchedToplayerPosition);
       }
 
-      // If the box went beyond the stack then show up the fail screen
-      if (topLayer.threejs.position[topLayer.direction] > 10) {
-        missedTheSpot();
+      if (
+        topLayer.threejs.position[topLayer.direction] > 10 ||
+        topLayer.threejs.position[topLayer.direction] < -10
+      ) {
+        // If the box went beyond the stack then show up the fail screen
+        // missedTheSpot();
+        console.log("OUT");
+        turn *= -1;
       }
     } else {
       // If it shouldn't move then is it because the autopilot reached the correct position?
