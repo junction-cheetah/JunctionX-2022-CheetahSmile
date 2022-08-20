@@ -29,7 +29,11 @@ var initialGameState = {
   isGaming: false,
 };
 
-var gameState = { ...initialGameState };
+function deepCopy(object) {
+return  JSON.parse(JSON.stringify(object));
+}
+
+var gameState = deepCopy(initialGameState );
 
 io.on("connection", (socket) => {
   console.log("a user connected");
@@ -58,9 +62,9 @@ io.on("connection", (socket) => {
       clearInterval(timerId);
       timeMicroSec = 0;
       console.log(gameState)
-      lastState = { ...gameState };
+      lastState = deepCopy(gameState );
       console.log(initialGameState);
-      gameState = { ...initialGameState };
+      gameState = deepCopy(initialGameState )
       console.log(gameState);
     }
   });
