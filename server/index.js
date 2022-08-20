@@ -33,17 +33,7 @@ var initialGameState = {
   nowUserIndex: 0,
   timeMicroSec: 0,
   isGaming: false,
-  topLayer: {
-    position: {
-      x: 0,
-      y: 0,
-      z: 0,
-    },
-    width: 0,
-    depth: 0,
-    direction: "x",
-    turn: 1,
-  },
+  topLayer: null,
   speed: 0.007,
   cameraHeight: 4,
 };
@@ -70,6 +60,9 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user disconnected");
     accessUserNumber--;
+    if (accessUserNumber == 0){
+      init(true)
+    }
   });
 
   socket.on("end", (msg) => {
@@ -87,7 +80,7 @@ io.on("connection", (socket) => {
   socket.on("stack", (msg) => {
     console.log("STACK");
     changeNowUser();
-    splitBlockAndAddNextOneIfOverlaps();
+    stack();
   });
 
   socket.on("topLayer", (topLayer) => {
@@ -186,7 +179,7 @@ io.on("connection", (socket) => {
   }
 
   //오토파일럿 로직 자동 계산
-  function splitBlockAndAddNextOneIfOverlaps() {
+  function stack() {
     if (!gameState.isGaming) return;
 
     const stack = gameState.stack;
@@ -235,7 +228,7 @@ io.on("connection", (socket) => {
   }
 
   function addLayer(nextX, nextZ, newWidth, newDepth, nextDirection = "z") {
-
+    console.log("ADD LAYER")
     const y = boxHeight * gameState.stack.length; // 박스 높이 * 스택 갯수
 
     const layer = {
