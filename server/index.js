@@ -53,15 +53,13 @@ function deepCopy(object) {
 
 var gameState = deepCopy(initialGameState);
 
+function setGameState(updateObject) {
+  gameState = { ...gameState, updateObject };
+}
 
-
-  function setGameState(updateObject) {
-    gameState = { ...gameState, updateObject };
-  }
-
-  function setTopLayer(updateObject) {
-    gameState.topLayer = { ...gameState.topLayer, updateObject };
-  }
+function setTopLayer(updateObject) {
+  gameState.topLayer = { ...gameState.topLayer, updateObject };
+}
 
 io.on("connection", (socket) => {
   console.log("a user connected");
@@ -84,9 +82,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("stack", (msg) => {
-    console.log("STACK")
+    console.log("STACK");
     changeNowUser();
-    splitBlockAndAddNextOneIfOverlaps()
+    splitBlockAndAddNextOneIfOverlaps();
   });
 
   socket.on("topLayer", (topLayer) => {
@@ -111,8 +109,7 @@ io.on("connection", (socket) => {
     if (forced || notReady) {
       gameState = deepCopy(initialGameState);
       addLayer(0, 0, originalBoxSize, originalBoxSize);
-      setTopLayer(
-      addLayer(-10, 0, originalBoxSize, originalBoxSize, "x"))
+      setTopLayer(addLayer(-10, 0, originalBoxSize, originalBoxSize, "x"));
     }
   }
   socket.on("start", (data) => {
@@ -126,7 +123,7 @@ io.on("connection", (socket) => {
       console.log("GAME START");
       io.emit("started", msg);
       gameState.isGaming = true;
-      
+
       timerId = setInterval(() => {
         io.emit("timer", timeMicroSec / 1000);
         tick();
@@ -141,7 +138,7 @@ io.on("connection", (socket) => {
   });
 
   function tick() {
-      gameState.isGaming = true;
+    gameState.isGaming = true;
     clock();
     setTurn();
     animation();
@@ -157,7 +154,6 @@ io.on("connection", (socket) => {
       gameState.topLayer.turn *= -1;
   }
 
-
   function animation() {
     const timeScale = 1;
 
@@ -169,7 +165,8 @@ io.on("connection", (socket) => {
     const turn = gameState.topLayer.turn;
 
     if (gameState.isGaming) {
-      topLayerObject.position[topLayerObject.direction] += speed * timeScale * turn;
+      topLayerObject.position[topLayerObject.direction] +=
+        speed * timeScale * turn;
     }
 
     if (gameState.cameraHeight < boxHeight * (stack.length - 2) + 4) {
@@ -189,7 +186,7 @@ io.on("connection", (socket) => {
     const direction = topLayer.direction;
 
     const size = direction == "x" ? topLayer.width : topLayer.depth;
-
+    console.log(previousLayer);
     const delta =
       topLayer.position[direction] - previousLayer.position[direction];
     const overhangSize = Math.abs(delta);
@@ -227,7 +224,6 @@ io.on("connection", (socket) => {
   }
 
   function addLayer(nextX, nextZ, newWidth, newDepth, nextDirection = "z") {
-    
     console.log(gameState.stack);
     const y = boxHeight * gameState.stack.length; // 박스 높이 * 스택 갯수
 
