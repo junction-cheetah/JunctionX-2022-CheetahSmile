@@ -11,7 +11,6 @@ const useNewSession = () => {
       .get('/default/connectClientToServer?playerIds=test1,test2,test3')
       .then((response) => {
         console.log(response.statusCode);
-        console.log(response.body);
       })
       .catch((e) => console.log('something went wrong :(', e));
   }, []);
