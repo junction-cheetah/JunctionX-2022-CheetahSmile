@@ -11,11 +11,13 @@ let autopilot;
 let gameEnded;
 let robotPrecision; // Determines how precise the game is on autopilot
 let skyObjects;
+let star = [];
+let star1, star2, star3;
 let skyW = 6.99;
-let skyD = 13.9;
-let starR = 1;
-let mspeedX = 0.05;
-let mspeedY = 0.05;
+let skyD = 12.9;
+let starR = 0.7;
+let mspeedX = 0.02;
+let mspeedY = 0.02;
 let moveSpeed = 0.05;
 
 const scoreElement = document.getElementById("score");
@@ -39,13 +41,13 @@ function init() {
 
   // Initialize CannonJS
   world = new CANNON.World();
-  world.gravity.set(0, -10, 0); // Gravity pulls things down
+  world.gravity.set(0, -20, 0); // Gravity pulls things down
   world.broadphase = new CANNON.NaiveBroadphase();
-  world.solver.iterations = 50;
+  world.solver.iterations = 40;
 
   // Initialize ThreeJs
   const aspect = window.innerWidth / window.innerHeight;
-  const width = 7;
+  const width = 5;
   const height = width / aspect;
 
   camera = new THREE.OrthographicCamera(
@@ -91,36 +93,28 @@ function init() {
   const textureLoader = new THREE.TextureLoader();
   const starTexture = textureLoader.load("/textures/star.png");
 
-  star = new THREE.Mesh(
-    new THREE.PlaneGeometry(starR, starR),
-    new THREE.MeshStandardMaterial({
-      map: starTexture,
-      side: THREE.DoubleSide,
-      transparent: true,
-    })
-  );
-  star.position.set(0, 0, 0);
-  star = new THREE.Mesh(
-    new THREE.PlaneGeometry(starR, starR),
-    new THREE.MeshStandardMaterial({
-      map: starTexture,
-      side: THREE.DoubleSide,
-      transparent: true,
-    })
-  );
-  star.position.set(0, 0, 0);
-  skyObjects.add(star);
+  for (let i = 1; i < 4; i++) {
+    star[i] = new THREE.Mesh(
+      new THREE.PlaneGeometry(starR, starR),
+      new THREE.MeshStandardMaterial({
+        map: starTexture,
+        side: THREE.DoubleSide,
+        transparent: true,
+      })
+    );
+    star[i].position.set(0, i - 2, i - 2);
+    skyObjects.add(star[i]);
+  }
+  // const plane = new THREE.Mesh(
+  //   new THREE.PlaneGeometry(skyW, skyD),
+  //   new THREE.MeshBasicMaterial({
+  //     wireframe: true,
+  //     side: THREE.DoubleSide,
+  //   })
+  // );
+  // // plane.rotation.x = Math.PI / 2;
+  // skyObjects.add(plane);
   scene.add(skyObjects);
-
-  const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(skyW, skyD),
-    new THREE.MeshBasicMaterial({
-      wireframe: true,
-      side: THREE.DoubleSide,
-    })
-  );
-  // plane.rotation.x = Math.PI / 2;
-  skyObjects.add(plane);
 
   // Set up renderer
   renderer = new THREE.WebGLRenderer({
@@ -132,6 +126,7 @@ function init() {
   document.body.appendChild(renderer.domElement);
 }
 
+//처음시작하는 스테이지 - 게임 스타트 함수
 function startGame() {
   autopilot = false;
   gameEnded = false;
@@ -150,6 +145,7 @@ function startGame() {
     }
   }
 
+  //씬에서 기존 게임에 있던 메쉬들 초기화
   if (scene) {
     // Remove every Mesh from the scene
     while (scene.children.find((c) => c.type == "Mesh")) {
@@ -164,13 +160,16 @@ function startGame() {
     addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
   }
 
+  //카메라도 제일 밑에서 다시 시작
   if (camera) {
     // Reset camera positions
     camera.position.set(4, 4, 4);
     camera.lookAt(0, 0, 0);
+    skyObjects.position.y = 0;
   }
 }
 
+//레이어 추가하는 함수
 function addLayer(x, z, width, depth, direction) {
   const y = boxHeight * stack.length; // Add the new box one layer higher
   const layer = generateBox(x, y, z, width, depth, false);
@@ -184,17 +183,13 @@ function addOverhang(x, z, width, depth) {
   overhangs.push(overhang);
 }
 
+//박스 만들어내는 함수
 function generateBox(x, y, z, width, depth, falls) {
-  // const textureLoader = new THREE.TextureLoader();
-  // const cheeseTexture = textureLoader.load("/textures/brick.png");
-
   // ThreeJS
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
   // const color = new THREE.Color(`hsl(${30 + stack.length * 4}, 100%, 50%)`);
   const material = new THREE.MeshStandardMaterial({
-    // map: cheeseTexture,
     color: "#cdcdcd",
-    // wireframe: true,
   });
   material.wireframeLinewidth = 10.0;
   const mesh = new THREE.Mesh(geometry, material);
@@ -223,6 +218,7 @@ function generateBox(x, y, z, width, depth, falls) {
   };
 }
 
+//박스 자르는 함수
 function cutBox(topLayer, overlap, size, delta) {
   const direction = topLayer.direction;
   const newWidth = direction == "x" ? overlap : topLayer.width;
@@ -247,6 +243,7 @@ function cutBox(topLayer, overlap, size, delta) {
   topLayer.cannonjs.addShape(shape);
 }
 
+//게임 리트라이
 function retry() {
   startGame();
   return;
@@ -318,9 +315,9 @@ function splitBlockAndAddNextOneIfOverlaps() {
   }
 }
 
+//쌓지 못하는 경우 - 게임 탈락 함수
 function missedTheSpot() {
   const topLayer = stack[stack.length - 1];
-
   // Turn to top layer into an overhang and let it fall down
   addOverhang(
     topLayer.threejs.position.x,
@@ -341,9 +338,10 @@ function animation(time) {
 
   if (lastTime) {
     const timePassed = time - lastTime;
-    const speed = 0.008;
-
     const topLayer = stack[stack.length - 1];
+    const speed = 0.005 * (4 - topLayer.width);
+    console.log(time);
+
     const previousLayer = stack[stack.length - 2];
 
     // The top level box should move if the game has not ended AND
@@ -382,21 +380,33 @@ function animation(time) {
     updatePhysics(timePassed);
     renderer.render(scene, camera);
   }
+  for (let i = 1; i < 4; i++) {
+    if (i == 1) {
+      star[i].position.x += mspeedX;
+      star[i].position.y += mspeedX;
+    }
+    if (i == 2) {
+      star[i].position.x += mspeedX;
+      star[i].position.y += -mspeedX;
+    }
+    if (i == 3) {
+      star[i].position.x += -mspeedX;
+      star[i].position.y += -mspeedX;
+    }
+    star[i].rotation.z += 0.01;
 
-  star.position.x += mspeedX;
-  star.position.y += mspeedY;
-  star.rotation.z += 0.01;
-  if (
-    star.position.x > skyW / 2 - starR / 2 ||
-    star.position.x < -skyW / 2 + starR / 2
-  ) {
-    mspeedX *= -1;
-  }
-  if (
-    star.position.y < -skyD / 2 + starR / 2 ||
-    star.position.y > skyD / 2 - starR / 2
-  ) {
-    mspeedY *= -1;
+    if (
+      star[i].position.x > skyW / 2 - starR ||
+      star[i].position.x < -skyW / 2 + starR
+    ) {
+      mspeedX *= -1;
+    }
+    if (
+      star[i].position.y < -skyD / 2 + starR ||
+      star[i].position.y > skyD / 2 - starR
+    ) {
+      mspeedY *= -1;
+    }
   }
   skyObjects.rotation.y = Math.PI * 1.25;
 

@@ -24,10 +24,9 @@ body:hover #instructions {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 50%;
-  width: 50%;
-  /* background-color: rgba(255, 255, 255, 0.75); */
-  border-radius: 15px;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 a:visited {
