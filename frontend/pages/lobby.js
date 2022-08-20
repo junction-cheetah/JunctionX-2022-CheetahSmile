@@ -29,7 +29,7 @@ export default function Lobby() {
 
   return (
     <>
-      <NextSeo title="Lobby" description="TODO" />
+      <NextSeo title="Lobby" description="BUILD YOUR POTENTIAL!" />
       <Main>
         {open && (
           <Modal

@@ -1,0 +1,37 @@
+import axios from 'axios';
+
+const BACKEND_URL =
+  'https://b9otw2e9p0.execute-api.ap-northeast-2.amazonaws.com';
+
+const axiosInstance = axios.create({
+  baseURL: BACKEND_URL,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
+});
+export default axiosInstance;
+
+function logout() {
+  localStorage.removeItem('aws-google-oauth-token');
+  location.href = 'https://cobuilding.vercel.app/';
+}
+
+axiosInstance.interceptors.request.use(async (request) => {
+  const tokenFromLocalStorage = localStorage.get('aws-google-oauth-token');
+  const accessToken = '';
+  request.headers.Authorization = `Bearer ${accessToken}`;
+  return request;
+});
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    console.log(error);
+    const status = error.response || error.response.status;
+    if (status >= 400) {
+      logout();
+    }
+    throw error;
+  }
+);

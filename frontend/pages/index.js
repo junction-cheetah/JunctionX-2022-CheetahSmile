@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
 import useAuth from '../utils/hooks/useAuth';
+import jwtDecode from 'jwt-decode';
 
 export default function Home() {
   const [isAuthenticated, setToken] = useAuth();
@@ -19,12 +20,12 @@ export default function Home() {
   // login
   const login = () => {
     window.open(
-      'https://cobuilding.auth.ap-northeast-2.amazoncognito.com/login?client_id=2jkdlb41uc8gvv3krs0uldaplf&response_type=code&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://cobuilding.vercel.app/',
+      'https://cobuilding.auth.ap-northeast-2.amazoncognito.com/login?client_id=2jkdlb41uc8gvv3krs0uldaplf&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://cobuilding.vercel.app/',
       '_self'
     );
   };
   useEffect(() => {
-    const newToken = router.asPath.split('code=')[1];
+    const newToken = router.asPath.split('id_token=')[1];
     if (newToken) {
       localStorage.setItem('aws-google-oauth-token', newToken);
       setToken(newToken);
@@ -33,7 +34,7 @@ export default function Home() {
 
   return (
     <>
-      <NextSeo title="Co-Building" description="TODO" />
+      <NextSeo title="Co-Building" description="BUILD YOUR POTENTIAL!" />
       <Main onClick={() => (isAuthenticated ? goToLobby() : null)}>
         <h1>
           BUILD <br /> YOUR <br /> POTENTIAL

@@ -16,7 +16,7 @@ export default function Room({ sessionId }) {
 
   return (
     <>
-      <NextSeo title="Room" description="TODO" />
+      <NextSeo title="Room" description="BUILD YOUR POTENTIAL!" />
       <Main>
         <Image
           src="/icons/back.svg"
