@@ -25,10 +25,16 @@ export default function Home() {
     );
   };
   useEffect(() => {
-    let token = router.asPath.split('id_token=')?.[1]?.split('&')[0];
+    let token = router.query.id_token;
     if (token) {
       // 방금 최초 로그인
       localStorage.setItem('aws-google-oauth-token', token);
+
+      const tempSession = localStorage.getItem('temp-session');
+      if (tempSession) {
+        localStorage.removeItem('temp-session');
+        router.push(`/room?session=${tempSession}`);
+      }
     } else {
       // 이미 로그인
       token = localStorage.getItem('aws-google-oauth-token');

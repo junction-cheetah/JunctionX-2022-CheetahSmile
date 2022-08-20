@@ -17,6 +17,13 @@ function MyApp({ Component, pageProps }) {
     if (router.pathname !== '/') {
       const storageToken = localStorage.getItem('aws-google-oauth-token');
       if (!storageToken) {
+        // NOTE: QR 코드 로그인 후 바로 방으로 입장
+        if (router.pathname === '/room') {
+          const sessionId = router.query.session;
+          if (sessionId) {
+            localStorage.setItem('temp-session', sessionId);
+          }
+        }
         router.replace('/');
         mutate(USER_KEY, null);
       } else {
