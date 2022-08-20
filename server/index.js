@@ -216,7 +216,6 @@ io.on("connection", (socket) => {
       const newDepth = topLayer.depth; // New layer has the same size as the cut top layer
       const nextDirection = direction == "x" ? "z" : "x";
 
-      if (scoreElement) scoreElement.innerText = stack.length - 1;
       addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
     } else {
       endGame();
