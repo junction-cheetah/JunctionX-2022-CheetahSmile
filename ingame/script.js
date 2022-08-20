@@ -3,6 +3,7 @@ var stackData = [];
 var timer = 0;
 var isMyTurn = true;
 var topLayerPosition;
+var fecthedCameraPosition = 4
 
 socket.on("stacked", function (msg) {
   stackData = msg.stack;
@@ -22,6 +23,9 @@ socket.on("started", function () {
 });;
 socket.on("topLayerReceive", function (topLayerPositionData) {
   topLayerPosition = topLayerPositionData;
+});;
+socket.on("cameraHeightReceive", function (cameraHeight) {
+  fecthedCameraPosition = cameraHeight;
 });;
 
 function onStack() {
@@ -43,6 +47,9 @@ function propagationNewLayer(newLayerData) {
 }
 function propagationToplayer(topLayerPosition){
   socket.emit("topLayer", topLayerPosition);
+}
+function propagationCameraPosition(height) {
+  socket.emit("cameraHeight", height);
 }
 
 function fetchNewLayer (newLayerData){
@@ -414,12 +421,14 @@ function animation(time) {
               robotPrecision));
 
     if (boxShouldMove) {
-      if (isMyTurn){
+      if (isMyTurn || autopilot){
         // Keep the position visible on UI and the position in the model in sync
         topLayer.threejs.position[topLayer.direction] += speed * timePassed;
         topLayer.cannonjs.position[topLayer.direction] += speed * timePassed;
-        propagationToplayer(topLayer.threejs.position.toArray());
-      } else{
+        if (!autopilot){
+          propagationToplayer(topLayer.threejs.position.toArray());
+        }
+      } else {
        topLayer.threejs.position.fromArray(patchedToplayerPosition)
        topLayer.cannonjs.position.fromArray(patchedToplayerPosition);
       }
@@ -439,7 +448,14 @@ function animation(time) {
 
     // 4 is the initial camera height
     if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
+      if(isMyTurn || autopilot) {
+
       camera.position.y += speed * timePassed;
+      propagationCameraPosition(camera.position.y);
+      }
+      else{
+        camera.position.y = fecthedCameraPosition
+      }
       skyObjects.position.y += speed * timePassed;
     }
     updatePhysics(timePassed);
