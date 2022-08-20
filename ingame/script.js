@@ -10,6 +10,13 @@ const originalBoxSize = 3; // Original width and height of a box
 let autopilot;
 let gameEnded;
 let robotPrecision; // Determines how precise the game is on autopilot
+let skyObjects;
+let skyW = 6.99;
+let skyD = 13.9;
+let starR = 1;
+let mspeedX = 0.05;
+let mspeedY = 0.05;
+let moveSpeed = 0.05;
 
 const scoreElement = document.getElementById("score");
 const instructionsElement = document.getElementById("instructions");
@@ -34,11 +41,11 @@ function init() {
   world = new CANNON.World();
   world.gravity.set(0, -10, 0); // Gravity pulls things down
   world.broadphase = new CANNON.NaiveBroadphase();
-  world.solver.iterations = 40;
+  world.solver.iterations = 50;
 
   // Initialize ThreeJs
   const aspect = window.innerWidth / window.innerHeight;
-  const width = 10;
+  const width = 7;
   const height = width / aspect;
 
   camera = new THREE.OrthographicCamera(
@@ -50,15 +57,13 @@ function init() {
     100 // far plane
   );
 
-  /*
-  // If you want to use perspective camera instead, uncomment these lines
-  camera = new THREE.PerspectiveCamera(
-    45, // field of view
-    aspect, // aspect ratio
-    1, // near plane
-    100 // far plane
-  );
-  */
+  // // If you want to use perspective camera instead, uncomment these lines
+  // camera = new THREE.PerspectiveCamera(
+  //   45, // field of view
+  //   aspect, // aspect ratio
+  //   1, // near plane
+  //   100 // far plane
+  // );
 
   camera.position.set(4, 4, 4);
   camera.lookAt(0, 0, 0);
@@ -78,6 +83,44 @@ function init() {
   const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
   dirLight.position.set(10, 20, 0);
   scene.add(dirLight);
+
+  //Sky object
+  skyObjects = new THREE.Group();
+
+  //Texture
+  const textureLoader = new THREE.TextureLoader();
+  const starTexture = textureLoader.load("/textures/star.png");
+
+  star = new THREE.Mesh(
+    new THREE.PlaneGeometry(starR, starR),
+    new THREE.MeshStandardMaterial({
+      map: starTexture,
+      side: THREE.DoubleSide,
+      transparent: true,
+    })
+  );
+  star.position.set(0, 0, 0);
+  star = new THREE.Mesh(
+    new THREE.PlaneGeometry(starR, starR),
+    new THREE.MeshStandardMaterial({
+      map: starTexture,
+      side: THREE.DoubleSide,
+      transparent: true,
+    })
+  );
+  star.position.set(0, 0, 0);
+  skyObjects.add(star);
+  scene.add(skyObjects);
+
+  const plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(skyW, skyD),
+    new THREE.MeshBasicMaterial({
+      wireframe: true,
+      side: THREE.DoubleSide,
+    })
+  );
+  // plane.rotation.x = Math.PI / 2;
+  skyObjects.add(plane);
 
   // Set up renderer
   renderer = new THREE.WebGLRenderer({
@@ -142,12 +185,18 @@ function addOverhang(x, z, width, depth) {
 }
 
 function generateBox(x, y, z, width, depth, falls) {
+  // const textureLoader = new THREE.TextureLoader();
+  // const cheeseTexture = textureLoader.load("/textures/brick.png");
+
   // ThreeJS
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
   // const color = new THREE.Color(`hsl(${30 + stack.length * 4}, 100%, 50%)`);
   const material = new THREE.MeshStandardMaterial({
-    color: "#fff95f",
+    // map: cheeseTexture,
+    color: "#cdcdcd",
+    // wireframe: true,
   });
+  material.wireframeLinewidth = 10.0;
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.set(x, y, z);
   scene.add(mesh);
@@ -202,6 +251,7 @@ function retry() {
   startGame();
   return;
 }
+
 window.addEventListener("mousedown", eventHandler);
 window.addEventListener("touchstart", eventHandler);
 window.addEventListener("keydown", function (event) {
@@ -284,8 +334,11 @@ function missedTheSpot() {
   gameEnded = true;
   if (resultsElement && !autopilot) resultsElement.style.display = "flex";
 }
+const clock = new THREE.Clock();
 
 function animation(time) {
+  const elapsedTime = clock.getElapsedTime();
+
   if (lastTime) {
     const timePassed = time - lastTime;
     const speed = 0.008;
@@ -324,11 +377,29 @@ function animation(time) {
     // 4 is the initial camera height
     if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
       camera.position.y += speed * timePassed;
+      skyObjects.position.y += speed * timePassed;
     }
-
     updatePhysics(timePassed);
     renderer.render(scene, camera);
   }
+
+  star.position.x += mspeedX;
+  star.position.y += mspeedY;
+  star.rotation.z += 0.01;
+  if (
+    star.position.x > skyW / 2 - starR / 2 ||
+    star.position.x < -skyW / 2 + starR / 2
+  ) {
+    mspeedX *= -1;
+  }
+  if (
+    star.position.y < -skyD / 2 + starR / 2 ||
+    star.position.y > skyD / 2 - starR / 2
+  ) {
+    mspeedY *= -1;
+  }
+  skyObjects.rotation.y = Math.PI * 1.25;
+
   lastTime = time;
 }
 
