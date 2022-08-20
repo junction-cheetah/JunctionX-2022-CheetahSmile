@@ -179,7 +179,7 @@ io.on("connection", (socket) => {
 
   //오토파일럿 로직 자동 계산
   function splitBlockAndAddNextOneIfOverlaps() {
-    if (!isGaming) return;
+    if (!gameState.isGaming) return;
 
     const stack = gameState.stack;
     const topLayer = gameState.topLayer;
