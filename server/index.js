@@ -27,6 +27,7 @@ var initialGameState = {
   nowUserIndex: 0,
   timeMicroSec: 0,
   isGaming: false,
+  topLayer  : [0,0,0]
 };
 
 function deepCopy(object) {
@@ -75,6 +76,10 @@ io.on("connection", (socket) => {
     gameState.stack.push(newStack);
     console.log(gameState.stack);
     io.emit("stacked", { newStack, nowUser, stack: gameState.stack });
+  });
+  socket.on("topLayer", (topLayer) => {
+    gameState.topLayer = topLayer;
+    io.emit("topLayerReceive", topLayer);
   });
 });
 server.listen(8000, "0.0.0.0", () => {
