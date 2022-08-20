@@ -4,6 +4,7 @@ import QRCode from 'qrcode';
 import { useEffect } from 'react';
 import styled from '@emotion/styled';
 import Image from 'next/future/image';
+import { useRouter } from 'next/router';
 
 export default function Room({ sessionId }) {
   useEffect(() => {
@@ -11,10 +12,21 @@ export default function Room({ sessionId }) {
     QRCode.toCanvas(canvas, location.href, { color: { dark: '#226AF6' } });
   }, []);
 
+  const router = useRouter();
+
   return (
     <>
       <NextSeo title="Room" description="TODO" />
       <Main>
+        <Image
+          src="/icons/back.svg"
+          alt="←"
+          width={40}
+          height={35}
+          style={{ position: 'fixed', top: 15, left: 10 }}
+          onClick={() => router.push('/lobby')}
+        />
+
         <canvas id="roomCode" style={{ borderRadius: 20 }}></canvas>
 
         <Team>
