@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24.674" height="40.349" viewBox="0 0 24.674 40.349">
+    <defs>
+        <filter id="e5l6wgyrua" x="0" y="0" width="24.674" height="40.349" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+            <feFlood flood-color="#0267ff" flood-opacity=".271"/>
+            <feComposite operator="in" in2="blur"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+        <filter id="huy7drqt6b" x="0" y="0" width="24.674" height="40.349" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="5" result="blur-2"/>
+            <feFlood flood-color="#fff" result="color"/>
+            <feComposite operator="out" in="SourceGraphic" in2="blur-2"/>
+            <feComposite operator="in" in="color"/>
+            <feComposite operator="in" in2="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g data-type="innerShadowGroup">
+        <g style="filter:url(#e5l6wgyrua)">
+            <path data-name="Icon open-badge" d="M7.837 0a7.837 7.837 0 1 0 7.837 7.837A7.86 7.86 0 0 0 7.837 0zM3.919 18.849v12.5l3.918-3.919 3.919 3.919v-12.5a11.8 11.8 0 0 1-3.919.745 11.8 11.8 0 0 1-3.918-.745z" transform="translate(4.5 4.5)" style="fill:#0267ff"/>
+        </g>
+        <g style="filter:url(#huy7drqt6b)">
+            <path data-name="Icon open-badge" d="M7.837 0a7.837 7.837 0 1 0 7.837 7.837A7.86 7.86 0 0 0 7.837 0zM3.919 18.849v12.5l3.918-3.919 3.919 3.919v-12.5a11.8 11.8 0 0 1-3.919.745 11.8 11.8 0 0 1-3.918-.745z" transform="translate(4.5 4.5)" style="fill:#fff"/>
+        </g>
+    </g>
+</svg>
