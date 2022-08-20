@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import styled from '@emotion/styled';
 import Image from 'next/future/image';
 import { useRouter } from 'next/router';
+import useSWR from 'swr';
+import { USER_KEY } from '../swr/user';
 
 export default function Room({ sessionId }) {
   useEffect(() => {
@@ -13,6 +15,7 @@ export default function Room({ sessionId }) {
   }, []);
 
   const router = useRouter();
+  const { data: user } = useSWR(USER_KEY);
 
   return (
     <>
@@ -38,23 +41,23 @@ export default function Room({ sessionId }) {
         <Players>
           <div className="player">
             <Image src="/polygon.svg" width={80} height={80} alt="" />
-            <p>jyp930</p>
+            <p>{user?.email?.split('@')?.[0]}</p>
           </div>
           <div className="player">
             <Image src="/polygon.svg" width={80} height={80} alt="" />
-            <p>jyp930</p>
+            <p></p>
           </div>
           <div className="player">
             <Image src="/polygon.svg" width={80} height={80} alt="" />
-            <p>jyp930</p>
+            <p></p>
           </div>
           <div className="player">
             <Image src="/polygon.svg" width={80} height={80} alt="" />
-            <p>jyp930</p>
+            <p></p>
           </div>
           <div className="player">
             <Image src="/polygon.svg" width={80} height={80} alt="" />
-            <p>jyp930</p>
+            <p></p>
           </div>
         </Players>
 

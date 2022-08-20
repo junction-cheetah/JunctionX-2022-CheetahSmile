@@ -4,6 +4,8 @@ import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
 import useAuth from '../utils/hooks/useAuth';
 import jwtDecode from 'jwt-decode';
+import { mutate } from 'swr';
+import { USER_KEY } from '../swr/user';
 
 export default function Home() {
   const [isAuthenticated, setToken] = useAuth();
@@ -31,7 +33,7 @@ export default function Home() {
       setToken(newToken);
 
       const decoded = jwtDecode(newToken);
-      console.log(decoded);
+      mutate(USER_KEY, { token: newToken, email: decoded.email });
     }
   }, [router, setToken]);
 
