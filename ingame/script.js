@@ -1,5 +1,7 @@
 const socket = io("ws://15.164.221.178:8000/");
 
+
+
 var timer = 0;
 var myEmail = "dodo4114@naver.com";
 
@@ -248,9 +250,8 @@ function addLayer(x, y, z, width, depth, direction) {
 
 //바닥에 떨어지는 박스 (x,z방향, 너비, 층고높이)
 function addOverhang(x, z, width, depth) {
-  console.log("addOverhang x : " + x);
   const y = boxHeight * (stack.length - 2); // 박스 높이 * 스택 갯수(현재높이를 포함하지 않아 -1)
-  console.log("y : " + y);
+
   const overhang = generateBox(x, y, z, width, depth, true);
   overhangs.push(overhang); //오버행배열에 현재 오버행 박스 넣기
 }
@@ -315,7 +316,7 @@ function cutBox(topLayer, overlap, size, delta) {
 
 //게임 리트라이
 function retry() {
-  init();
+  serverInit(true)
   fireGameStart();
   return;
 }
@@ -498,8 +499,6 @@ function updateStarsPosition() {
 
 function updatePhysics(timePassed) {
   world.step(timePassed / 1000); // Step the physics world
-  // Copy coordinates from Cannon.js to Three.js
-  // console.log(overhangs)
   overhangs.forEach((element) => {
     element.threejs.position.copy(element.cannonjs.position);
     element.threejs.quaternion.copy(element.cannonjs.quaternion);
