@@ -4,18 +4,28 @@ import SEO from '../seo.config';
 import { createContext, useEffect, useState } from 'react';
 import { mutate } from 'swr';
 import { LOADING_KEY } from '../swr/loading';
-import { Router } from 'next/router';
+import { Router, useRouter } from 'next/router';
 import Loading from '../foundations/Loading';
 
 export const TokenContext = createContext({});
 
 function MyApp({ Component, pageProps }) {
-  const [token, setToken] = useState(null);
+  // localStorage token
+  const [token, setToken] = useState('loading');
   useEffect(() => {
     const storageToken = localStorage.getItem('cheetahToken');
     setToken(storageToken);
   }, []);
 
+  // 401 redirect
+  const router = useRouter();
+  useEffect(() => {
+    if (token !== 'loading' && !token && router.pathname !== '/') {
+      router.replace('/');
+    }
+  }, [token, router]);
+
+  // page transition
   useEffect(() => {
     const start = () => {
       mutate(LOADING_KEY, true);
