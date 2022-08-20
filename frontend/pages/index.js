@@ -63,7 +63,7 @@ const Main = styled.main`
     font-weight: 900;
     line-height: 1.5;
 
-    text-shadow: 0 0 2px #fff;
+    text-shadow: 0 0 5px rgba(2, 103, 255, 0.26);
 
     margin-bottom: 70px;
   }
@@ -91,7 +91,7 @@ const Main = styled.main`
 
   button {
     border-radius: 21px;
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.5);
     transition: transform 0.3s;
     &:hover {
       transform: scale(1.05) !important;
