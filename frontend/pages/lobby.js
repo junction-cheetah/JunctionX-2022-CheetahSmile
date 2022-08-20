@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { generateUniqueId } from '../utils/functions/generator';
-import Image from 'next/image';
+import Image from 'next/future/image';
 import Modal from 'react-modal';
 import { mutate } from 'swr';
 import { USER_KEY } from '../swr/user';
@@ -45,6 +45,13 @@ export default function Lobby() {
           >
             <ModalContent>
               <h2>TEAM NAME</h2>
+              <Image
+                src="/icons/close.svg"
+                width={20}
+                height={20}
+                alt="X"
+                onClick={() => setOpen(false)}
+              />
               <input
                 type="text"
                 value={roomName}
@@ -150,6 +157,8 @@ const ModalContent = styled.div`
   justify-content: space-around;
   align-items: center;
 
+  position: relative;
+
   h2,
   button {
     opacity: 0.7;
@@ -175,6 +184,12 @@ const ModalContent = styled.div`
     font-size: 16px;
     width: 70%;
     text-align: center;
+  }
+
+  img {
+    position: absolute;
+    top: 15px;
+    right: 15px;
   }
 `;
 

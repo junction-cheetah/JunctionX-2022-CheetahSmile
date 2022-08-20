@@ -20,13 +20,13 @@ export default function Result({ sessionId }) {
         <Team>
           <span>TEAM</span>
           <br />
-          <span>핀란 드가자</span>
+          <span>team23</span>
         </Team>
 
         <Score>503</Score>
         <You>
           <Image src="/icons/crown.svg" width={25} height={20} alt="" />
-          <p>핀란 드가자</p>
+          <p>team23</p>
         </You>
 
         <div

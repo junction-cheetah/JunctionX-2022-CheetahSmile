@@ -7,30 +7,9 @@ const Ranking = () => {
       <h1>RANKING</h1>
       <ul>
         {[
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
-          { score: 1023, name: '이수경수경' },
-          { score: 857, name: '최강롯데' },
+          { score: 34, name: 'team23' },
+          { score: 29, name: 'team233' },
+          { score: 15, name: 'susu' },
         ].map(({ score, name }, index) => (
           <li key={index}>
             <span className="ranking">{ordinal(index + 1)}</span>

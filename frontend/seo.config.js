@@ -46,6 +46,10 @@ export default {
   ],
   additionalMetaTags: [
     {
+      httpEquiv: 'Content-Security-Policy',
+      content: 'upgrade-insecure-requests',
+    },
+    {
       name: 'description',
       content: 'Junction Asia 2022 AWS GameTech',
     },
@@ -77,7 +81,7 @@ export default {
     },
     {
       name: 'theme-color',
-      content: '#FFFFFF',
+      content: '#D5EAFA',
     },
   ],
 };

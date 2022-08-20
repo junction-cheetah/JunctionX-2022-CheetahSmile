@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120.62" height="120.59" viewBox="0 0 120.62 120.59">
+    <defs>
+        <filter id="5o61hlrl9a" x="0" y="0" width="120.62" height="120.59" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+            <feFlood flood-color="#0267ff"/>
+            <feComposite operator="in" in2="blur"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g style="filter:url(#5o61hlrl9a)">
+        <path data-name="Icon ionic-ios-close" d="m80.32 67.084 39.866-39.866a9.341 9.341 0 0 0-13.211-13.211L67.11 53.873 27.243 14.007a9.341 9.341 0 1 0-13.21 13.211L53.9 67.084 14.033 106.95a9.341 9.341 0 0 0 13.211 13.211L67.11 80.295l39.866 39.866a9.341 9.341 0 0 0 13.211-13.211z" transform="translate(-6.79 -6.79)" style="fill:#0267ff;opacity:.472"/>
+    </g>
+</svg>

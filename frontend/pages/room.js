@@ -50,7 +50,7 @@ export default function Room({ sessionId }) {
         <Team>
           <span>TEAM</span>
           <br />
-          <span>핀란 드가자</span>
+          <span>team23</span>
         </Team>
 
         <Players>
