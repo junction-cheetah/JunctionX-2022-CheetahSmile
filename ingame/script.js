@@ -2,29 +2,28 @@ const socket = io("ws://15.164.221.178:8000/");
 var stackData = [];
 var timer = 0;
 var isMyTurn = true;
-var topLayerPosition;
+var fetchedTopLayerPosition = [0, 0, 0];
 var fecthedCameraPosition = 4;
 
 socket.on("stacked", function (msg) {
   stackData = msg.stack;
-  eventHandler();
+  eventHandler(false);
 });
 
 const timerElement = document.getElementById("timer");
 socket.on("timer", function (time) {
   timer = time;
   if (timerElement) timerElement.innerText = timer;
-  console.log(time);
 });
 
 socket.on("started", function () {
-  startGame();
+  startGame(false);
 });
 socket.on("topLayerReceive", function (topLayerPositionData) {
   topLayerPosition = topLayerPositionData;
 });
 socket.on("cameraHeightReceive", function (cameraHeight) {
-  fecthedCameraPosition = cameraHeight;
+  fetchedTopLayerPosition = cameraHeight;
 });
 
 function onStack() {
@@ -46,9 +45,11 @@ function onEnd() {
 function propagationNewLayer(newLayerData) {
   socket.emit("newLayer", newLayerData);
 }
+
 function propagationToplayer(topLayerPosition) {
   socket.emit("topLayer", topLayerPosition);
 }
+
 function propagationCameraPosition(height) {
   socket.emit("cameraHeight", height);
 }
@@ -79,6 +80,7 @@ let mspeedX = 0.02;
 let mspeedY = 0.02;
 let moveSpeed = 0.05;
 let turn = 1;
+let boxStep;
 
 const scoreElement = document.getElementById("score");
 const instructionsElement = document.getElementById("instructions");
@@ -187,8 +189,10 @@ function init() {
 }
 
 //처음시작하는 스테이지 - 게임 스타트 함수
-function startGame() {
-  onStart();
+function startGame(isOriginalStart = true) {
+  if (isOriginalStart) {
+    onStart();
+  }
 
   autopilot = false;
   gameEnded = false;
@@ -219,7 +223,7 @@ function startGame() {
     addLayer(0, 0, originalBoxSize, originalBoxSize);
 
     // First layer
-    addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+    addLayer(-10.1, 0, originalBoxSize, originalBoxSize, "x");
   }
 
   //카메라도 제일 밑에서 다시 시작
@@ -238,7 +242,10 @@ function addLayer(x, z, width, depth, direction) {
   layer.direction = direction;
   stack.push(layer);
   propagationNewLayer({
-    position: { x: x, z: z },
+    position: {
+      x: x,
+      z: z,
+    },
     width: width,
     depth: depth,
   });
@@ -330,13 +337,17 @@ window.addEventListener("keydown", function (event) {
   }
 });
 
-function eventHandler() {
+function eventHandler(isOrigin = true) {
   if (autopilot) startGame();
-  else splitBlockAndAddNextOneIfOverlaps();
+  else splitBlockAndAddNextOneIfOverlaps(isOrigin);
 }
 
-function splitBlockAndAddNextOneIfOverlaps() {
+function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
   if (gameEnded) return;
+
+  if (isOrigin) {
+    onStack();
+  }
 
   const topLayer = stack[stack.length - 1];
   const previousLayer = stack[stack.length - 2];
@@ -377,14 +388,17 @@ function splitBlockAndAddNextOneIfOverlaps() {
 
     if (scoreElement) scoreElement.innerText = stack.length - 1;
     addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
+    boxStep = newWidth;
   } else {
-    missedTheSpot();
+    missedTheSpot(isOrigin);
   }
 }
 
 //쌓지 못하는 경우 - 게임 탈락 함수
-function missedTheSpot() {
-  onEnd();
+function missedTheSpot(isOrigin = true) {
+  if (isOrigin) {
+    onEnd();
+  }
   const topLayer = stack[stack.length - 1];
   // Turn to top layer into an overhang and let it fall down
   addOverhang(
@@ -429,18 +443,18 @@ function animation(time) {
           speed * timePassed * turn;
         topLayer.cannonjs.position[topLayer.direction] +=
           speed * timePassed * turn;
-        if (!autopilot) {
-          propagationToplayer(topLayer.threejs.position.toArray());
+        if (isMyTurn && !autopilot) {
+          propagationToplayer(topLayer.threejs.position);
         }
-        console.log(topLayer.threejs.position);
+        // console.log(topLayer.threejs.position);
       } else {
-        topLayer.threejs.position.fromArray(patchedToplayerPosition);
-        topLayer.cannonjs.position.fromArray(patchedToplayerPosition);
+        topLayer.threejs.position = fetchedTopLayerPosition;
+        topLayer.cannonjs.position = fetchedTopLayerPosition;
       }
-
+      turnRange = 10;
       if (
-        topLayer.threejs.position[topLayer.direction] > 10 - stack.length - 1 ||
-        topLayer.threejs.position[topLayer.direction] <= -10
+        topLayer.threejs.position[topLayer.direction] > turnRange ||
+        topLayer.threejs.position[topLayer.direction] < -turnRange
       ) {
         // If the box went beyond the stack then show up the fail screen
         // missedTheSpot();
