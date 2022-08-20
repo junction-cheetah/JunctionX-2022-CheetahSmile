@@ -262,7 +262,7 @@ io.on("connection", (socket) => {
   }
 
   function addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth) {
-    const y = boxHeight * gameState.stack.length; // 박스 높이 * 스택 갯수
+    const y = boxHeight * (gameState.stack.length-1); // 박스 높이 * 스택 갯수
 
     io.emit("addOverhang", {
       overhangX,

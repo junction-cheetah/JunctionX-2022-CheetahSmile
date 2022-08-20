@@ -254,8 +254,6 @@ function addLayer(x, y, z, width, depth, direction) {
 
 //바닥에 떨어지는 박스 (x,z방향, 너비, 층고높이)
 function addOverhang(x,y, z, width, depth) {
-  const y = boxHeight * (stack.length - 2); // 박스 높이 * 스택 갯수(현재높이를 포함하지 않아 -1)
-
   const overhang = generateBox(x, y, z, width, depth, true);
   overhangs.push(overhang); //오버행배열에 현재 오버행 박스 넣기
 }
