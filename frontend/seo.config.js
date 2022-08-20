@@ -14,11 +14,25 @@ export default {
       rel: 'shortcut icon',
       href: '/favicon.ico',
     },
+    // 글꼴
+    {
+      rel: 'preconnect',
+      href: 'https://fonts.gstatic.com',
+    },
+    {
+      rel: 'preconnect',
+      href: 'https://fonts.googleapis.com',
+    },
+    {
+      rel: 'stylesheet',
+      href: 'https://fonts.cdnfonts.com/css/azo-sans',
+    },
     {
       rel: 'stylesheet',
       type: 'text/css',
-      href: 'https://cdn.jsdelivr.net/gh/loplat/NanumSquareRound@main/nanumsquareround.css',
+      href: 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard-dynamic-subset.css',
     },
+    // manifest
     {
       rel: 'manifest',
       href: '/manifest.json',
