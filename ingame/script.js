@@ -273,6 +273,7 @@ function addOverhang(x, z, width, depth) {
 
 //박스 만들어내는 함수(좌표,너비,층고높이, 떨어지는지 유무)
 function generateBox(x, y, z, width, depth, falls) {
+  console.log("GEN")
   // ThreeJS 비주얼
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
   const material = new THREE.MeshStandardMaterial({
@@ -402,6 +403,8 @@ function fireEndProcess() {
 }
 
 function animation(time) {
+  // console.log(camera)
+
   if (lastTime) {
     const timePassed = time - lastTime;
     topLayer = stack[stack.length - 1];
@@ -424,31 +427,34 @@ function animation(time) {
         speed * timePassed * turn;
       topLayer.cannonjs.position[topLayer.direction] +=
         speed * timePassed * turn;
-    
-  } else {
-    // If it shouldn't move then is it because the autopilot reached the correct position?
-    // Because if so then next level is coming
-    if (autopilot) {
-      splitBlockAndAddNextOneIfOverlaps();
-      setRobotPrecision();
-    }
-  }
-
-  // 4 is the initial camera height
-  if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
-    if (autopilot) {
-      camera.position.y += speed * timePassed;
-      dispatchCameraPosition(camera.position.y);
     } else {
-      camera.position.y = globalGameState.cameraHeight;
+      // If it shouldn't move then is it because the autopilot reached the correct position?
+      // Because if so then next level is coming
+      if (autopilot) {
+        splitBlockAndAddNextOneIfOverlaps();
+        setRobotPrecision();
+      }
     }
-    skyObjects.position.y += speed * timePassed;
+
+    // 4 is the initial camera height
+    if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
+      if (autopilot) {
+        camera.position.y += speed * timePassed;
+        dispatchCameraPosition(camera.position.y);
+        console.log("autopilot");
+      } else {
+        camera.position.y = globalGameState.cameraHeight;
+        console.log("CAMERA");
+        console.log(camera.position);
+      }
+      skyObjects.position.y += speed * timePassed;
+    }
+    updatePhysics(timePassed);
   }
-  updatePhysics(timePassed);
-  renderer.render(scene, camera);
-  updateStarsPosition();
-  lastTime = time;
-}}
+    renderer.render(scene, camera);
+    updateStarsPosition();
+    lastTime = time;
+}
 
 function updateStarsPosition() {
   for (let i = 1; i < 4; i++) {
@@ -505,4 +511,3 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.render(scene, camera);
 });
-

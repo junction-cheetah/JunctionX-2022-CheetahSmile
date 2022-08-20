@@ -74,6 +74,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("stack", (msg) => {
+    console.log("STACK")
     var newStack = { ...msg, serverTime: timeMicroSec / 1000 };
     changeNowUser();
     gameState.stack.push(newStack);
@@ -81,6 +82,7 @@ io.on("connection", (socket) => {
     io.emit("stacked", { newStack, nowUser, stack: gameState.stack });
   });
   socket.on("topLayer", (topLayer) => {
+    console.log("topLayer");
     gameState.topLayer = { ...gameState.topLayer, ...topLayer };
     io.emit("topLayerReceive", topLayer);
   });
@@ -88,10 +90,12 @@ io.on("connection", (socket) => {
   // All in Server
 
   socket.on("dispatchEventPropagation", (data) => {
+    console.log("Event");
     io.emit("receiveEventPropagation", data);
   });
 
   socket.on("init", (forced = false) => {
+    console.log("INIT");
     init(forced);
   });
 
@@ -103,6 +107,7 @@ io.on("connection", (socket) => {
     }
   }
   socket.on("start", (data) => {
+    console.log("START");
     makeGameStart(data);
   });
 
@@ -121,6 +126,7 @@ io.on("connection", (socket) => {
   };
 
   socket.on("setGameState", (newGameState) => {
+    console.log("Set GAME STATE");
     gameState = { ...gameState, ...newGameState };
   });
 
@@ -149,7 +155,7 @@ io.on("connection", (socket) => {
     const speed = gameState.speed;
 
     const turn = gameState.topLayer.turn;
-    
+
     if (gameState.isGaming) {
       topLayer.position[topLayer.direction] += speed * timeScale * turn;
     }
