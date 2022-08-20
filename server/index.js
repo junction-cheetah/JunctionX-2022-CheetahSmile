@@ -224,7 +224,7 @@ io.on("connection", (socket) => {
   }
 
   function addLayer(nextX, nextZ, newWidth, newDepth, nextDirection = "z") {
-    console.log(gameState.stack);
+
     const y = boxHeight * gameState.stack.length; // 박스 높이 * 스택 갯수
 
     const layer = {
@@ -234,7 +234,6 @@ io.on("connection", (socket) => {
       direction: nextDirection,
     }; //현재 레이어에 넣는 새로운 박스 만들기
     gameState.stack.push(layer);
-    console.log(gameState.stack);
     setTopLayer(layer);
 
     io.emit("addLayer", {
