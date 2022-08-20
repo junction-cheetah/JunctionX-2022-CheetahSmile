@@ -6,14 +6,33 @@ import useAuth from '../utils/hooks/useAuth';
 
 export default function Home() {
   const [isAuthenticated, setToken] = useAuth();
-
   const router = useRouter();
+
+  // router
   const goToLobby = () => {
     router.push('/lobby');
   };
   useEffect(() => {
     router.prefetch('/lobby');
   }, [router]);
+
+  // login
+  const login = () => {
+    // TODO: cognito
+    // window.open(
+    //   'https://<domain>.auth.<region>.amazoncognito.com/login?response_type=token&client_id=<client_id>&redirect_uri=<redirection_url>',
+    //   '_self'
+    // );
+    localStorage.setItem('cheetahToken', 'test');
+    setToken('test');
+  };
+  useEffect(() => {
+    const newToken = router.asPath.split('access_token=')[1];
+    if (newToken) {
+      localStorage.setItem('cheetahToken', newToken);
+      setToken(newToken);
+    }
+  }, [router, setToken]);
 
   return (
     <>
@@ -25,14 +44,7 @@ export default function Home() {
         {isAuthenticated === 'loading' ? null : (
           <>
             {!isAuthenticated && (
-              <button
-                onClick={() => {
-                  localStorage.setItem('cheetahToken', 'test');
-                  setToken('test');
-                }}
-              >
-                Login with Google
-              </button>
+              <button onClick={login}>Login with Google</button>
             )}
             {isAuthenticated && <p>Tab to Start</p>}
           </>
@@ -73,7 +85,7 @@ const Main = styled.main`
       transform: scale(1);
     }
     to {
-      transform: scale(1.05);
+      transform: scale(1.1);
     }
   }
 
@@ -99,6 +111,6 @@ const Main = styled.main`
   }
 
   p {
-    animation: pulse 1s infinite alternate;
+    animation: pulse 0.8s infinite alternate;
   }
 `;
