@@ -2,10 +2,10 @@ export default {
   titleTemplate: '%s | Junction Asia 2022',
   openGraph: {
     type: 'website',
-    site_name: 'cheetah',
+    site_name: 'co-building',
     images: [
       {
-        url: 'https://junction-x-2022-cheetah-smile.vercel.app/co-building-512x512.png',
+        url: 'https://cobuilding.vercel.app/co-building-512x512.png',
       },
     ],
   },
@@ -51,12 +51,12 @@ export default {
     },
     {
       name: 'application-name',
-      content: 'cheetah',
+      content: 'co-building',
     },
     // iOS
     {
       name: 'apple-mobile-web-app-title',
-      content: 'cheetah',
+      content: 'co-building',
     },
     {
       name: 'apple-mobile-web-app-capable',

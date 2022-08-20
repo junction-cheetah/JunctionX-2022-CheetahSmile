@@ -18,7 +18,7 @@ export default function Lobby() {
     router.prefetch('/room');
   }, [router]);
 
-  const [roomName, setRoomName] = useState('cheetah');
+  const [roomName, setRoomName] = useState('team23');
   const [open, setOpen] = useState(false);
 
   const [_, setToken] = useAuth();
