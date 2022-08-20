@@ -81,7 +81,7 @@ export default {
     },
     {
       name: 'theme-color',
-      content: '#FFFFFF',
+      content: '#D5EAFA',
     },
   ],
 };
