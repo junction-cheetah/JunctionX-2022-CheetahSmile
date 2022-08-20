@@ -1,16 +1,20 @@
 import { NextSeo } from 'next-seo';
+import { useState } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
   return (
     <>
-      <NextSeo title="홈" description="TODO" />
-      <h2>Junction</h2>
-      <p>
-        각자가 갖추고 있는 능력과 지식을 바탕으로 혁신적인 솔루션을 창조해내고,
-        그 과정을 즐기는 300명의 참가자를 모집합니다. 최대 5명의 참가자가 한
-        팀을 이룰 수 있습니다.
-      </p>
-      <p>#Gold</p>
+      <NextSeo title="Cheetah'Smile" description="TODO" />
+      <h2>Build Your Potential</h2>
+      {!isAuthenticated && <button>Login with Google</button>}
+      {isAuthenticated && (
+        <Link href="/lobby">
+          <a>Tab to Start</a>
+        </Link>
+      )}
     </>
   );
 }

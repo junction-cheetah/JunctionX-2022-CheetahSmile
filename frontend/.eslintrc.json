@@ -1,7 +1,3 @@
 {
-  "extends": ["plugin:@typescript-eslint/recommended", "next/core-web-vitals"],
-  "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "rules": {
-  }
+  "extends": "next/core-web-vitals"
 }
