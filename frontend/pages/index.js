@@ -25,11 +25,11 @@ export default function Home() {
     );
   };
   useEffect(() => {
-    let token = router.query.id_token;
+    let token = router.asPath.split('id_token=')?.[1]?.split('&')[0];
     if (token) {
       // 방금 최초 로그인
       localStorage.setItem('aws-google-oauth-token', token);
-
+      // NOTE: QR 코드 로그인 후 바로 방으로 입장
       const tempSession = localStorage.getItem('temp-session');
       if (tempSession) {
         localStorage.removeItem('temp-session');
