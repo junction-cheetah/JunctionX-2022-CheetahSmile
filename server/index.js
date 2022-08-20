@@ -38,7 +38,7 @@ var initialGameState = {
     width: 0,
     depth: 0,
     turn: 0,
-    direction :'x'
+    direction: "x",
   },
   speed: 0.007,
   cameraHeight: 4,
@@ -165,7 +165,7 @@ io.on("connection", (socket) => {
 
     const turn = gameState.topLayer.turn;
     if (gameState.isGaming) {
-    
+      console.log(speed * timeScale * turn);
       gameState.topLayer.position[topLayerObject.direction] +=
         speed * timeScale * turn;
     }
