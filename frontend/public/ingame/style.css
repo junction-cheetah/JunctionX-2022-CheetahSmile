@@ -1,35 +1,59 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap");
-a{
+@import url("https://fonts.cdnfonts.com/css/azo-sans");
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+a {
   text-decoration: none;
   color: #171717;
 }
+
 body {
   margin: 0;
   color: #171717;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Azo Sans", Pretendard, sans-serif;
+  background-image: url(../background.png);
+  background-repeat: no-repeat;
+  background-size: cover;
   cursor: pointer;
 }
 
-#instructions {
-  display: none;
-}
+#instructions {}
 
 #results,
-body:hover #instructions {
+#instructions {
   position: absolute;
-  top:50%;
-  left:50%;
-  transform: translate(-50%,-50%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   height: 100%;
   width: 100%;
   background-color: rgba(255, 255, 255, 0.15);
+  line-height: 3em;
 }
 
 a:visited {
   color: inherit;
+}
+
+a:hover {
+  color: #226af6;
+}
+
+#score {
+  position: absolute;
+  color: #226af6;
+
+  font-size: 3em;
+  font-weight: bold;
+  top: 30px;
+  right: 30px;
 }
 
 #results {
@@ -45,127 +69,13 @@ a:visited {
   border-radius: 20px;
 }
 
-#results {
-}
 
-#score {
+
+#title {
   position: absolute;
   color: #171717;
-  font-size: 3em;
-  font-weight: bold;
-  top: 30px;
-  right: 30px;
-}
-
-#timer {
-  position: absolute;
-  color: #171717;
-  font-size: 3em;
+  font-size: 2em;
   font-weight: bold;
   top: 30px;
   left: 30px;
-}
-
-#youtube,
-#skillshare,
-#youtube-card,
-#skillshare-card {
-  display: none;
-  color: black;
-}
-
-@media (min-height: 425px) {
-  /** Youtube logo by https://codepen.io/alvaromontoro */
-  #youtube,
-  #skillshare {
-    z-index: 50;
-    width: 100px;
-    height: 70px;
-    position: fixed;
-    bottom: 20px;
-    transform: scale(0.8);
-    transition: transform 0.5s;
-  }
-
-  #youtube {
-    display: block;
-    background: red;
-    right: 20px;
-    border-radius: 50% / 11%;
-  }
-
-  #skillshare {
-    display: block;
-    left: 20px;
-    color: white;
-    font-size: 1.8em;
-    font-weight: extra-bold;
-    font-family: "Montserrat", sans-serif;
-    text-decoration: none;
-  }
-
-  #youtube:hover,
-  #youtube:focus {
-    transform: scale(0.9);
-    color: black;
-  }
-
-  #skillshare:hover,
-  #skillshare:focus {
-    transform: scale(0.9);
-    color: #002333;
-  }
-
-  #youtube::before {
-    content: "";
-    display: block;
-    position: absolute;
-    top: 7.5%;
-    left: -6%;
-    width: 112%;
-    height: 85%;
-    background: red;
-    border-radius: 9% / 50%;
-  }
-
-  #youtube::after {
-    content: "";
-    display: block;
-    position: absolute;
-    top: 20px;
-    left: 40px;
-    width: 45px;
-    height: 30px;
-    border: 15px solid transparent;
-    box-sizing: border-box;
-    border-left: 30px solid white;
-  }
-
-  #youtube span {
-    font-size: 0;
-    position: absolute;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-  }
-
-  #youtube:hover + #youtube-card,
-  #skillshare:hover + #skillshare-card {
-    z-index: 49;
-    display: block;
-    position: fixed;
-    bottom: 12px;
-    width: 300px;
-    background-color: white;
-  }
-
-  #youtube:hover + #youtube-card {
-    right: 10px;
-    padding: 25px 130px 25px 25px;
-  }
-
-  #skillshare:hover + #skillshare-card {
-    left: 10px;
-    padding: 25px 25px 25px 130px;
-  }
 }

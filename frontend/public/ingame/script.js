@@ -1,82 +1,3 @@
-const socket = io('ws://15.164.221.178:8000/');
-var stackData = [];
-var timer = 0;
-var isMyTurn = true;
-var fetchedTopLayerData = {
-  position: new THREE.Vector3([0, 0, 0]),
-  width: 0,
-  depth: 0,
-};
-// var fetchedTopLayerPosition = [0, 0, 0];
-var fecthedCameraPosition = 4;
-
-socket.on('stacked', function (msg) {
-  stackData = msg.stack;
-  console.log('stacked');
-  eventHandler(false);
-});
-
-const timerElement = document.getElementById('timer');
-socket.on('timer', function (time) {
-  timer = time;
-  if (timerElement) timerElement.innerText = timer;
-});
-
-socket.on('started', function () {
-  startGame(false);
-});
-socket.on('topLayerReceive', function (topLayerData) {
-  fetchedTopLayerData = topLayerData;
-});
-socket.on('cameraHeightReceive', function (cameraHeight) {
-  fecthedCameraPosition = cameraHeight;
-});
-
-function onStack() {
-  socket.emit('stack', {
-    clientTime: timer,
-  });
-}
-
-function onStart() {
-  console.log('START');
-  socket.emit('start', '');
-}
-
-function onEnd() {
-  console.log('END');
-  socket.emit('end', '');
-}
-
-function propagationNewLayer(newLayerData) {
-  socket.emit('newLayer', newLayerData);
-}
-
-function propagationToplayer(topLayerData) {
-  socket.emit('topLayer', topLayerData);
-}
-
-function propagationCameraPosition(height) {
-  socket.emit('cameraHeight', height);
-}
-
-function fetchNewLayer(newLayerData) {}
-
-function fetchNewLayer(newLayerData) {}
-
-function fetchTopLayer(topLayerInput) {
-  console.log(fetchedTopLayerData);
-  topLayerInput.threejs.position = fetchedTopLayerData.position;
-  topLayerInput.threejs.width = fetchedTopLayerData.width;
-  topLayerInput.threejs.depth = fetchedTopLayerData.depth;
-
-  topLayerInput.cannonjs.position.x = fetchedTopLayerData.position.x;
-  topLayerInput.cannonjs.position.y = fetchedTopLayerData.position.y;
-  topLayerInput.cannonjs.position.z = fetchedTopLayerData.position.z;
-  topLayerInput.cannonjs.width = fetchedTopLayerData.width;
-  topLayerInput.cannonjs.depth = fetchedTopLayerData.depth;
-}
-
 window.focus(); // Capture keys right away (by default focus is on editor)
 
 let camera, scene, renderer; // ThreeJS globals
@@ -165,10 +86,14 @@ function init() {
 
   //비주얼라이제이션 (조명 및 배경)
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+  ambientLight.castShadow = true;
+
   scene.add(ambientLight);
 
   const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
   dirLight.position.set(10, 20, 0);
+  dirLight.castShadow = true;
+
   scene.add(dirLight);
   //Sky object
   skyObjects = new THREE.Group();
@@ -194,18 +119,15 @@ function init() {
     antialias: true,
     alpha: true,
   });
+  renderer.shadowMap.enabled = true;
+
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setAnimationLoop(animation);
   document.body.appendChild(renderer.domElement);
 }
 
 //처음시작하는 스테이지 - 게임 스타트 함수
-function startGame(isOriginalStart = true) {
-  //초기 게임스타트 변수가 참일때 시작
-  if (isOriginalStart) {
-    onStart();
-  }
-
+function startGame() {
   //게임 스타트시 모든 게임 전역 변수 초기화
   autopilot = false;
   gameEnded = false;
@@ -255,14 +177,7 @@ function addLayer(x, z, width, depth, direction) {
   const layer = generateBox(x, y, z, width, depth, false); //현재 레이어에 넣는 새로운 박스 만들기
   layer.direction = direction;
   stack.push(layer); //스택에 현재 레이어 넣기
-  propagationNewLayer({
-    position: {
-      x: x,
-      z: z,
-    },
-    width: width,
-    depth: depth,
-  });
+
 }
 
 //바닥에 떨어지는 박스 (x,z방향, 너비, 층고높이)
@@ -303,6 +218,9 @@ function generateBox(x, y, z, width, depth, falls) {
   });
   const mesh = new THREE.Mesh(geometry, textureCube3);
   mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+
   scene.add(mesh);
 
   // CannonJS 물리 떨어지는..
@@ -376,22 +294,13 @@ window.addEventListener('keydown', function (event) {
 });
 
 //이벤트가 참일 때
-function eventHandler(isOrigin = true) {
+function eventHandler() {
   if (autopilot) startGame(); //오토파일럿이 참일때 게임 스타트
-  else splitBlockAndAddNextOneIfOverlaps(isOrigin); //아니면 오토파일럿 시작
+  else splitBlockAndAddNextOneIfOverlaps(); //아니면 오토파일럿 시작
 }
 //오토파일럿 로직 자동 계산
-function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
+function splitBlockAndAddNextOneIfOverlaps() {
   if (gameEnded) return;
-
-  if (isOrigin) {
-    onStack();
-  }
-
-  if (isMyTurn && !isOrigin) {
-    //다시 이벤트가 들어오면 리턴
-    return;
-  }
 
   const topLayer = stack[stack.length - 1];
 
@@ -401,29 +310,25 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
 
   const size = direction == 'x' ? topLayer.width : topLayer.depth;
 
-  //나의 턴이 아닐 때 오토파일럿 재생중
-  if (!isMyTurn) {
-    fetchTopLayer(topLayer);
-  }
   const delta =
     topLayer.threejs.position[direction] -
     previousLayer.threejs.position[direction];
   const overhangSize = Math.abs(delta);
   const overlap = size - overhangSize;
   console.log(overlap);
-  if (overlap > 0 || !isOrigin) {
+  if (overlap > 0) {
     cutBox(topLayer, overlap, size, delta);
 
     // Overhang
     const overhangShift = (overlap / 2 + overhangSize / 2) * Math.sign(delta);
     const overhangX =
-      direction == 'x'
-        ? topLayer.threejs.position.x + overhangShift
-        : topLayer.threejs.position.x;
+      direction == 'x' ?
+      topLayer.threejs.position.x + overhangShift :
+      topLayer.threejs.position.x;
     const overhangZ =
-      direction == 'z'
-        ? topLayer.threejs.position.z + overhangShift
-        : topLayer.threejs.position.z;
+      direction == 'z' ?
+      topLayer.threejs.position.z + overhangShift :
+      topLayer.threejs.position.z;
     const overhangWidth = direction == 'x' ? overhangSize : topLayer.width;
     const overhangDepth = direction == 'z' ? overhangSize : topLayer.depth;
 
@@ -436,19 +341,15 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
     const newDepth = topLayer.depth; // New layer has the same size as the cut top layer
     const nextDirection = direction == 'x' ? 'z' : 'x';
 
-    if (scoreElement) scoreElement.innerText = stack.length - 1;
+    if (scoreElement) scoreElement.innerText = stack.length + " th";
     addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
   } else {
-    missedTheSpot(isOrigin);
+    missedTheSpot();
   }
 }
 
 //쌓지 못하는 경우 - 게임 탈락 함수
-function missedTheSpot(isOrigin = true) {
-  if (isOrigin) {
-    onEnd();
-  }
-
+function missedTheSpot() {
   const topLayer = stack[stack.length - 1]; //전에 탑레이어의 객체를 가져온다
   // Turn to top layer into an overhang and let it fall down
   addOverhang(
@@ -474,40 +375,21 @@ function animation(time) {
 
     // The top level box should move if the game has not ended AND
     // it's either NOT in autopilot or it is in autopilot and the box did not yet reach the robot position
-    const boxShouldMove =
-      !gameEnded &&
+    const boxShouldMove = !gameEnded &&
       (!autopilot ||
         (autopilot &&
           topLayer.threejs.position[topLayer.direction] <
-            previousLayer.threejs.position[topLayer.direction] +
-              robotPrecision));
+          previousLayer.threejs.position[topLayer.direction] +
+          robotPrecision));
 
     //
     if (boxShouldMove) {
-      if (isMyTurn || autopilot) {
-        // Keep the position visible on UI and the position in the model in sync
-        topLayer.threejs.position[topLayer.direction] +=
-          speed * timePassed * turn;
-        topLayer.cannonjs.position[topLayer.direction] +=
-          speed * timePassed * turn;
-        if (isMyTurn && !autopilot) {
-          propagationToplayer({
-            position: topLayer.threejs.position,
-            width: topLayer.threejs.width,
-            depth: topLayer.threejs.depth,
-          });
-          // propagationToplayer({
-          //   poistion: topLayer.threejs.position,
-          //   width: topLayer.width,
-          //   height: topLayer.depth,
-          // });
-        }
-        // console.log(topLayer.threejs.position);
-      } else {
-        fetchTopLayer(topLayer);
-        // topLayer.threejs.position = fetchedTopLayerPosition;
-        // topLayer.cannonjs.position = fetchedTopLayerPosition;
-      }
+      // Keep the position visible on UI and the position in the model in sync
+      topLayer.threejs.position[topLayer.direction] +=
+        speed * timePassed * turn;
+      topLayer.cannonjs.position[topLayer.direction] +=
+        speed * timePassed * turn;
+
       if (topLayer.threejs.position[topLayer.direction] > 10) {
         // If the box went beyond the stack then show up the fail screen
         // missedTheSpot();
@@ -529,14 +411,11 @@ function animation(time) {
 
     // 4 is the initial camera height
     if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
-      if (isMyTurn || autopilot) {
-        camera.position.y += speed * timePassed;
-        propagationCameraPosition(camera.position.y);
-      } else {
-        camera.position.y = fecthedCameraPosition;
-      }
-      skyObjects.position.y += speed * timePassed;
+      camera.position.y += speed * timePassed;
     }
+
+    skyObjects.position.y += speed * timePassed;
+
     updatePhysics(timePassed);
     renderer.render(scene, camera);
   }
