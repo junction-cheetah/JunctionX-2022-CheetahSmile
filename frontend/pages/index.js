@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 import useAuth from '../utils/hooks/useAuth';
 
 export default function Home() {
-  const isAuthenticated = useAuth();
+  const [isAuthenticated, setToken] = useAuth();
 
   const router = useRouter();
   const goToLobby = () => {
@@ -24,7 +24,16 @@ export default function Home() {
         </h2>
         {isAuthenticated === 'loading' ? null : (
           <>
-            {!isAuthenticated && <button>Login with Google</button>}
+            {!isAuthenticated && (
+              <button
+                onClick={() => {
+                  localStorage.setItem('cheetahToken', 'test');
+                  setToken('test');
+                }}
+              >
+                Login with Google
+              </button>
+            )}
             {isAuthenticated && <p>Tab to Start</p>}
           </>
         )}

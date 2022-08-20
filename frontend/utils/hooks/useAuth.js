@@ -9,6 +9,6 @@ const useAuth = () => {
     setIsAuthenticated(!!token);
   }, [token]);
 
-  return isAuthenticated;
+  return [isAuthenticated, setToken];
 };
 export default useAuth;
