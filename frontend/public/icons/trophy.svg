@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="33.622" height="33.628" viewBox="0 0 33.622 33.628">
+    <defs>
+        <filter id="fcbbootufa" x="0" y="0" width="33.622" height="33.628" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+            <feFlood flood-color="#0267ff" flood-opacity=".271"/>
+            <feComposite operator="in" in2="blur"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+        <filter id="dy9xfwyxib" x="0" y="0" width="33.622" height="33.628" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="5" result="blur-2"/>
+            <feFlood flood-color="#fff" result="color"/>
+            <feComposite operator="out" in="SourceGraphic" in2="blur-2"/>
+            <feComposite operator="in" in="color"/>
+            <feComposite operator="in" in2="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g data-type="innerShadowGroup">
+        <g style="filter:url(#fcbbootufa)">
+            <path data-name="Icon ionic-md-trophy" d="M23.736 6.749c.053-1.6.012-3.315.006-3.374H7.6c0 .059-.047 1.776.006 3.374H3.375c0 4.025.586 6.055 1.243 7.5a10.459 10.459 0 0 0 3.474 4.161 41.213 41.213 0 0 0 6.173 3.409v1.675c-.272.592-1.391 1.669-4.93 1.669H8.11V28h15.152v-2.838h-1.521c-3.593 0-4.439-1.131-4.634-1.669v-1.675a66.09 66.09 0 0 0 6.179-3.4 12.215 12.215 0 0 0 3.474-4.161A21.027 21.027 0 0 0 28 6.749zM7.021 13.076a9.757 9.757 0 0 1-.929-3.664h1.7c.041.355.083.669.136.965a26.215 26.215 0 0 0 1.521 5.712 8.49 8.49 0 0 1-2.428-3.013zm17.33 0a8.55 8.55 0 0 1-2.462 3.036 25.848 25.848 0 0 0 1.527-5.735c.047-.3.095-.61.136-.965h1.734a9.758 9.758 0 0 1-.935 3.664z" transform="translate(1.13 1.13)" style="fill:#0267ff"/>
+        </g>
+        <g style="filter:url(#dy9xfwyxib)">
+            <path data-name="Icon ionic-md-trophy" d="M23.736 6.749c.053-1.6.012-3.315.006-3.374H7.6c0 .059-.047 1.776.006 3.374H3.375c0 4.025.586 6.055 1.243 7.5a10.459 10.459 0 0 0 3.474 4.161 41.213 41.213 0 0 0 6.173 3.409v1.675c-.272.592-1.391 1.669-4.93 1.669H8.11V28h15.152v-2.838h-1.521c-3.593 0-4.439-1.131-4.634-1.669v-1.675a66.09 66.09 0 0 0 6.179-3.4 12.215 12.215 0 0 0 3.474-4.161A21.027 21.027 0 0 0 28 6.749zM7.021 13.076a9.757 9.757 0 0 1-.929-3.664h1.7c.041.355.083.669.136.965a26.215 26.215 0 0 0 1.521 5.712 8.49 8.49 0 0 1-2.428-3.013zm17.33 0a8.55 8.55 0 0 1-2.462 3.036 25.848 25.848 0 0 0 1.527-5.735c.047-.3.095-.61.136-.965h1.734a9.758 9.758 0 0 1-.935 3.664z" transform="translate(1.13 1.13)" style="fill:#fff"/>
+        </g>
+    </g>
+</svg>

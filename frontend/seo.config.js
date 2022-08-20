@@ -77,7 +77,7 @@ export default {
     },
     {
       name: 'theme-color',
-      content: '#226AF6',
+      content: '#FFFFFF',
     },
   ],
 };
