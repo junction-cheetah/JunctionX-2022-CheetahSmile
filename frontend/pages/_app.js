@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }) {
   const [token, setToken] = useState('loading');
   useEffect(() => {
     const storageToken = localStorage.getItem('cheetahToken');
-    setToken(storageToken);
+    setToken(storageToken || null);
   }, []);
 
   // 401 redirect
