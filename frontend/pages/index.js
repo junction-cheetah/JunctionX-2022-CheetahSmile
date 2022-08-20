@@ -1,6 +1,6 @@
 import { NextSeo } from 'next-seo';
 import { useEffect } from 'react';
-import { styled } from 'loplat-ui';
+import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
 import useAuth from '../utils/hooks/useAuth';
 
@@ -80,7 +80,6 @@ const Main = styled.main`
     width: 300px;
     max-width: 90%;
     height: 60px;
-    object-fit: contain;
 
     text-align: center;
     text-shadow: 0 0 6px rgba(255, 255, 255, 0.64);
