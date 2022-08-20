@@ -152,8 +152,8 @@ io.on("connection", (socket) => {
       topLayer.position[topLayer.direction] += speed * timeScale * turn;
     }
 
-    if (cameraHeight< boxHeight * (stack.length - 2) + 4) {
-      cameraHeight += speed * timeScale;
+    if (gameState.cameraHeight< boxHeight * (stack.length - 2) + 4) {
+      gameState.cameraHeight += speed * timeScale;
     }
   }
 
