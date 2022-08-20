@@ -509,9 +509,9 @@ function updateStarsPosition() {
 }
 
 function updatePhysics(timePassed) {
-  // console.log(timePassed)
   world.step(timePassed / 1000); // Step the physics world
   // Copy coordinates from Cannon.js to Three.js
+  console.log(overhangs)
   overhangs.forEach((element) => {
     element.threejs.position.copy(element.cannonjs.position);
     element.threejs.quaternion.copy(element.cannonjs.quaternion);
