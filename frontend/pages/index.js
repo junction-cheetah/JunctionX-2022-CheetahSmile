@@ -1,10 +1,11 @@
 import { NextSeo } from 'next-seo';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { styled } from 'loplat-ui';
 import { useRouter } from 'next/router';
+import useAuth from '../utils/hooks/useAuth';
 
 export default function Home() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const isAuthenticated = useAuth();
 
   const router = useRouter();
   const goToLobby = () => {
@@ -21,8 +22,12 @@ export default function Home() {
         <h2>
           BUILD <br /> YOUR <br /> POTENTIAL
         </h2>
-        {!isAuthenticated && <button>Login with Google</button>}
-        {isAuthenticated && <p>Tab to Start</p>}
+        {isAuthenticated === 'loading' ? null : (
+          <>
+            {!isAuthenticated && <button>Login with Google</button>}
+            {isAuthenticated && <p>Tab to Start</p>}
+          </>
+        )}
       </Main>
     </>
   );
