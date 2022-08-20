@@ -195,6 +195,7 @@ io.on("connection", (socket) => {
 
     const size = direction == "x" ? topLayer.width : topLayer.depth;
     console.log(previousLayer);
+    if (!previousLayer) return
     const delta =
       topLayer.position[direction] - previousLayer.position[direction];
     const overhangSize = Math.abs(delta);
