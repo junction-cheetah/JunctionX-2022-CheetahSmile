@@ -80,6 +80,7 @@ socket.on(
   }
 );
 socket.on("addLayer", ({ x, y, z, width, depth, direction }) => {
+  console.log({ x, y, z, width, depth, direction });
   addLayer(x, y, z, width, depth, direction);
 });
 
