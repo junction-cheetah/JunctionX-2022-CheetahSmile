@@ -77,8 +77,8 @@ io.on("connection", (socket) => {
       console.log("GAME END");
       io.emit("end", msg);
       gameState.isGaming = false;
-      timeMicroSec = 0;
       clearInterval(timerId);
+      timeMicroSec = 0;
       lastState = deepCopy(gameState);
       gameState = deepCopy(initialGameState);
     }
@@ -273,7 +273,6 @@ io.on("connection", (socket) => {
   function endGame() {
     gameState.stack.pop();
     gameState.isGaming = false;
-    timeMicroSec = 0;
     io.emit("end");
   }
 });

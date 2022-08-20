@@ -398,7 +398,7 @@ function animation(time) {
 
   topLayerObject = stack[stack.length - 1];
   var topLayerData = fetchedTopLayerData;
-  // console.log(fetchedTopLayerData);
+  console.log(fetchedTopLayerData);
   if (topLayerObject && topLayerData) {
     topLayerObject.threejs.position.x = topLayerData.position.x;
     topLayerObject.threejs.position.y = topLayerData.position.y;
