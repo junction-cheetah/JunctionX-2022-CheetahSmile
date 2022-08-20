@@ -33,7 +33,13 @@ var initialGameState = {
   nowUserIndex: 0,
   timeMicroSec: 0,
   isGaming: false,
-  topLayer: null,
+  topLayer: {
+    postion: { x: 0, y: 0, z: 0 },
+    width: 0,
+    depth: 0,
+    turn: 0,
+    direction :'x'
+  },
   speed: 0.007,
   cameraHeight: 4,
 };
@@ -57,13 +63,13 @@ function setTopLayer(updateObject) {
 io.on("connection", (socket) => {
   console.log("a user connected");
   socket.broadcast.emit("hi");
-  accessUserNumber++
+  accessUserNumber++;
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
     accessUserNumber--;
-    if (accessUserNumber == 0){
-      init(true)
+    if (accessUserNumber == 0) {
+      init(true);
     }
   });
 
@@ -81,14 +87,8 @@ io.on("connection", (socket) => {
 
   socket.on("stack", (msg) => {
     console.log("STACK");
-    changeNowUser();
-    stack();
-  });
-
-  socket.on("topLayer", (topLayer) => {
-    // console.log("topLayer");
-    gameState.topLayer = { ...gameState.topLayer, ...topLayer };
-    io.emit("topLayerReceive", topLayer);
+    // changeNowUser();
+    makeStack();
   });
 
   // All in Server
@@ -136,17 +136,14 @@ io.on("connection", (socket) => {
   });
 
   function tick() {
-
-    try{
-
+    try {
       gameState.isGaming = true;
       clock();
       setTurn();
       animation();
-    } catch(e) {
-      console.log(e)
-      init(true)
-
+    } catch (e) {
+      console.log(e);
+      init(true);
     }
   }
 
@@ -181,7 +178,7 @@ io.on("connection", (socket) => {
   }
 
   //오토파일럿 로직 자동 계산
-  function stack() {
+  function makeStack() {
     if (!gameState.isGaming) return;
 
     const stack = gameState.stack;
@@ -193,7 +190,7 @@ io.on("connection", (socket) => {
 
     const size = direction == "x" ? topLayer.width : topLayer.depth;
     console.log(previousLayer);
-    if (!previousLayer) return
+    if (!previousLayer) return;
     const delta =
       topLayer.position[direction] - previousLayer.position[direction];
     const overhangSize = Math.abs(delta);
@@ -213,7 +210,7 @@ io.on("connection", (socket) => {
           : topLayer.position.z;
       const overhangWidth = direction == "x" ? overhangSize : topLayer.width;
       const overhangDepth = direction == "z" ? overhangSize : topLayer.depth;
-      console.log(overhangX)
+      console.log(overhangX);
       addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
 
       // Next layer
@@ -230,7 +227,7 @@ io.on("connection", (socket) => {
   }
 
   function addLayer(nextX, nextZ, newWidth, newDepth, nextDirection = "z") {
-    console.log("ADD LAYER")
+    console.log("ADD LAYER");
     const y = boxHeight * gameState.stack.length; // 박스 높이 * 스택 갯수
 
     const layer = {
