@@ -13,7 +13,7 @@ export default function Result({ sessionId }) {
   return (
     <>
       <NextSeo title="Result" description="TODO" />
-      <h2>Result</h2>
+      <h1>Result</h1>
       <Link href="/lobby">
         <a>Home</a>
       </Link>
