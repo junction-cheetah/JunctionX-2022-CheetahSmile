@@ -68,6 +68,12 @@ export default function Lobby() {
                 <span>RANKING</span>
               </a>
             </Link>
+            <Link href="/achievement">
+              <a>
+                <Image src="/icons/badge.svg" width={40} height={40} alt="" />
+                <span>ACHIEVEMENT</span>
+              </a>
+            </Link>
           </>
         )}
         <Logout onClick={logout}>
