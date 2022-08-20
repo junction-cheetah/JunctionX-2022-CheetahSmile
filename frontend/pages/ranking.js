@@ -5,7 +5,7 @@ import RankingComponent from '../containers/Ranking';
 export default function Ranking() {
   return (
     <>
-      <NextSeo title="Ranking" description="TODO" />
+      <NextSeo title="Ranking" description="BUILD YOUR POTENTIAL!" />
       <Main>
         <RankingComponent />
       </Main>
