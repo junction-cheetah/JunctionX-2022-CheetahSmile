@@ -1,4 +1,3 @@
-
 window.focus(); // Capture keys right away (by default focus is on editor)
 
 let camera, scene, renderer; // ThreeJS globals
@@ -247,29 +246,29 @@ function generateBox(x, y, z, width, depth, falls) {
 }
 
 //박스 자르는 함수(탑레이어,쌓인 박스크기, 잘릴 박스크기, 전보다 이동한 차이값)
-function cutBox(topLayer, overlap, size, delta) {
-  const direction = topLayer.direction;
-  const newWidth = direction == 'x' ? overlap : topLayer.width;
-  const newDepth = direction == 'z' ? overlap : topLayer.depth;
+// function cutBox(topLayer, overlap, size, delta) {
+//   const direction = topLayer.direction;
+//   const newWidth = direction == 'x' ? overlap : topLayer.width;
+//   const newDepth = direction == 'z' ? overlap : topLayer.depth;
 
-  // Update metadata
-  topLayer.width = newWidth;
-  topLayer.depth = newDepth;
+//   // Update metadata
+//   topLayer.width = newWidth;
+//   topLayer.depth = newDepth;
 
-  // Update ThreeJS model
-  topLayer.threejs.scale[direction] = overlap / size;
-  topLayer.threejs.position[direction] -= delta / 2;
+//   // Update ThreeJS model
+//   topLayer.threejs.scale[direction] = overlap / size;
+//   topLayer.threejs.position[direction] -= delta / 2;
 
-  // Update CannonJS model
-  topLayer.cannonjs.position[direction] -= delta / 2;
+//   // Update CannonJS model
+//   topLayer.cannonjs.position[direction] -= delta / 2;
 
-  // CannonJS 잘릴 박스를 리사이즈할 수 없어서 새로운 박스로 대체
-  const shape = new CANNON.Box(
-    new CANNON.Vec3(newWidth / 2, boxHeight / 2, newDepth / 2)
-  );
-  topLayer.cannonjs.shapes = [];
-  topLayer.cannonjs.addShape(shape);
-}
+//   // CannonJS 잘릴 박스를 리사이즈할 수 없어서 새로운 박스로 대체
+//   const shape = new CANNON.Box(
+//     new CANNON.Vec3(newWidth / 2, boxHeight / 2, newDepth / 2)
+//   );
+//   topLayer.cannonjs.shapes = [];
+//   topLayer.cannonjs.addShape(shape);
+// }
 
 //게임 리트라이
 function retry() {
@@ -317,8 +316,9 @@ function splitBlockAndAddNextOneIfOverlaps() {
   const overhangSize = Math.abs(delta);
   const overlap = size - overhangSize;
   console.log(overlap);
+
   if (overlap > 0) {
-    cutBox(topLayer, overlap, size, delta);
+    // cutBox(topLayer, overlap, size, delta);
 
     // Overhang
     const overhangShift = (overlap / 2 + overhangSize / 2) * Math.sign(delta);
@@ -333,7 +333,7 @@ function splitBlockAndAddNextOneIfOverlaps() {
     const overhangWidth = direction == 'x' ? overhangSize : topLayer.width;
     const overhangDepth = direction == 'z' ? overhangSize : topLayer.depth;
 
-    addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
+    // addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
 
     // Next layer
     const nextX = direction == 'x' ? topLayer.threejs.position.x : -10;

@@ -1,0 +1,81 @@
+@import url("https://fonts.cdnfonts.com/css/azo-sans");
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: #171717;
+}
+
+body {
+  margin: 0;
+  color: #171717;
+  font-family: "Azo Sans", Pretendard, sans-serif;
+  background-image: url(../background.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  cursor: pointer;
+}
+
+#instructions {}
+
+#results,
+#instructions {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.15);
+  line-height: 3em;
+}
+
+a:visited {
+  color: inherit;
+}
+
+a:hover {
+  color: #226af6;
+}
+
+#score {
+  position: absolute;
+  color: #226af6;
+
+  font-size: 3em;
+  font-weight: bold;
+  top: 30px;
+  right: 30px;
+}
+
+#results {
+  display: none;
+  cursor: default;
+}
+
+#results .content,
+#instructions .content {
+  background-color: rgba(255, 255, 255, 0.75);
+  max-width: 300px;
+  padding: 20px;
+  border-radius: 20px;
+}
+
+
+
+#title {
+  position: absolute;
+  color: #171717;
+  font-size: 2em;
+  font-weight: bold;
+  top: 30px;
+  left: 30px;
+}
