@@ -1,11 +1,12 @@
 import { NextSeo } from 'next-seo';
 import styled from '@emotion/styled';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { generateUniqueId } from '../utils/functions/generator';
 import Image from 'next/image';
 import Modal from 'react-modal';
+import useAuth from '../utils/hooks/useAuth';
 
 export default function Lobby() {
   const router = useRouter();
@@ -19,6 +20,12 @@ export default function Lobby() {
 
   const [roomName, setRoomName] = useState('cheetah');
   const [open, setOpen] = useState(false);
+
+  const [_, setToken] = useAuth();
+  const logout = () => {
+    localStorage.removeItem('cheetahToken');
+    setToken(null);
+  };
 
   return (
     <>
@@ -60,6 +67,9 @@ export default function Lobby() {
             </Link>
           </>
         )}
+        <Logout onClick={logout}>
+          <Image src="/icons/logout.svg" alt="" width={30} height={26} />
+        </Logout>
       </Main>
     </>
   );
@@ -176,3 +186,13 @@ const customStyles = {
     border: 'none',
   },
 };
+
+const Logout = styled.button`
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+
+  width: fit-content !important;
+  height: fit-content !important;
+  background-color: unset !important;
+`;
