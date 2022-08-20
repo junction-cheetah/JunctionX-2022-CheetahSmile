@@ -14,21 +14,26 @@ app.get("/", (req, res) => {
 });
 
 var timeMicroSec = 0;
-var stack = [];
+var timerId;
+var lastState;
 var accessUsers = [];
 var nowUser = "";
 var sessionId = "";
 var teamName = "";
 
 var initialGameState = {
-  stack: stack,
+  stack: [],
   nowUser: "",
   nowUserIndex: 0,
   timeMicroSec: 0,
   isGaming: false,
 };
 
-var gameState = initialGameState;
+function deepCopy(object) {
+return  JSON.parse(JSON.stringify(object));
+}
+
+var gameState = deepCopy(initialGameState );
 
 io.on("connection", (socket) => {
   console.log("a user connected");
@@ -39,20 +44,37 @@ io.on("connection", (socket) => {
   });
 
   socket.on("start", (msg) => {
-    console.log("START")
-    io.emit("started", msg);
-    gameState.isGaming = true;
-    setInterval(() => {
-      io.emit("timer", timeMicroSec++ / 1000);
-    }, 1);
+    if (!gameState.isGaming) {
+      console.log("GAME START");
+      io.emit("started", msg);
+      gameState.isGaming = true;
+      timerId = setInterval(() => {
+        io.emit("timer", timeMicroSec++ / 1000);
+      }, 1);
+    }
+  });
+
+  socket.on("end", (msg) => {
+    if (gameState.isGaming) {
+      console.log("GAME END");
+      io.emit("end", msg);
+      gameState.isGaming = false;
+      clearInterval(timerId);
+      timeMicroSec = 0;
+      console.log(gameState)
+      lastState = deepCopy(gameState );
+      console.log(initialGameState);
+      gameState = deepCopy(initialGameState )
+      console.log(gameState);
+    }
   });
 
   socket.on("stack", (msg) => {
     var newStack = { ...msg, serverTime: timeMicroSec / 1000 };
     changeNowUser();
-    stack.push(newStack);
-    console.log(stack);
-    io.emit("stacked", {newStack, nowUser});
+    gameState.stack.push(newStack);
+    console.log(gameState.stack);
+    io.emit("stacked", { newStack, nowUser, stack: gameState.stack });
   });
 });
 server.listen(8000, "0.0.0.0", () => {
@@ -60,6 +82,8 @@ server.listen(8000, "0.0.0.0", () => {
 });
 
 function changeNowUser() {
-  gameState.nowUserIndex = Math.floor((nowUserIndex + 1) / accessUsers.length);
-  gameState.nowUser = accessUsers[nowUserIndex];
+  gameState.nowUserIndex = Math.floor(
+    (gameState.nowUserIndex + 1) / accessUsers.length
+  );
+  gameState.nowUser = accessUsers[gameState.nowUserIndex];
 }
