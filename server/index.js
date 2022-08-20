@@ -40,20 +40,24 @@ io.on("connection", (socket) => {
   });
 
   socket.on("start", (msg) => {
-    console.log("GAME START");
-    io.emit("started", msg);
-    gameState.isGaming = true;
-    timerId = setInterval(() => {
-      io.emit("timer", timeMicroSec++ / 1000);
-    }, 1);
+    if (!isGaming) {
+      console.log("GAME START");
+      io.emit("started", msg);
+      gameState.isGaming = true;
+      timerId = setInterval(() => {
+        io.emit("timer", timeMicroSec++ / 1000);
+      }, 1);
+    }
   });
 
   socket.on("end", (msg) => {
-    console.log("GAME END");
-    io.emit("end", msg);
-    gameState.isGaming = false;
-    clearInterval(timerId);
-    timeMicroSec = 0;
+    if (isGaming) {
+      console.log("GAME END");
+      io.emit("end", msg);
+      gameState.isGaming = false;
+      clearInterval(timerId);
+      timeMicroSec = 0;s
+    }
   });
 
   socket.on("stack", (msg) => {

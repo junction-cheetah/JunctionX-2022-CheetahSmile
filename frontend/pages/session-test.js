@@ -3,8 +3,12 @@ import Link from 'next/link';
 import { io } from 'socket.io-client';
 import { GameLiftClient, AcceptMatchCommand } from '@aws-sdk/client-gamelift';
 import { useState,useEffect } from 'react';
+import styled from '@emotion/styled';
+
+
   const socket = io('ws://15.164.221.178:8000/');
 export default function SessionTest() {
+
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [lastPong, setLastPong] = useState(null);
 
@@ -53,6 +57,10 @@ export default function SessionTest() {
     socket.emit('start', "");
 
   }
+  function end(){
+    console.log("END")
+    socket.emit('end', "");
+  }
   function addListener() {
   }
 
@@ -62,7 +70,17 @@ export default function SessionTest() {
       <h2>{timer}</h2>
       <p>person 1: jyp</p>
       <p>person 2: su</p>
-      <button onClick={start}>start</button>
+      <MyButton onClick={start}>START</MyButton>
+      <MyButton onClick={end}>END</MyButton>
     </>
   );
 }
+
+
+const MyButton = styled.button`
+
+width: 50%;
+height: 32px;
+border-radius: 4px;
+
+`
