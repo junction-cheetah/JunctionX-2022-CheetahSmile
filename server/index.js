@@ -166,7 +166,7 @@ io.on("connection", (socket) => {
     const speed = gameState.speed;
 
     const turn = gameState.topLayer.turn;
-
+console.log(gameState)
     if (gameState.isGaming) {
       gameState.topLayer.position[topLayerObject.direction] +=
         speed * timeScale * turn;
