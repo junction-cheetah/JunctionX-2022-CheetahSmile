@@ -146,14 +146,14 @@ io.on("connection", (socket) => {
     topLayer = gameState.topLayer;
     const stack = gameState.stack;
     const previousLayer = stack[stack.length - 2];
+    const speed= gameState.speed
 
     if (gameState.isGaming) {
       topLayer.position[topLayer.direction] += speed * timeScale * turn;
     }
 
-    if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
-      camera.position.y += speed * timeScale;
-      skyObjects.position.y += speed * timeScale;
+    if (cameraHeight< boxHeight * (stack.length - 2) + 4) {
+      cameraHeight += speed * timeScale;
     }
   }
 
