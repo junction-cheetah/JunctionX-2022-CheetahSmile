@@ -1,12 +1,21 @@
-import axios from 'axios';
+import { useEffect } from 'react';
+import useSWR from 'swr';
+import { USER_KEY } from '../../swr/user';
+import axiosInstance from '../../api';
 
-export const requestNewGameSession = (playerIds) => {
-  const playerIds = playerIds.join()
-  axios
-      .get(`https://b9otw2e9p0.execute-api.ap-northeast-2.amazonaws.com/default/connectClientToServer?playerIds=${playerIds}`)
+const useNewSession = () => {
+  const { data: user } = useSWR(USER_KEY);
+
+  useEffect(() => {
+    axiosInstance
+      .get('/default/connectClientToServer?playerIds=test1,test2,test3')
       .then((response) => {
-          console.log(response.statusCode);
-          console.log(response.body);
+        console.log(response.statusCode);
+        console.log(response.body);
       })
       .catch((e) => console.log('something went wrong :(', e));
+  }, []);
+
+  return null;
 };
+export default useNewSession;
