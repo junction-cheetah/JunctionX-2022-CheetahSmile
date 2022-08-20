@@ -16,7 +16,7 @@ body {
 }
 
 #results,
-body #instructions {
+body:hover #instructions {
   position: absolute;
   top:50%;
   left:50%;
