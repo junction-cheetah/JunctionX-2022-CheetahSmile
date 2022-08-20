@@ -130,6 +130,7 @@ const Team = styled.p`
   color: #0267ff;
   text-shadow: 0 0 2px #0267ff;
   font-weight: bold;
+  line-height: 1.6;
 `;
 
 const Players = styled.div`

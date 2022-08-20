@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30.862" height="25.89" viewBox="0 0 30.862 25.89">
+    <defs>
+        <filter id="wb3dp210za" x="0" y="0" width="30.862" height="25.89" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="1" result="blur"/>
+            <feFlood flood-color="#0267ff" flood-opacity=".271"/>
+            <feComposite operator="in" in2="blur"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+        <filter id="6w2ll1cspb" x="0" y="0" width="30.862" height="25.89" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="10" result="blur-2"/>
+            <feFlood flood-color="#fff" flood-opacity=".604" result="color"/>
+            <feComposite operator="out" in="SourceGraphic" in2="blur-2"/>
+            <feComposite operator="in" in="color"/>
+            <feComposite operator="in" in2="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g data-type="innerShadowGroup">
+        <g style="filter:url(#wb3dp210za)">
+            <path data-name="Icon awesome-crown" d="M20.511 17.4H4.351a.623.623 0 0 0-.622.622v1.243a.623.623 0 0 0 .622.622h16.16a.623.623 0 0 0 .622-.622v-1.24a.623.623 0 0 0-.622-.625zM23 4.972a1.865 1.865 0 0 0-1.865 1.865 1.827 1.827 0 0 0 .171.769l-2.815 1.686a1.241 1.241 0 0 1-1.717-.451L13.608 3.3a1.865 1.865 0 1 0-2.354 0L8.088 8.842a1.242 1.242 0 0 1-1.717.451L3.562 7.606a1.864 1.864 0 1 0-1.7 1.1 1.9 1.9 0 0 0 .3-.031l2.809 7.49H19.89l2.81-7.494a1.9 1.9 0 0 0 .3.029 1.865 1.865 0 1 0 0-3.729z" transform="translate(3 3)" style="fill:#0267ff"/>
+        </g>
+        <g style="filter:url(#6w2ll1cspb)">
+            <path data-name="Icon awesome-crown" d="M20.511 17.4H4.351a.623.623 0 0 0-.622.622v1.243a.623.623 0 0 0 .622.622h16.16a.623.623 0 0 0 .622-.622v-1.24a.623.623 0 0 0-.622-.625zM23 4.972a1.865 1.865 0 0 0-1.865 1.865 1.827 1.827 0 0 0 .171.769l-2.815 1.686a1.241 1.241 0 0 1-1.717-.451L13.608 3.3a1.865 1.865 0 1 0-2.354 0L8.088 8.842a1.242 1.242 0 0 1-1.717.451L3.562 7.606a1.864 1.864 0 1 0-1.7 1.1 1.9 1.9 0 0 0 .3-.031l2.809 7.49H19.89l2.81-7.494a1.9 1.9 0 0 0 .3.029 1.865 1.865 0 1 0 0-3.729z" transform="translate(3 3)" style="fill:#fff"/>
+        </g>
+    </g>
+</svg>
