@@ -1,13 +1,25 @@
 import { NextSeo } from 'next-seo';
 import styled from '@emotion/styled';
 import RankingComponent from '../containers/Ranking';
+import Image from 'next/future/image';
+import { useRouter } from 'next/router';
 
 export default function Ranking() {
+  const router = useRouter();
+
   return (
     <>
       <NextSeo title="Ranking" description="BUILD YOUR POTENTIAL!" />
       <Main>
         <RankingComponent />
+        <Image
+          src="/icons/back.svg"
+          alt="←"
+          width={40}
+          height={35}
+          style={{ position: 'fixed', top: 15, left: 10 }}
+          onClick={() => router.push('/lobby')}
+        />
       </Main>
     </>
   );
