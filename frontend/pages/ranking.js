@@ -4,7 +4,7 @@ export default function Ranking() {
   return (
     <>
       <NextSeo title="Ranking" description="TODO" />
-      <h2>Ranking</h2>
+      <h1>Ranking</h1>
     </>
   );
 }

@@ -19,9 +19,9 @@ export default function Home() {
     <>
       <NextSeo title="Home" description="TODO" />
       <Main onClick={() => (isAuthenticated ? goToLobby() : null)}>
-        <h2>
+        <h1>
           BUILD <br /> YOUR <br /> POTENTIAL
-        </h2>
+        </h1>
         {isAuthenticated === 'loading' ? null : (
           <>
             {!isAuthenticated && (
@@ -56,7 +56,7 @@ const Main = styled.main`
   align-items: center;
   justify-content: center;
 
-  h2 {
+  h1 {
     text-align: center;
     color: white;
     font-size: 40px;

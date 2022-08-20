@@ -4,7 +4,7 @@ export default function Achievement() {
   return (
     <>
       <NextSeo title="Achievement" description="TODO" />
-      <h2>Achievement</h2>
+      <h1>Achievement</h1>
     </>
   );
 }

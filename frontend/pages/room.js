@@ -12,7 +12,7 @@ export default function Room({ sessionId }) {
   return (
     <>
       <NextSeo title="Room" description="TODO" />
-      <h2>Room</h2>
+      <h1>Room</h1>
       <p>person 1: jyp</p>
       <p>person 2: su</p>
       <canvas id="roomCode"></canvas>
