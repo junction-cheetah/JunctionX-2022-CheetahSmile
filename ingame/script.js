@@ -3,28 +3,27 @@ var stackData = [];
 var timer = 0;
 
 socket.on("stacked", function (msg) {
-   stackData = msg.stack;
+  stackData = msg.stack;
 });
 
 const timerElement = document.getElementById("timer");
 socket.on("timer", function (time) {
   timer = time;
   if (timerElement) timerElement.innerText = timer;
-  console.log(time)
+  console.log(time);
 });
-  function onStack() {
-    socket.emit("stack", { clientTime: timer });
-  }
+function onStack() {
+  socket.emit("stack", { clientTime: timer });
+}
 
-  function onStart() {
-    console.log("START");
-    socket.emit("start", "");
-  }
-  function onEnd() {
-    console.log("END");
-    socket.emit("end", "");
-  }
-
+function onStart() {
+  console.log("START");
+  socket.emit("start", "");
+}
+function onEnd() {
+  console.log("END");
+  socket.emit("end", "");
+}
 
 window.focus(); // Capture keys right away (by default focus is on editor)
 
@@ -156,7 +155,7 @@ function init() {
 
 //처음시작하는 스테이지 - 게임 스타트 함수
 function startGame() {
-onStart()
+  onStart();
 
   autopilot = false;
   gameEnded = false;
@@ -347,7 +346,7 @@ function splitBlockAndAddNextOneIfOverlaps() {
 
 //쌓지 못하는 경우 - 게임 탈락 함수
 function missedTheSpot() {
-  onEnd()
+  onEnd();
   const topLayer = stack[stack.length - 1];
   // Turn to top layer into an overhang and let it fall down
   addOverhang(
