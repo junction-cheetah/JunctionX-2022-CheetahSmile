@@ -1,10 +1,12 @@
 import { NextSeo } from 'next-seo';
-import Link from 'next/link';
 import QRCode from 'qrcode';
 import { useEffect } from 'react';
 import styled from '@emotion/styled';
 import Image from 'next/future/image';
 import { useRouter } from 'next/router';
+import useSWR from 'swr';
+import { USER_KEY } from '../swr/user';
+import { Toast, toast } from 'loplat-ui';
 
 export default function Room({ sessionId }) {
   useEffect(() => {
@@ -13,9 +15,25 @@ export default function Room({ sessionId }) {
   }, []);
 
   const router = useRouter();
+  const { data: user } = useSWR(USER_KEY);
+
+  // TODO: players
+  const players = ['1', '2'];
+
+  const startGame = () => {
+    if (players.length >= 2) {
+      router.push({ pathname: '/game', query: { session: sessionId } });
+    } else {
+      toast.warning('You need more than two people to start');
+    }
+  };
+  useEffect(() => {
+    router.prefetch('/game');
+  }, [router]);
 
   return (
     <>
+      <Toast mt={4} mx={2} />
       <NextSeo title="Room" description="BUILD YOUR POTENTIAL!" />
       <Main>
         <Image
@@ -38,29 +56,27 @@ export default function Room({ sessionId }) {
         <Players>
           <div className="player">
             <Image src="/polygon.svg" width={80} height={80} alt="" />
-            <p>jyp930</p>
+            <p>{user?.email?.split('@')?.[0]}</p>
           </div>
           <div className="player">
             <Image src="/polygon.svg" width={80} height={80} alt="" />
-            <p>jyp930</p>
+            <p></p>
           </div>
           <div className="player">
             <Image src="/polygon.svg" width={80} height={80} alt="" />
-            <p>jyp930</p>
+            <p></p>
           </div>
           <div className="player">
             <Image src="/polygon.svg" width={80} height={80} alt="" />
-            <p>jyp930</p>
+            <p></p>
           </div>
           <div className="player">
             <Image src="/polygon.svg" width={80} height={80} alt="" />
-            <p>jyp930</p>
+            <p></p>
           </div>
         </Players>
 
-        <Link href={{ pathname: '/game', query: { session: sessionId } }}>
-          <a>START</a>
-        </Link>
+        <button onClick={startGame}>START</button>
       </Main>
     </>
   );
@@ -99,7 +115,7 @@ const Main = styled.main`
   align-items: center;
   justify-content: center;
 
-  a {
+  button {
     width: 90%;
     max-width: 300px;
     height: 64px;
@@ -138,7 +154,7 @@ const Players = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  margin-bottom: 32px;
+  margin: 0 40px 32px;
 
   .player {
     position: relative;

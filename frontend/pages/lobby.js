@@ -6,7 +6,9 @@ import { useRouter } from 'next/router';
 import { generateUniqueId } from '../utils/functions/generator';
 import Image from 'next/image';
 import Modal from 'react-modal';
-import useAuth from '../utils/hooks/useAuth';
+import { mutate } from 'swr';
+import { USER_KEY } from '../swr/user';
+import useNewSession from '../utils/functions/sessionConnector';
 
 export default function Lobby() {
   const router = useRouter();
@@ -21,11 +23,12 @@ export default function Lobby() {
   const [roomName, setRoomName] = useState('team23');
   const [open, setOpen] = useState(false);
 
-  const [_, setToken] = useAuth();
   const logout = () => {
     localStorage.removeItem('aws-google-oauth-token');
-    setToken(null);
+    mutate(USER_KEY, null);
   };
+
+  const a = useNewSession();
 
   return (
     <>

@@ -1,29 +1,30 @@
 import '../styles/globals.css';
 import { DefaultSeo } from 'next-seo';
 import SEO from '../seo.config';
-import { createContext, useEffect, useState } from 'react';
-import { mutate } from 'swr';
+import { useEffect } from 'react';
+import useSWR, { mutate } from 'swr';
 import { LOADING_KEY } from '../swr/loading';
 import { Router, useRouter } from 'next/router';
 import Loading from '../foundations/Loading';
-
-export const TokenContext = createContext({});
+import { USER_KEY } from '../swr/user';
+import jwtDecode from 'jwt-decode';
 
 function MyApp({ Component, pageProps }) {
-  // localStorage token
-  const [token, setToken] = useState('loading');
-  useEffect(() => {
-    const storageToken = localStorage.getItem('aws-google-oauth-token');
-    setToken(storageToken || null);
-  }, []);
-
-  // 401 redirect
+  // authentication
   const router = useRouter();
+  const { data: user } = useSWR(USER_KEY);
   useEffect(() => {
-    if (token !== 'loading' && !token && router.pathname !== '/') {
-      router.replace('/');
+    if (router.pathname !== '/') {
+      const storageToken = localStorage.getItem('aws-google-oauth-token');
+      if (!storageToken) {
+        router.replace('/');
+        mutate(USER_KEY, null);
+      } else {
+        const decoded = jwtDecode(storageToken);
+        mutate(USER_KEY, { token: storageToken, email: decoded.email });
+      }
     }
-  }, [token, router]);
+  }, [router, user]);
 
   // page transition
   useEffect(() => {
@@ -48,9 +49,7 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <DefaultSeo {...SEO} />
-      <TokenContext.Provider value={{ token, setToken }}>
-        <Component {...pageProps} />
-      </TokenContext.Provider>
+      <Component {...pageProps} />
       <Loading />
     </>
   );

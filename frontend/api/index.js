@@ -10,7 +10,6 @@ const axiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
 });
-export default axiosInstance;
 
 function logout() {
   localStorage.removeItem('aws-google-oauth-token');
@@ -18,8 +17,7 @@ function logout() {
 }
 
 axiosInstance.interceptors.request.use(async (request) => {
-  const tokenFromLocalStorage = localStorage.get('aws-google-oauth-token');
-  const accessToken = '';
+  const accessToken = localStorage.getItem('aws-google-oauth-token');
   request.headers.Authorization = `Bearer ${accessToken}`;
   return request;
 });
@@ -27,7 +25,6 @@ axiosInstance.interceptors.request.use(async (request) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log(error);
     const status = error.response || error.response.status;
     if (status >= 400) {
       logout();
@@ -35,3 +32,5 @@ axiosInstance.interceptors.response.use(
     throw error;
   }
 );
+
+export default axiosInstance;

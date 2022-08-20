@@ -1,12 +1,12 @@
 import { NextSeo } from 'next-seo';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { useRouter } from 'next/router';
-import useAuth from '../utils/hooks/useAuth';
 import jwtDecode from 'jwt-decode';
+import useSWR, { mutate } from 'swr';
+import { USER_KEY } from '../swr/user';
 
 export default function Home() {
-  const [isAuthenticated, setToken] = useAuth();
   const router = useRouter();
 
   // router
@@ -25,15 +25,25 @@ export default function Home() {
     );
   };
   useEffect(() => {
-    const newToken = router.asPath.split('id_token=')[1]?.split('&')[0];
-    if (newToken) {
-      localStorage.setItem('aws-google-oauth-token', newToken);
-      setToken(newToken);
-
-      const decoded = jwtDecode(newToken);
-      console.log(decoded);
+    let token = router.asPath.split('id_token=')?.[1]?.split('&')[0];
+    if (token) {
+      // 방금 최초 로그인
+      localStorage.setItem('aws-google-oauth-token', token);
+    } else {
+      // 이미 로그인
+      token = localStorage.getItem('aws-google-oauth-token');
     }
-  }, [router, setToken]);
+
+    if (token) {
+      const decoded = jwtDecode(token);
+      mutate(USER_KEY, { token, email: decoded.email });
+    } else {
+      mutate(USER_KEY, null);
+    }
+  }, [router]);
+
+  const { data: user } = useSWR(USER_KEY);
+  const isAuthenticated = useMemo(() => !!user, [user]);
 
   return (
     <>
@@ -42,7 +52,7 @@ export default function Home() {
         <h1>
           BUILD <br /> YOUR <br /> POTENTIAL
         </h1>
-        {isAuthenticated === 'loading' ? null : (
+        {user === undefined ? null : (
           <>
             {!isAuthenticated && (
               <button onClick={login}>Login with Google</button>
