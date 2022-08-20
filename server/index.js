@@ -85,11 +85,8 @@ io.on("connection", (socket) => {
 
   socket.on("stack", (msg) => {
     console.log("STACK")
-    var newStack = { ...msg, serverTime: timeMicroSec / 1000 };
     changeNowUser();
-    gameState.stack.push(newStack);
-    console.log(gameState.stack);
-    io.emit("stacked", { newStack, nowUser, stack: gameState.stack });
+    splitBlockAndAddNextOneIfOverlaps()
   });
 
   socket.on("topLayer", (topLayer) => {
@@ -164,7 +161,7 @@ io.on("connection", (socket) => {
   function animation() {
     const timeScale = 1;
 
-    topLayer = gameState.topLayer;
+    topLayerObject = gameState.topLayer;
     const stack = gameState.stack;
     const previousLayer = stack[stack.length - 2];
     const speed = gameState.speed;
@@ -172,7 +169,7 @@ io.on("connection", (socket) => {
     const turn = gameState.topLayer.turn;
 
     if (gameState.isGaming) {
-      topLayer.position[topLayer.direction] += speed * timeScale * turn;
+      topLayerObject.position[topLayerObject.direction] += speed * timeScale * turn;
     }
 
     if (gameState.cameraHeight < boxHeight * (stack.length - 2) + 4) {
@@ -230,7 +227,10 @@ io.on("connection", (socket) => {
   }
 
   function addLayer(nextX, nextZ, newWidth, newDepth, nextDirection = "z") {
+    
+    console.log(gameState.stack);
     const y = boxHeight * gameState.stack.length; // 박스 높이 * 스택 갯수
+
     const layer = {
       position: { x: nextX, y: y, z: nextZ },
       width: newWidth,
@@ -238,6 +238,7 @@ io.on("connection", (socket) => {
       direction: nextDirection,
     }; //현재 레이어에 넣는 새로운 박스 만들기
     gameState.stack.push(layer);
+    console.log(gameState.stack);
     setTopLayer(layer);
 
     io.emit("addLayer", {
