@@ -116,7 +116,7 @@ const RowContainer = styled.div`
 const StackContainer = styled.div`
   display: flex;
   flex: 1;
-  flex-direction: column-reverse;
+  flex-direction: column;
   justify-content: space-around;
   overflow: auto;
 `;

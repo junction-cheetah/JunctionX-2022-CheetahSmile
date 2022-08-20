@@ -29,7 +29,7 @@ var initialGameState = {
   isGaming: false,
 };
 
-var gameState = initialGameState;
+var gameState = { ...initialGameState };
 
 io.on("connection", (socket) => {
   console.log("a user connected");
@@ -58,8 +58,8 @@ io.on("connection", (socket) => {
       clearInterval(timerId);
       timeMicroSec = 0;
 
-      lastState = gameState;
-      gameState = initialGameState;
+      lastState = { ...gameState };
+      gameState = { ...initialGameState };
     }
   });
 
