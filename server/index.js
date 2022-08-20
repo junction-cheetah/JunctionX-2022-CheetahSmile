@@ -50,6 +50,7 @@ function setGameState(updateObject) {
 
 function setTopLayer(updateObject) {
   gameState.topLayer = { ...gameState.topLayer, ...updateObject };
+  console.log(gameState.topLayer);
 }
 
 io.on("connection", (socket) => {
@@ -239,7 +240,6 @@ io.on("connection", (socket) => {
     }; //현재 레이어에 넣는 새로운 박스 만들기
     gameState.stack.push(layer);
     setTopLayer(layer);
-
     io.emit("addLayer", {
       x: nextX,
       y: y,

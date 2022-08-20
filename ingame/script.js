@@ -1,5 +1,3 @@
-
-
 const socket = io("ws://15.164.221.178:8000/");
 
 var timer = 0;
@@ -8,7 +6,6 @@ var myEmail = "dodo4114@naver.com";
 var globalGameState = {};
 var isMyTurn = globalGameState.nowUser == myEmail;
 
-var fetchedTopLayerData = globalGameState.topLayer;
 // var stack = globalGameState.stack;
 
 var stack = [];
@@ -32,10 +29,6 @@ socket.on("started", function () {
 });
 socket.on("end", function () {
   fireEndProcess();
-});
-
-socket.on("topLayerReceive", function (topLayerData) {
-  fetchedTopLayerData = topLayerData;
 });
 
 function fireStack() {
@@ -63,9 +56,10 @@ socket.on("receiveEventPropagation", function (data) {
   }
 });
 
+var fetchedTopLayerData;;
 socket.on("gameState", function (gameState) {
   globalGameState = gameState;
-    fetchedTopLayerData = gameState.topLayer;
+  fetchedTopLayerData = gameState.topLayer;
   // console.log(globalGameState);
 });
 
@@ -75,8 +69,7 @@ socket.on("cutBox", ({ topLayer, overlap, size, delta }) => {
 socket.on(
   "addOverhang",
   ({ overhangX, overhangZ, overhangWidth, overhangDepth }) => {
-
-    console.log("ADD OVER HANG")
+    console.log("ADD OVER HANG");
     addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
   }
 );
@@ -92,7 +85,6 @@ function setGameState(updateObject) {
 function serverInit(forced = false) {
   socket.emit("init", forced);
 }
-
 
 window.focus(); // Capture keys right away (by default focus is on editor)
 
@@ -196,8 +188,8 @@ function init() {
     skyObjects.add(star[i]);
   }
   scene.add(skyObjects);
-  topLayerObject = stack[-1]
-  console.log(stack)
+  topLayerObject = stack[-1];
+  console.log(stack);
 
   // ThreeJS 렌더러 초기설정
   renderer = new THREE.WebGLRenderer({
@@ -212,7 +204,7 @@ function init() {
 //처음시작하는 스테이지 - 게임 스타트 함수
 function fireGameStart() {
   socket.emit("start");
-  autopilot = false
+  autopilot = false;
   lastTime = 0;
   overhangs = [];
 
@@ -249,20 +241,16 @@ function fireGameStart() {
 
 //레이어 추가하는 함수 (x좌표, z좌표, 층고높이, 방향(x/z))
 function addLayer(x, y, z, width, depth, direction) {
-  console.log(y)
   const layer = generateBox(x, y, z, width, depth, false); //현재 레이어에 넣는 새로운 박스 만들기
   layer.direction = direction;
   stack.push(layer);
-  console.log(layer.threejs.position.y )
-  console.log(layer.threejs.position)
-  console.log(layer.threejs)
 }
 
 //바닥에 떨어지는 박스 (x,z방향, 너비, 층고높이)
 function addOverhang(x, z, width, depth) {
-  console.log('addOverhang x : ' + x)
+  console.log("addOverhang x : " + x);
   const y = boxHeight * (stack.length - 1); // 박스 높이 * 스택 갯수(현재높이를 포함하지 않아 -1)
-  console.log("y : " + y)
+  console.log("y : " + y);
   const overhang = generateBox(x, y, z, width, depth, true);
   overhangs.push(overhang); //오버행배열에 현재 오버행 박스 넣기
 }
@@ -327,7 +315,7 @@ function cutBox(topLayer, overlap, size, delta) {
 
 //게임 리트라이
 function retry() {
-  init()
+  init();
   fireGameStart();
   return;
 }
@@ -357,8 +345,8 @@ function eventHandler() {
 //오토파일럿 로직 자동 계산
 function splitBlockAndAddNextOneIfOverlaps() {
   if (!autopilot) {
-    fireStack()
-  };
+    fireStack();
+  }
 
   topLayerObject = stack[stack.length - 1];
   const previousLayer = stack[stack.length - 2];
@@ -403,12 +391,10 @@ function fireEndProcess() {
 function animation(time) {
   // console.log(camera)
 
-  topLayerObject = stack[stack.length-1];
+  topLayerObject = stack[stack.length - 1];
   var topLayerData = fetchedTopLayerData;
+  console.log(fetchedTopLayerData)
   if (topLayerObject && topLayerData) {
-
-
-
     topLayerObject.threejs.position.x = topLayerData.position.x;
     topLayerObject.threejs.position.y = topLayerData.position.y;
     topLayerObject.threejs.position.z = topLayerData.position.z;
@@ -416,14 +402,13 @@ function animation(time) {
     topLayerObject.threejs.width = topLayerData.width;
     topLayerObject.threejs.depth = topLayerData.depth;
 
-    topLayerObject.cannonjs.position['x'] = topLayerData.position.x;
-    topLayerObject.cannonjs.position['y'] = topLayerData.position.y;
-    topLayerObject.cannonjs.position['z'] = topLayerData.position.z;
+    topLayerObject.cannonjs.position["x"] = topLayerData.position.x;
+    topLayerObject.cannonjs.position["y"] = topLayerData.position.y;
+    topLayerObject.cannonjs.position["z"] = topLayerData.position.z;
     topLayerObject.cannonjs.width = topLayerData.width;
     topLayerObject.cannonjs.depth = topLayerData.depth;
 
     topLayerObject.direction = topLayerData.direction;
-
   }
 
   if (lastTime) {
@@ -435,10 +420,12 @@ function animation(time) {
     // The top level box should move if the game has not ended AND
     // it's either NOT in autopilot or it is in autopilot and the box did not yet reach the robot position
     // TODO
-    const isMovedByAuto = false &&
+    const isMovedByAuto =
+      false &&
       autopilot &&
       topLayerObject.threejs.position[topLayerObject.direction] <
-        previousLayer.threejs.position[topLayerObject.direction] + robotPrecision;
+        previousLayer.threejs.position[topLayerObject.direction] +
+          robotPrecision;
 
     //
     if (isMovedByAuto) {
@@ -514,7 +501,7 @@ function updateStarsPosition() {
 function updatePhysics(timePassed) {
   world.step(timePassed / 1000); // Step the physics world
   // Copy coordinates from Cannon.js to Three.js
-  console.log(overhangs)
+  // console.log(overhangs)
   overhangs.forEach((element) => {
     element.threejs.position.copy(element.cannonjs.position);
     element.threejs.quaternion.copy(element.cannonjs.quaternion);
