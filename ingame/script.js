@@ -1,3 +1,82 @@
+const socket = io("ws://15.164.221.178:8000/");
+var stackData = [];
+var timer = 0;
+var isMyTurn = false;
+var fetchedTopLayerData = {
+  position: new THREE.Vector3([0, 0, 0]),
+  width: 0,
+  depth: 0,
+};
+// var fetchedTopLayerPosition = [0, 0, 0];
+var fecthedCameraPosition = 4;
+
+socket.on("stacked", function (msg) {
+  stackData = msg.stack;
+  console.log("stacked");
+  eventHandler(false);
+});
+
+const timerElement = document.getElementById("timer");
+socket.on("timer", function (time) {
+  timer = time;
+  if (timerElement) timerElement.innerText = timer;
+});
+
+socket.on("started", function () {
+  startGame(false);
+});
+socket.on("topLayerReceive", function (topLayerData) {
+  fetchedTopLayerData = topLayerData;
+});
+socket.on("cameraHeightReceive", function (cameraHeight) {
+  fecthedCameraPosition = cameraHeight;
+});
+
+function onStack() {
+  socket.emit("stack", {
+    clientTime: timer,
+  });
+}
+
+function onStart() {
+  console.log("START");
+  socket.emit("start", "");
+}
+
+function onEnd() {
+  console.log("END");
+  socket.emit("end", "");
+}
+
+function propagationNewLayer(newLayerData) {
+  socket.emit("newLayer", newLayerData);
+}
+
+function propagationToplayer(topLayerData) {
+  socket.emit("topLayer", topLayerData);
+}
+
+function propagationCameraPosition(height) {
+  socket.emit("cameraHeight", height);
+}
+
+function fetchNewLayer(newLayerData) {}
+
+function fetchNewLayer(newLayerData) {}
+
+function fetchTopLayer(topLayerInput) {
+  console.log(fetchedTopLayerData);
+  topLayerInput.threejs.position = fetchedTopLayerData.position;
+  topLayerInput.threejs.width = fetchedTopLayerData.width;
+  topLayerInput.threejs.depth = fetchedTopLayerData.depth;
+
+  topLayerInput.cannonjs.position.x = fetchedTopLayerData.position.x;
+  topLayerInput.cannonjs.position.y = fetchedTopLayerData.position.y;
+  topLayerInput.cannonjs.position.z = fetchedTopLayerData.position.z;
+  topLayerInput.cannonjs.width = fetchedTopLayerData.width;
+  topLayerInput.cannonjs.depth = fetchedTopLayerData.depth;
+}
+
 window.focus(); // Capture keys right away (by default focus is on editor)
 
 let camera, scene, renderer; // ThreeJS globals
@@ -10,6 +89,18 @@ const originalBoxSize = 3; // Original width and height of a box
 let autopilot;
 let gameEnded;
 let robotPrecision; // Determines how precise the game is on autopilot
+let skyObjects;
+let star = [];
+let star1, star2, star3;
+let skyW = 6.99;
+let skyD = 12.9;
+let starR = 0.7;
+let mspeedX = 0.02;
+let mspeedY = 0.02;
+let moveSpeed = 0.05;
+let turn = 1;
+let turnRange = 10;
+let boxStep;
 
 const scoreElement = document.getElementById("score");
 const instructionsElement = document.getElementById("instructions");
@@ -32,13 +123,13 @@ function init() {
 
   // Initialize CannonJS
   world = new CANNON.World();
-  world.gravity.set(0, -10, 0); // Gravity pulls things down
+  world.gravity.set(0, -20, 0); // Gravity pulls things down
   world.broadphase = new CANNON.NaiveBroadphase();
   world.solver.iterations = 40;
 
   // Initialize ThreeJs
   const aspect = window.innerWidth / window.innerHeight;
-  const width = 10;
+  const width = 5;
   const height = width / aspect;
 
   camera = new THREE.OrthographicCamera(
@@ -50,15 +141,13 @@ function init() {
     100 // far plane
   );
 
-  /*
-  // If you want to use perspective camera instead, uncomment these lines
-  camera = new THREE.PerspectiveCamera(
-    45, // field of view
-    aspect, // aspect ratio
-    1, // near plane
-    100 // far plane
-  );
-  */
+  // // If you want to use perspective camera instead, uncomment these lines
+  // camera = new THREE.PerspectiveCamera(
+  //   45, // field of view
+  //   aspect, // aspect ratio
+  //   1, // near plane
+  //   100 // far plane
+  // );
 
   camera.position.set(4, 4, 4);
   camera.lookAt(0, 0, 0);
@@ -79,6 +168,36 @@ function init() {
   dirLight.position.set(10, 20, 0);
   scene.add(dirLight);
 
+  //Sky object
+  skyObjects = new THREE.Group();
+
+  //Texture
+  const textureLoader = new THREE.TextureLoader();
+  const starTexture = textureLoader.load("/textures/star.png");
+
+  for (let i = 1; i < 4; i++) {
+    star[i] = new THREE.Mesh(
+      new THREE.PlaneGeometry(starR, starR),
+      new THREE.MeshStandardMaterial({
+        map: starTexture,
+        side: THREE.DoubleSide,
+        transparent: true,
+      })
+    );
+    star[i].position.set(0, i - 2, i - 2);
+    skyObjects.add(star[i]);
+  }
+  // const plane = new THREE.Mesh(
+  //   new THREE.PlaneGeometry(skyW, skyD),
+  //   new THREE.MeshBasicMaterial({
+  //     wireframe: true,
+  //     side: THREE.DoubleSide,
+  //   })
+  // );
+  // // plane.rotation.x = Math.PI / 2;
+  // skyObjects.add(plane);
+  scene.add(skyObjects);
+
   // Set up renderer
   renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -89,7 +208,12 @@ function init() {
   document.body.appendChild(renderer.domElement);
 }
 
-function startGame() {
+//처음시작하는 스테이지 - 게임 스타트 함수
+function startGame(isOriginalStart = true) {
+  if (isOriginalStart) {
+    onStart();
+  }
+
   autopilot = false;
   gameEnded = false;
   lastTime = 0;
@@ -107,6 +231,7 @@ function startGame() {
     }
   }
 
+  //씬에서 기존 게임에 있던 메쉬들 초기화
   if (scene) {
     // Remove every Mesh from the scene
     while (scene.children.find((c) => c.type == "Mesh")) {
@@ -118,21 +243,32 @@ function startGame() {
     addLayer(0, 0, originalBoxSize, originalBoxSize);
 
     // First layer
-    addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+    addLayer(-10.1, 0, originalBoxSize, originalBoxSize, "x");
   }
 
+  //카메라도 제일 밑에서 다시 시작
   if (camera) {
     // Reset camera positions
     camera.position.set(4, 4, 4);
     camera.lookAt(0, 0, 0);
+    skyObjects.position.y = 0;
   }
 }
 
+//레이어 추가하는 함수
 function addLayer(x, z, width, depth, direction) {
   const y = boxHeight * stack.length; // Add the new box one layer higher
   const layer = generateBox(x, y, z, width, depth, false);
   layer.direction = direction;
   stack.push(layer);
+  propagationNewLayer({
+    position: {
+      x: x,
+      z: z,
+    },
+    width: width,
+    depth: depth,
+  });
 }
 
 function addOverhang(x, z, width, depth) {
@@ -141,13 +277,15 @@ function addOverhang(x, z, width, depth) {
   overhangs.push(overhang);
 }
 
+//박스 만들어내는 함수
 function generateBox(x, y, z, width, depth, falls) {
   // ThreeJS
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
   // const color = new THREE.Color(`hsl(${30 + stack.length * 4}, 100%, 50%)`);
   const material = new THREE.MeshStandardMaterial({
-    color: "#fff95f",
+    color: "#cdcdcd",
   });
+  material.wireframeLinewidth = 10.0;
   const mesh = new THREE.Mesh(geometry, material);
   mesh.position.set(x, y, z);
   scene.add(mesh);
@@ -174,6 +312,7 @@ function generateBox(x, y, z, width, depth, falls) {
   };
 }
 
+//박스 자르는 함수
 function cutBox(topLayer, overlap, size, delta) {
   const direction = topLayer.direction;
   const newWidth = direction == "x" ? overlap : topLayer.width;
@@ -198,10 +337,12 @@ function cutBox(topLayer, overlap, size, delta) {
   topLayer.cannonjs.addShape(shape);
 }
 
+//게임 리트라이
 function retry() {
   startGame();
   return;
 }
+
 window.addEventListener("mousedown", eventHandler);
 window.addEventListener("touchstart", eventHandler);
 window.addEventListener("keydown", function (event) {
@@ -216,27 +357,40 @@ window.addEventListener("keydown", function (event) {
   }
 });
 
-function eventHandler() {
+function eventHandler(isOrigin = true) {
   if (autopilot) startGame();
-  else splitBlockAndAddNextOneIfOverlaps();
+  else splitBlockAndAddNextOneIfOverlaps(isOrigin);
 }
 
-function splitBlockAndAddNextOneIfOverlaps() {
+function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
   if (gameEnded) return;
 
+  if (isOrigin) {
+    onStack();
+  }
+
+  if (isMyTurn && !isOrigin) {
+    return;
+  }
+
   const topLayer = stack[stack.length - 1];
+
   const previousLayer = stack[stack.length - 2];
 
   const direction = topLayer.direction;
 
   const size = direction == "x" ? topLayer.width : topLayer.depth;
+
+  if (!isMyTurn) {
+    fetchTopLayer(topLayer);
+  }
   const delta =
     topLayer.threejs.position[direction] -
     previousLayer.threejs.position[direction];
   const overhangSize = Math.abs(delta);
   const overlap = size - overhangSize;
-
-  if (overlap > 0) {
+  console.log(overlap);
+  if (overlap > 0 || !isOrigin) {
     cutBox(topLayer, overlap, size, delta);
 
     // Overhang
@@ -263,14 +417,19 @@ function splitBlockAndAddNextOneIfOverlaps() {
 
     if (scoreElement) scoreElement.innerText = stack.length - 1;
     addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
+    boxStep = newWidth;
   } else {
-    missedTheSpot();
+    missedTheSpot(isOrigin);
   }
 }
 
-function missedTheSpot() {
-  const topLayer = stack[stack.length - 1];
+//쌓지 못하는 경우 - 게임 탈락 함수
+function missedTheSpot(isOrigin = true) {
+  if (isOrigin) {
+    onEnd();
+  }
 
+  const topLayer = stack[stack.length - 1];
   // Turn to top layer into an overhang and let it fall down
   addOverhang(
     topLayer.threejs.position.x,
@@ -284,13 +443,17 @@ function missedTheSpot() {
   gameEnded = true;
   if (resultsElement && !autopilot) resultsElement.style.display = "flex";
 }
+const clock = new THREE.Clock();
 
 function animation(time) {
+  const elapsedTime = clock.getElapsedTime();
+  delta = clock.getDelta();
+
   if (lastTime) {
     const timePassed = time - lastTime;
-    const speed = 0.008;
-
     const topLayer = stack[stack.length - 1];
+    const speed = 0.007;
+
     const previousLayer = stack[stack.length - 2];
 
     // The top level box should move if the game has not ended AND
@@ -304,13 +467,34 @@ function animation(time) {
               robotPrecision));
 
     if (boxShouldMove) {
-      // Keep the position visible on UI and the position in the model in sync
-      topLayer.threejs.position[topLayer.direction] += speed * timePassed;
-      topLayer.cannonjs.position[topLayer.direction] += speed * timePassed;
-
-      // If the box went beyond the stack then show up the fail screen
+      if (isMyTurn || autopilot) {
+        // Keep the position visible on UI and the position in the model in sync
+        topLayer.threejs.position[topLayer.direction] +=
+          speed * timePassed * turn;
+        topLayer.cannonjs.position[topLayer.direction] +=
+          speed * timePassed * turn;
+        if (isMyTurn && !autopilot) {
+          propagationToplayer({
+            position: topLayer.threejs.position,
+            width: topLayer.threejs.width,
+            depth: topLayer.threejs.depth,
+          });
+          // propagationToplayer({
+          //   poistion: topLayer.threejs.position,
+          //   width: topLayer.width,
+          //   height: topLayer.depth,
+          // });
+        }
+        // console.log(topLayer.threejs.position);
+      } else {
+        fetchTopLayer(topLayer);
+        // topLayer.threejs.position = fetchedTopLayerPosition;
+        // topLayer.cannonjs.position = fetchedTopLayerPosition;
+      }
       if (topLayer.threejs.position[topLayer.direction] > 10) {
-        missedTheSpot();
+        // If the box went beyond the stack then show up the fail screen
+        // missedTheSpot();
+        turn *= -1;
       }
     } else {
       // If it shouldn't move then is it because the autopilot reached the correct position?
@@ -323,12 +507,46 @@ function animation(time) {
 
     // 4 is the initial camera height
     if (camera.position.y < boxHeight * (stack.length - 2) + 4) {
-      camera.position.y += speed * timePassed;
+      if (isMyTurn || autopilot) {
+        camera.position.y += speed * timePassed;
+        propagationCameraPosition(camera.position.y);
+      } else {
+        camera.position.y = fecthedCameraPosition;
+      }
+      skyObjects.position.y += speed * timePassed;
     }
-
     updatePhysics(timePassed);
     renderer.render(scene, camera);
   }
+  for (let i = 1; i < 4; i++) {
+    if (i == 1) {
+      star[i].position.x += mspeedX;
+      star[i].position.y += mspeedX;
+    }
+    if (i == 2) {
+      star[i].position.x += mspeedX;
+      star[i].position.y += -mspeedX;
+    }
+    if (i == 3) {
+      star[i].position.x += -mspeedX;
+      star[i].position.y += -mspeedX;
+    }
+    star[i].rotation.z += 0.01;
+
+    if (
+      star[i].position.x > skyW / 2 - starR ||
+      star[i].position.x < -skyW / 2 + starR
+    ) {
+      mspeedX *= -1;
+    }
+    if (
+      star[i].position.y < -skyD / 2 + starR ||
+      star[i].position.y > skyD / 2 - starR
+    ) {
+      mspeedY *= -1;
+    }
+  }
+  skyObjects.rotation.y = Math.PI * 1.25;
   lastTime = time;
 }
 

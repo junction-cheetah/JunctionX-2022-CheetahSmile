@@ -24,10 +24,9 @@ body:hover #instructions {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 50%;
-  width: 50%;
-  background-color: rgba(255, 255, 255, 0.75);
-  border-radius: 15px;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 a:visited {
@@ -41,7 +40,7 @@ a:visited {
 
 #results .content,
 #instructions .content {
-  border: 1px solid #000;
+  background-color: rgba(255, 255, 255, 0.75);
   max-width: 300px;
   padding: 20px;
   border-radius: 20px;
@@ -57,6 +56,15 @@ a:visited {
   font-weight: bold;
   top: 30px;
   right: 30px;
+}
+
+#timer {
+  position: absolute;
+  color: #171717;
+  font-size: 3em;
+  font-weight: bold;
+  top: 30px;
+  left: 30px;
 }
 
 #youtube,

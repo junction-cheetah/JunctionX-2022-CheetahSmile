@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30.354" height="27.31" viewBox="0 0 30.354 27.31">
+    <defs>
+        <filter id="46zoonkopa" x="0" y="0" width="30.354" height="27.31" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="1" result="blur"/>
+            <feFlood flood-color="#0267ff"/>
+            <feComposite operator="in" in2="blur"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+        <filter id="ke4s6mt5ub" x="0" y="0" width="30.354" height="27.31" filterUnits="userSpaceOnUse">
+            <feOffset dy="3"/>
+            <feGaussianBlur stdDeviation="3" result="blur-2"/>
+            <feFlood flood-opacity=".161" result="color"/>
+            <feComposite operator="out" in="SourceGraphic" in2="blur-2"/>
+            <feComposite operator="in" in="color"/>
+            <feComposite operator="in" in2="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g data-type="innerShadowGroup">
+        <g style="filter:url(#46zoonkopa)">
+            <path data-name="Icon open-account-logout" d="M9.133 0v3.044H21.31v15.222H9.133v3.044h15.221V0zM6.089 6.089 0 10.655l6.089 4.566v-3.044h12.177V9.133H6.089z" transform="translate(3 3)" style="opacity:.5;fill:#0267ff"/>
+        </g>
+        <g style="filter:url(#ke4s6mt5ub)">
+            <path data-name="Icon open-account-logout" d="M9.133 0v3.044H21.31v15.222H9.133v3.044h15.221V0zM6.089 6.089 0 10.655l6.089 4.566v-3.044h12.177V9.133H6.089z" transform="translate(3 3)" style="fill:#fff;opacity:.5"/>
+        </g>
+    </g>
+</svg>

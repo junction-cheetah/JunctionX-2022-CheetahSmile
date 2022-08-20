@@ -5,7 +5,7 @@ export default function Game({ sessionId }) {
   return (
     <>
       <NextSeo title="Game" description="TODO" />
-      <h2>Game</h2>
+      <h1>Game</h1>
       <Link href={{ pathname: '/result', query: { session: sessionId } }}>
         <a>Result</a>
       </Link>

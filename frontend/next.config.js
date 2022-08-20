@@ -7,6 +7,11 @@ const nextConfig = withPWA({
   pwa: {
     dest: 'public',
   },
+  experimental: {
+    images: {
+      allowFutureImage: true,
+    },
+  },
 });
 
 module.exports = nextConfig;

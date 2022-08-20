@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="38.25" height="38.25" viewBox="0 0 38.25 38.25">
+    <defs>
+        <filter id="iaxslhh0ra" x="0" y="0" width="38.25" height="38.25" filterUnits="userSpaceOnUse">
+            <feOffset/>
+            <feGaussianBlur stdDeviation="1.5" result="blur"/>
+            <feFlood flood-color="#0267ff" flood-opacity=".302"/>
+            <feComposite operator="in" in2="blur"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g data-name="Icon ionic-ios-arrow-dropup" style="opacity:.7">
+        <path data-name="패스 93" d="M10.378 21.185a1.362 1.362 0 0 1 0-1.92l6.729-6.708a1.356 1.356 0 0 1 1.87-.042l6.63 6.609a1.355 1.355 0 1 1-1.912 1.92L18 15.434l-5.7 5.759a1.356 1.356 0 0 1-1.922-.008z" style="fill:#0267ff" transform="translate(1.125 1.125)"/>
+        <g style="filter:url(#iaxslhh0ra)">
+            <path data-name="패스 94" d="M18 32.625A14.625 14.625 0 1 0 3.375 18 14.623 14.623 0 0 0 18 32.625zm0-2.25A12.37 12.37 0 0 1 9.253 9.253a12.37 12.37 0 1 1 17.494 17.494A12.269 12.269 0 0 1 18 30.375z" transform="translate(1.135 1.125)" style="fill:#0267ff"/>
+        </g>
+    </g>
+</svg>

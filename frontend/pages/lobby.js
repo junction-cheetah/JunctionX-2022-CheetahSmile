@@ -1,11 +1,12 @@
 import { NextSeo } from 'next-seo';
 import styled from '@emotion/styled';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { generateUniqueId } from '../utils/functions/generator';
 import Image from 'next/image';
 import Modal from 'react-modal';
+import useAuth from '../utils/hooks/useAuth';
 
 export default function Lobby() {
   const router = useRouter();
@@ -19,21 +20,28 @@ export default function Lobby() {
 
   const [roomName, setRoomName] = useState('cheetah');
   const [open, setOpen] = useState(false);
-  const closeModal = useCallback(() => {
-    setOpen(false);
-  }, []);
+
+  const [_, setToken] = useAuth();
+  const logout = () => {
+    localStorage.removeItem('cheetahToken');
+    setToken(null);
+  };
 
   return (
     <>
       <NextSeo title="Lobby" description="TODO" />
       <Main>
-        <button onClick={() => setOpen(true)}>
-          <Image src="/icons/people.svg" width={31} height={20} alt="" />
-          <span>Create Room</span>
-        </button>
         {open && (
-          <Modal isOpen={open} onRequestClose={closeModal} style={customStyles}>
-            <div style={{ width: 200, height: 200, background: 'white' }}>
+          <Modal
+            isOpen={open}
+            onRequestClose={() => {
+              setOpen(false);
+            }}
+            style={customStyles}
+            ariaHideApp={false}
+          >
+            <ModalContent>
+              <h2>TEAM NAME</h2>
               <input
                 type="text"
                 value={roomName}
@@ -41,22 +49,27 @@ export default function Lobby() {
                   setRoomName(e.target.value);
                 }}
               />
-              <button onClick={createRoom}>Create Room</button>
-            </div>
+              <button onClick={createRoom}>CREATE</button>
+            </ModalContent>
           </Modal>
         )}
-        <Link href="/ranking">
-          <a>
-            <Image src="/icons/trophy.svg" width={31} height={20} alt="" />
-            <span>Ranking</span>
-          </a>
-        </Link>
-        <Link href="/achievement">
-          <a>
-            <Image src="/icons/people.svg" width={31} height={20} alt="" />
-            <span>Achievement</span>
-          </a>
-        </Link>
+        {!open && (
+          <>
+            <button onClick={() => setOpen(true)}>
+              <Image src="/icons/people.svg" width={30} height={23} alt="" />
+              <span>Create Room</span>
+            </button>
+            <Link href="/ranking">
+              <a>
+                <Image src="/icons/trophy.svg" width={30} height={30} alt="" />
+                <span>Ranking</span>
+              </a>
+            </Link>
+          </>
+        )}
+        <Logout onClick={logout}>
+          <Image src="/icons/logout.svg" alt="" width={30} height={26} />
+        </Logout>
       </Main>
     </>
   );
@@ -100,14 +113,59 @@ const Main = styled.main`
   }
 
   span {
+    width: 120px;
+    text-align: left;
     opacity: 0.7;
     font-size: 18px;
     font-weight: bold;
-    text-align: center;
     color: #0267ff;
     text-shadow: 0 0 3px #0267ff;
 
-    margin-left: 4px;
+    margin-left: 16px;
+  }
+`;
+
+const ModalContent = styled.div`
+  width: 320px;
+  max-width: 100%;
+  height: 300px;
+  border-radius: 20px;
+
+  /* From https://css.glass */
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(6.7px);
+  -webkit-backdrop-filter: blur(6.7px);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+
+  h2,
+  button {
+    opacity: 0.7;
+    font-weight: bold;
+    text-shadow: 0 0 3px #0267ff;
+    color: #0267ff;
+    background-color: transparent;
+    font-size: 20px;
+  }
+
+  button {
+    background-color: #0267ff1a;
+    border-radius: 21px;
+    padding: 15.5px 52px 15.5px 53px;
+  }
+
+  input {
+    color: #171717;
+    border: none;
+    border-bottom: 1px solid #0267ff;
+    background-color: transparent;
+    outline: none;
+    font-size: 16px;
+    width: 70%;
+    text-align: center;
   }
 `;
 
@@ -116,11 +174,25 @@ const customStyles = {
     backgroundColor: 'transparent',
   },
   content: {
+    maxWidth: '100%',
     top: '50%',
     left: '50%',
     right: 'auto',
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    backgroundColor: 'transparent',
+    padding: 0,
+    border: 'none',
   },
 };
+
+const Logout = styled.button`
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+
+  width: fit-content !important;
+  height: fit-content !important;
+  background-color: unset !important;
+`;

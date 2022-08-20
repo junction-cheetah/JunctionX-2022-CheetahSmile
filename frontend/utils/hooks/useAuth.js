@@ -6,7 +6,7 @@ const useAuth = () => {
 
   const [isAuthenticated, setIsAuthenticated] = useState('loading');
   useEffect(() => {
-    setIsAuthenticated(!!token);
+    setIsAuthenticated(token !== 'loading' && !!token);
   }, [token]);
 
   return [isAuthenticated, setToken];
