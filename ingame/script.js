@@ -68,9 +68,9 @@ socket.on("cutBox", ({ topLayer, overlap, size, delta }) => {
 });
 socket.on(
   "addOverhang",
-  ({ overhangX, overhangZ, overhangWidth, overhangDepth }) => {
+  ({ overhangX,y, overhangZ, overhangWidth, overhangDepth }) => {
     console.log("ADD OVER HANG");
-    addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
+    addOverhang(overhangX,y, overhangZ, overhangWidth, overhangDepth);
   }
 );
 socket.on("addLayer", ({ x, y, z, width, depth, direction }) => {
@@ -253,7 +253,7 @@ function addLayer(x, y, z, width, depth, direction) {
 }
 
 //바닥에 떨어지는 박스 (x,z방향, 너비, 층고높이)
-function addOverhang(x, z, width, depth) {
+function addOverhang(x,y, z, width, depth) {
   const y = boxHeight * (stack.length - 2); // 박스 높이 * 스택 갯수(현재높이를 포함하지 않아 -1)
 
   const overhang = generateBox(x, y, z, width, depth, true);
@@ -384,6 +384,7 @@ function fireEndProcess() {
   // Turn to top layer into an overhang and let it fall down
   addOverhang(
     topLayerObject.threejs.position.x,
+    topLayerObject.threejs.position.y,
     topLayerObject.threejs.position.z,
     topLayerObject.width,
     topLayerObject.depth
