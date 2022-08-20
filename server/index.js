@@ -274,7 +274,7 @@ io.on("connection", (socket) => {
   }
 
   function endGame() {
-    stack.pop();
+    gameState.stack.pop();
     gameState.isGaming = false;
     io.emit("end");
   }
