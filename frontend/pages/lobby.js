@@ -56,13 +56,13 @@ export default function Lobby() {
         {!open && (
           <>
             <button onClick={() => setOpen(true)}>
-              <Image src="/icons/people.svg" width={30} height={23} alt="" />
-              <span>Create Room</span>
+              <Image src="/icons/people.svg" width={40} height={30} alt="" />
+              <span>CREATE ROOM</span>
             </button>
             <Link href="/ranking">
               <a>
-                <Image src="/icons/trophy.svg" width={30} height={30} alt="" />
-                <span>Ranking</span>
+                <Image src="/icons/trophy.svg" width={40} height={33} alt="" />
+                <span>RANKING</span>
               </a>
             </Link>
           </>
@@ -113,7 +113,7 @@ const Main = styled.main`
   }
 
   span {
-    width: 120px;
+    width: 132px;
     text-align: left;
     opacity: 0.7;
     font-size: 18px;
@@ -121,7 +121,7 @@ const Main = styled.main`
     color: #0267ff;
     text-shadow: 0 0 3px #0267ff;
 
-    margin-left: 16px;
+    margin-left: 12px;
   }
 `;
 

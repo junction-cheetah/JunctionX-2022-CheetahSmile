@@ -5,7 +5,7 @@ export default {
     site_name: 'cheetah',
     images: [
       {
-        url: 'https://junction-x-2022-cheetah-smile.vercel.app/vegimap-512x512.png',
+        url: 'https://junction-x-2022-cheetah-smile.vercel.app/co-building-512x512.png',
       },
     ],
   },
@@ -41,7 +41,7 @@ export default {
     {
       rel: 'apple-touch-icon',
       sizes: '180x180',
-      href: '/icons/vegimap-180x180.png',
+      href: '/icons/co-building-180x180.png',
     },
   ],
   additionalMetaTags: [
