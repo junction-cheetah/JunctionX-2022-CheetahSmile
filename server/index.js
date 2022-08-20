@@ -34,7 +34,7 @@ var initialGameState = {
   timeMicroSec: 0,
   isGaming: false,
   topLayer: {
-    position: { x: 0, y: 0, z: 0 },
+    postion: { x: 0, y: 0, z: 0 },
     width: 0,
     depth: 0,
     turn: 1,
@@ -157,7 +157,7 @@ io.on("connection", (socket) => {
   }
 
   function animation() {
-    const timeScale = 0.01;
+    const timeScale = 1;
 
     topLayerObject = gameState.topLayer;
     const stack = gameState.stack;
