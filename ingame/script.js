@@ -38,7 +38,7 @@ socket.on("topLayerReceive", function (topLayerData) {
   fetchedTopLayerData = topLayerData;
 });
 
-function onStack() {
+function fireStack() {
   socket.emit("stack", {
     clientTime: timer,
   });
@@ -351,7 +351,9 @@ function eventHandler() {
 }
 //오토파일럿 로직 자동 계산
 function splitBlockAndAddNextOneIfOverlaps() {
-  if (!autopilot) return;
+  if (!autopilot) {
+    fireStack()
+  };
 
   topLayerObject = stack[stack.length - 1];
   const previousLayer = stack[stack.length - 2];
