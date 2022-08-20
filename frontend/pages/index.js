@@ -25,10 +25,13 @@ export default function Home() {
     );
   };
   useEffect(() => {
-    const newToken = router.asPath.split('id_token=')[1];
+    const newToken = router.asPath.split('id_token=')[1]?.split('&')[0];
     if (newToken) {
       localStorage.setItem('aws-google-oauth-token', newToken);
       setToken(newToken);
+
+      const decoded = jwtDecode(newToken);
+      console.log(decoded);
     }
   }, [router, setToken]);
 
