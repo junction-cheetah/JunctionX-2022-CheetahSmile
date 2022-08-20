@@ -85,7 +85,7 @@ export default function SessionTest() {
 
   return (
     <BigContainer>
-      <NextSeo title="Room" description="TODO" />
+      <NextSeo title="Room" description="BUILD YOUR POTENTIAL!" />
       <h2>{timer}</h2>
       <p>person 1: jyp</p>
       <p>person 2: su</p>

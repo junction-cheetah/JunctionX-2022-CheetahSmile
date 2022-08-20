@@ -16,7 +16,7 @@ export default function Room({ sessionId }) {
 
   return (
     <>
-      <NextSeo title="Room" description="TODO" />
+      <NextSeo title="Room" description="BUILD YOUR POTENTIAL!" />
       <Main>
         <Image
           src="/icons/back.svg"
@@ -59,7 +59,7 @@ export default function Room({ sessionId }) {
         </Players>
 
         <Link href={{ pathname: '/game', query: { session: sessionId } }}>
-          <a>Start!</a>
+          <a>START</a>
         </Link>
       </Main>
     </>

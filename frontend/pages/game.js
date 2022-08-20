@@ -4,7 +4,7 @@ import Link from 'next/link';
 export default function Game({ sessionId }) {
   return (
     <>
-      <NextSeo title="Game" description="TODO" />
+      <NextSeo title="Game" description="BUILD YOUR POTENTIAL!" />
       <h1>Game</h1>
       <Link href={{ pathname: '/result', query: { session: sessionId } }}>
         <a>Result</a>

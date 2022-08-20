@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }) {
   // localStorage token
   const [token, setToken] = useState('loading');
   useEffect(() => {
-    const storageToken = localStorage.getItem('cheetahToken');
+    const storageToken = localStorage.getItem('aws-google-oauth-token');
     setToken(storageToken || null);
   }, []);
 

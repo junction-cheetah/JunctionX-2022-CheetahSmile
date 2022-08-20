@@ -15,7 +15,7 @@ export default function Result({ sessionId }) {
 
   return (
     <>
-      <NextSeo title="Result" description="TODO" />
+      <NextSeo title="Result" description="BUILD YOUR POTENTIAL!" />
       <Main>
         <Team>
           <span>TEAM</span>
