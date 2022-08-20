@@ -1,4 +1,4 @@
-const socket = io("ws://15.164.221.178:8000/");
+const socket = io('ws://15.164.221.178:8000/');
 var stackData = [];
 var timer = 0;
 var isMyTurn = true;
@@ -10,54 +10,54 @@ var fetchedTopLayerData = {
 // var fetchedTopLayerPosition = [0, 0, 0];
 var fecthedCameraPosition = 4;
 
-socket.on("stacked", function (msg) {
+socket.on('stacked', function (msg) {
   stackData = msg.stack;
-  console.log("stacked");
+  console.log('stacked');
   eventHandler(false);
 });
 
-const timerElement = document.getElementById("timer");
-socket.on("timer", function (time) {
+const timerElement = document.getElementById('timer');
+socket.on('timer', function (time) {
   timer = time;
   if (timerElement) timerElement.innerText = timer;
 });
 
-socket.on("started", function () {
+socket.on('started', function () {
   startGame(false);
 });
-socket.on("topLayerReceive", function (topLayerData) {
+socket.on('topLayerReceive', function (topLayerData) {
   fetchedTopLayerData = topLayerData;
 });
-socket.on("cameraHeightReceive", function (cameraHeight) {
+socket.on('cameraHeightReceive', function (cameraHeight) {
   fecthedCameraPosition = cameraHeight;
 });
 
 function onStack() {
-  socket.emit("stack", {
+  socket.emit('stack', {
     clientTime: timer,
   });
 }
 
 function onStart() {
-  console.log("START");
-  socket.emit("start", "");
+  console.log('START');
+  socket.emit('start', '');
 }
 
 function onEnd() {
-  console.log("END");
-  socket.emit("end", "");
+  console.log('END');
+  socket.emit('end', '');
 }
 
 function propagationNewLayer(newLayerData) {
-  socket.emit("newLayer", newLayerData);
+  socket.emit('newLayer', newLayerData);
 }
 
 function propagationToplayer(topLayerData) {
-  socket.emit("topLayer", topLayerData);
+  socket.emit('topLayer', topLayerData);
 }
 
 function propagationCameraPosition(height) {
-  socket.emit("cameraHeight", height);
+  socket.emit('cameraHeight', height);
 }
 
 function fetchNewLayer(newLayerData) {}
@@ -103,9 +103,9 @@ let mspeedY = 0.02;
 let moveSpeed = 0.05;
 
 // HTML에 보내는 스코어
-const scoreElement = document.getElementById("score");
-const instructionsElement = document.getElementById("instructions");
-const resultsElement = document.getElementById("results");
+const scoreElement = document.getElementById('score');
+const instructionsElement = document.getElementById('instructions');
+const resultsElement = document.getElementById('results');
 
 // 오토파일럿의 정확도를 파악하는 함수
 function setRobotPrecision() {
@@ -161,7 +161,7 @@ function init() {
   addLayer(0, 0, originalBoxSize, originalBoxSize);
 
   // 처음 쌓이는 레이어 1층(x축 -10 방향에서 리스폰)
-  addLayer(-10, 0, originalBoxSize, originalBoxSize, "x");
+  addLayer(-10, 0, originalBoxSize, originalBoxSize, 'x');
 
   //비주얼라이제이션 (조명 및 배경)
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -174,7 +174,7 @@ function init() {
   skyObjects = new THREE.Group();
   //Texture
   const textureLoader = new THREE.TextureLoader();
-  const starTexture = textureLoader.load("/textures/star.png");
+  const starTexture = textureLoader.load('./textures/star.png');
   for (let i = 1; i < 4; i++) {
     star[i] = new THREE.Mesh(
       new THREE.PlaneGeometry(starR, starR),
@@ -214,8 +214,8 @@ function startGame(isOriginalStart = true) {
   overhangs = [];
 
   //게임 스타트시 HTML스코어 관련 초기화
-  if (instructionsElement) instructionsElement.style.display = "none";
-  if (resultsElement) resultsElement.style.display = "none";
+  if (instructionsElement) instructionsElement.style.display = 'none';
+  if (resultsElement) resultsElement.style.display = 'none';
   if (scoreElement) scoreElement.innerText = 0;
 
   if (world) {
@@ -228,8 +228,8 @@ function startGame(isOriginalStart = true) {
   //ThreeJS 씬에서 기존 게임에 있던 메쉬들 초기화
   if (scene) {
     // Remove every Mesh from the scene
-    while (scene.children.find((c) => c.type == "Mesh")) {
-      const mesh = scene.children.find((c) => c.type == "Mesh");
+    while (scene.children.find((c) => c.type == 'Mesh')) {
+      const mesh = scene.children.find((c) => c.type == 'Mesh');
       scene.remove(mesh);
     }
 
@@ -237,7 +237,7 @@ function startGame(isOriginalStart = true) {
     addLayer(0, 0, originalBoxSize, originalBoxSize);
 
     // 처음 쌓이는 박스 (-10.1 x축으로)
-    addLayer(-10.1, 0, originalBoxSize, originalBoxSize, "x");
+    addLayer(-10.1, 0, originalBoxSize, originalBoxSize, 'x');
   }
 
   //카메라도 제일 밑에서 다시 시작
@@ -277,29 +277,29 @@ function generateBox(x, y, z, width, depth, falls) {
   const textureLoader = new THREE.TextureLoader();
   const textureCube3 = [
     new THREE.MeshStandardMaterial({
-      map: textureLoader.load("../textures/cube/PNG/px.png"),
+      map: textureLoader.load('./textures/cube/PNG/px.png'),
     }),
     new THREE.MeshStandardMaterial({
-      map: textureLoader.load("../textures/cube/PNG/py.png"),
+      map: textureLoader.load('./textures/cube/PNG/py.png'),
     }),
     new THREE.MeshStandardMaterial({
-      map: textureLoader.load("../textures/cube/PNG/pz.png"),
+      map: textureLoader.load('./textures/cube/PNG/pz.png'),
     }),
     new THREE.MeshStandardMaterial({
-      map: textureLoader.load("../textures/cube/PNG/nx.png"),
+      map: textureLoader.load('./textures/cube/PNG/nx.png'),
     }),
     new THREE.MeshStandardMaterial({
-      map: textureLoader.load("../textures/cube/PNG/ny.png"),
+      map: textureLoader.load('./textures/cube/PNG/ny.png'),
     }),
     new THREE.MeshStandardMaterial({
-      map: textureLoader.load("../textures/cube/PNG/nz.png"),
+      map: textureLoader.load('./textures/cube/PNG/nz.png'),
     }),
   ];
 
   // ThreeJS 비주얼
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
   const material = new THREE.MeshStandardMaterial({
-    color: "#cdcdcd",
+    color: '#cdcdcd',
   });
   const mesh = new THREE.Mesh(geometry, textureCube3);
   mesh.position.set(x, y, z);
@@ -330,8 +330,8 @@ function generateBox(x, y, z, width, depth, falls) {
 //박스 자르는 함수(탑레이어,쌓인 박스크기, 잘릴 박스크기, 전보다 이동한 차이값)
 function cutBox(topLayer, overlap, size, delta) {
   const direction = topLayer.direction;
-  const newWidth = direction == "x" ? overlap : topLayer.width;
-  const newDepth = direction == "z" ? overlap : topLayer.depth;
+  const newWidth = direction == 'x' ? overlap : topLayer.width;
+  const newDepth = direction == 'z' ? overlap : topLayer.depth;
 
   // Update metadata
   topLayer.width = newWidth;
@@ -359,16 +359,16 @@ function retry() {
 }
 
 //이벤트 들어왔을 때
-window.addEventListener("mousedown", eventHandler);
-window.addEventListener("touchstart", eventHandler);
-window.addEventListener("keydown", function (event) {
-  if (event.key == " ") {
+window.addEventListener('mousedown', eventHandler);
+window.addEventListener('touchstart', eventHandler);
+window.addEventListener('keydown', function (event) {
+  if (event.key == ' ') {
     //시작
     event.preventDefault();
     eventHandler();
     return;
   }
-  if (event.key == "R" || event.key == "r") {
+  if (event.key == 'R' || event.key == 'r') {
     //리트라이
     event.preventDefault();
     retry();
@@ -399,7 +399,7 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
 
   const direction = topLayer.direction;
 
-  const size = direction == "x" ? topLayer.width : topLayer.depth;
+  const size = direction == 'x' ? topLayer.width : topLayer.depth;
 
   //나의 턴이 아닐 때 오토파일럿 재생중
   if (!isMyTurn) {
@@ -417,24 +417,24 @@ function splitBlockAndAddNextOneIfOverlaps(isOrigin = true) {
     // Overhang
     const overhangShift = (overlap / 2 + overhangSize / 2) * Math.sign(delta);
     const overhangX =
-      direction == "x"
+      direction == 'x'
         ? topLayer.threejs.position.x + overhangShift
         : topLayer.threejs.position.x;
     const overhangZ =
-      direction == "z"
+      direction == 'z'
         ? topLayer.threejs.position.z + overhangShift
         : topLayer.threejs.position.z;
-    const overhangWidth = direction == "x" ? overhangSize : topLayer.width;
-    const overhangDepth = direction == "z" ? overhangSize : topLayer.depth;
+    const overhangWidth = direction == 'x' ? overhangSize : topLayer.width;
+    const overhangDepth = direction == 'z' ? overhangSize : topLayer.depth;
 
     addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
 
     // Next layer
-    const nextX = direction == "x" ? topLayer.threejs.position.x : -10;
-    const nextZ = direction == "z" ? topLayer.threejs.position.z : -10;
+    const nextX = direction == 'x' ? topLayer.threejs.position.x : -10;
+    const nextZ = direction == 'z' ? topLayer.threejs.position.z : -10;
     const newWidth = topLayer.width; // New layer has the same size as the cut top layer
     const newDepth = topLayer.depth; // New layer has the same size as the cut top layer
-    const nextDirection = direction == "x" ? "z" : "x";
+    const nextDirection = direction == 'x' ? 'z' : 'x';
 
     if (scoreElement) scoreElement.innerText = stack.length - 1;
     addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
@@ -461,7 +461,7 @@ function missedTheSpot(isOrigin = true) {
   scene.remove(topLayer.threejs);
 
   gameEnded = true;
-  if (resultsElement && !autopilot) resultsElement.style.display = "flex";
+  if (resultsElement && !autopilot) resultsElement.style.display = 'flex';
 }
 
 function animation(time) {
@@ -582,9 +582,9 @@ function updatePhysics(timePassed) {
   });
 }
 
-window.addEventListener("resize", () => {
+window.addEventListener('resize', () => {
   // Adjust camera
-  console.log("resize", window.innerWidth, window.innerHeight);
+  console.log('resize', window.innerWidth, window.innerHeight);
   const aspect = window.innerWidth / window.innerHeight;
   const width = 10;
   const height = width / aspect;
