@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
     changeNowUser();
     gameState.stack.push(newStack);
     console.log(gameState.stack);
-    io.emit("stacked", { newStack, nowUser });
+    io.emit("stacked", { newStack, nowUser,stack:gameState.stack });
   });
 });
 server.listen(8000, "0.0.0.0", () => {
