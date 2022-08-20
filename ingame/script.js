@@ -274,12 +274,34 @@ function addOverhang(x, z, width, depth) {
 
 //박스 만들어내는 함수(좌표,너비,층고높이, 떨어지는지 유무)
 function generateBox(x, y, z, width, depth, falls) {
+  const textureLoader = new THREE.TextureLoader();
+  const textureCube3 = [
+    new THREE.MeshStandardMaterial({
+      map: textureLoader.load("../textures/cube/PNG/px.png"),
+    }),
+    new THREE.MeshStandardMaterial({
+      map: textureLoader.load("../textures/cube/PNG/py.png"),
+    }),
+    new THREE.MeshStandardMaterial({
+      map: textureLoader.load("../textures/cube/PNG/pz.png"),
+    }),
+    new THREE.MeshStandardMaterial({
+      map: textureLoader.load("../textures/cube/PNG/nx.png"),
+    }),
+    new THREE.MeshStandardMaterial({
+      map: textureLoader.load("../textures/cube/PNG/ny.png"),
+    }),
+    new THREE.MeshStandardMaterial({
+      map: textureLoader.load("../textures/cube/PNG/nz.png"),
+    }),
+  ];
+
   // ThreeJS 비주얼
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
   const material = new THREE.MeshStandardMaterial({
     color: "#cdcdcd",
   });
-  const mesh = new THREE.Mesh(geometry, material);
+  const mesh = new THREE.Mesh(geometry, textureCube3);
   mesh.position.set(x, y, z);
   scene.add(mesh);
 
