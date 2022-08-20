@@ -14,6 +14,7 @@ app.get("/", (req, res) => {
 });
 
 var timeMicroSec = 0;
+var timerId;
 var stack = [];
 var accessUsers = [];
 var nowUser = "";
@@ -39,12 +40,20 @@ io.on("connection", (socket) => {
   });
 
   socket.on("start", (msg) => {
-    console.log("START")
+    console.log("GAME START");
     io.emit("started", msg);
     gameState.isGaming = true;
-    setInterval(() => {
+    timerId = setInterval(() => {
       io.emit("timer", timeMicroSec++ / 1000);
     }, 1);
+  });
+
+  socket.on("end", (msg) => {
+    console.log("GAME END");
+    io.emit("end", msg);
+    gameState.isGaming = false;
+    clearInterval(timerId);
+    timeMicroSec = 0;
   });
 
   socket.on("stack", (msg) => {
@@ -52,7 +61,7 @@ io.on("connection", (socket) => {
     changeNowUser();
     stack.push(newStack);
     console.log(stack);
-    io.emit("stacked", {newStack, nowUser});
+    io.emit("stacked", { newStack, nowUser });
   });
 });
 server.listen(8000, "0.0.0.0", () => {
