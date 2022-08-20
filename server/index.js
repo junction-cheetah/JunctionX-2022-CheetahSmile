@@ -213,7 +213,7 @@ io.on("connection", (socket) => {
   }
 
   function addLayer(nextX, nextZ, newWidth, newDepth, nextDirection = "z") {
-    const y = boxHeight * stackData.length; // 박스 높이 * 스택 갯수
+    const y = boxHeight * gameState.stack.length; // 박스 높이 * 스택 갯수
     const layer = {
       position: { x: nextX, y: y, z: nextZ },
       width,
