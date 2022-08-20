@@ -12,6 +12,7 @@
     "@emotion/css": "^11.10.0",
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
+    "loplat-ui": "^1.9.0-canary.8",
     "next": "12.2.5",
     "next-pwa": "5.5.4",
     "next-seo": "^5.5.0",

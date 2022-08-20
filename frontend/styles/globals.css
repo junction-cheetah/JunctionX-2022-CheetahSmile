@@ -100,3 +100,8 @@ textarea {
 address {
   font-style: normal;
 }
+
+/*TODO: 삭제*/
+a, button {
+  border: 1px solid black !important;
+}
