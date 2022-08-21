@@ -33,7 +33,7 @@ export default function Home() {
       const tempSession = localStorage.getItem('temp-session');
       if (tempSession) {
         localStorage.removeItem('temp-session');
-        router.push(`/room?session=${tempSession}`);
+        router.push(`/room?session=${tempSession}&team=junction`);
       }
     } else {
       // 이미 로그인

@@ -5,12 +5,15 @@ import { useRouter } from 'next/router';
 import styled from '@emotion/styled';
 import Image from 'next/future/image';
 import RankingComponent from '../containers/Ranking';
+import useSWR from 'swr';
+import { USER_KEY } from '../swr/user';
 
-export default function Result({ sessionId }) {
+export default function Result({ sessionId, score, team }) {
+  const { data: user } = useSWR(USER_KEY);
   const router = useRouter();
   const recreateGame = () => {
     const sessionId = generateUniqueId();
-    router.push(`/room?session=${sessionId}`);
+    router.push(`/room?session=${sessionId}&team=${team}`);
   };
 
   return (
@@ -20,13 +23,13 @@ export default function Result({ sessionId }) {
         <Team>
           <span>TEAM</span>
           <br />
-          <span>team23</span>
+          <span>{team}</span>
         </Team>
 
-        <Score>503</Score>
+        <Score>{score}</Score>
         <You>
           <Image src="/icons/crown.svg" width={25} height={20} alt="" />
-          <p>team23</p>
+          <p>{user?.email?.split('@')?.[0]}</p>
         </You>
 
         <div
@@ -55,6 +58,8 @@ export default function Result({ sessionId }) {
 
 export async function getServerSideProps({ query }) {
   const sessionId = query.session;
+  const score = query.score;
+  const team = query.team;
 
   if (!sessionId) {
     return {
@@ -68,6 +73,8 @@ export async function getServerSideProps({ query }) {
   return {
     props: {
       sessionId,
+      score,
+      team,
     },
   };
 }

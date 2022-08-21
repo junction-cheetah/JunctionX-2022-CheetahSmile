@@ -1,13 +1,12 @@
 import { NextSeo } from 'next-seo';
 import styled from '@emotion/styled';
 import { useEffect, useState } from 'react';
-import { axiosInstance2, axiosInstance3 } from '../api';
+import { axiosInstance2 } from '../api';
 import { useRouter } from 'next/router';
-import { generateUniqueId } from '../utils/functions/generator';
 import useSWR from 'swr';
 import { USER_KEY } from '../swr/user';
 
-export default function Game({ sessionId }) {
+export default function Game({ sessionId, team }) {
   const [size, setSize] = useState({ width: 414, height: 736 });
   useEffect(() => {
     setSize({
@@ -29,14 +28,16 @@ export default function Game({ sessionId }) {
           },
         })
         .finally((result) => {
-          router.push(`/result?session=${sessionId}`);
+          router.push(
+            `/result?session=${sessionId}&score=${e.data}&team=${team}`
+          );
         });
     }
     window.addEventListener('message', listener);
     return () => {
       window.removeEventListener('message', listener);
     };
-  }, [router, user]);
+  }, [router, user, sessionId, team]);
 
   return (
     <>
@@ -55,6 +56,7 @@ export default function Game({ sessionId }) {
 
 export async function getServerSideProps({ query }) {
   const sessionId = query.session;
+  const team = query.team;
 
   if (!sessionId) {
     return {
@@ -68,6 +70,7 @@ export async function getServerSideProps({ query }) {
   return {
     props: {
       sessionId,
+      team,
     },
   };
 }
