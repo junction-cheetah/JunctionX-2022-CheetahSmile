@@ -75,7 +75,6 @@ function init() {
 
   //비주얼라이제이션 (조명 및 배경)
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-  ambientLight.castShadow = true;
 
   scene.add(ambientLight);
 
@@ -109,6 +108,7 @@ function init() {
     alpha: true,
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
   renderer.setAnimationLoop(animation);
   document.body.appendChild(renderer.domElement);
 }
@@ -300,13 +300,13 @@ function splitBlockAndAddNextOneIfOverlaps() {
     // Overhang
     const overhangShift = (overlap / 2 + overhangSize / 2) * Math.sign(delta);
     const overhangX =
-      direction == 'x'
-        ? topLayer.threejs.position.x + overhangShift
-        : topLayer.threejs.position.x;
+      direction == 'x' ?
+      topLayer.threejs.position.x + overhangShift :
+      topLayer.threejs.position.x;
     const overhangZ =
-      direction == 'z'
-        ? topLayer.threejs.position.z + overhangShift
-        : topLayer.threejs.position.z;
+      direction == 'z' ?
+      topLayer.threejs.position.z + overhangShift :
+      topLayer.threejs.position.z;
     const overhangWidth = direction == 'x' ? overhangSize : topLayer.width;
     const overhangDepth = direction == 'z' ? overhangSize : topLayer.depth;
 
@@ -353,13 +353,12 @@ function animation(time) {
 
     // The top level box should move if the game has not ended AND
     // it's either NOT in autopilot or it is in autopilot and the box did not yet reach the robot position
-    const boxShouldMove =
-      !gameEnded &&
+    const boxShouldMove = !gameEnded &&
       (!autopilot ||
         (autopilot &&
           topLayer.threejs.position[topLayer.direction] <
-            previousLayer.threejs.position[topLayer.direction] +
-              robotPrecision));
+          previousLayer.threejs.position[topLayer.direction] +
+          robotPrecision));
 
     //
     if (boxShouldMove) {
