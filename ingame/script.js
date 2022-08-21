@@ -296,20 +296,23 @@ function cutBox(topLayer, overlap, size, delta) {
   const previousLayerData =
     globalGameState.stack[globalGameState.stack.length - 2]; //전 레이어
 
-  prevLayerObject = stack[stack.length - 2];
+  prevLayerObject = stack[stack.length - 1];
   var updateData = previousLayerData;
   console.log(updateData);
   if (prevLayerObject && updateData) {
-    prevLayerObject.threejs.position.x = updateData.position.x;
-    prevLayerObject.threejs.position.y = updateData.position.y;
-    prevLayerObject.threejs.position.z = updateData.position.z;
+
+    prevLayerObject.threejs.width = updateData.width;
+    prevLayerObject.threejs.depth = updateData.depth;
 
     prevLayerObject.threejs.scale.x = updateData.scale.x;
     prevLayerObject.threejs.scale.y = updateData.scale.y;
     prevLayerObject.threejs.scale.z = updateData.scale.z;
 
-    prevLayerObject.threejs.width = updateData.width;
-    prevLayerObject.threejs.depth = updateData.depth;
+    
+    prevLayerObject.threejs.position.x = updateData.position.x;
+    prevLayerObject.threejs.position.y = updateData.position.y;
+    prevLayerObject.threejs.position.z = updateData.position.z;
+
 
     // topLayerObject.cannonjs.position["x"] = topLayerData.position.x;
     // topLayerObject.cannonjs.position["y"] = topLayerData.position.y;

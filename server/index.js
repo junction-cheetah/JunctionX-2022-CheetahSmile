@@ -257,21 +257,11 @@ io.on("connection", (socket) => {
     const newWidth = direction == "x" ? overlap : topLayer.width;
     const newDepth = direction == "z" ? overlap : topLayer.depth;
 
-    // Update metadata
-
-
-    // setTopLayer({
-    //   width: newWidth,
-    //   depth : newDepth,
-    //   position: {
-
-    //   };
-    // })
     gameState.topLayer.width = newWidth;
     gameState.topLayer.depth = newDepth;
-    gameState.topLayer.position[direction] -= delta / 2;
 
     gameState.topLayer.scale[direction] = overlap / size;
+    gameState.topLayer.position[direction] -= delta / 2;
 
     console.log(overlap / size)
 
