@@ -221,6 +221,7 @@ io.on("connection", (socket) => {
       const nextDirection = direction == "x" ? "z" : "x";
 
       addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
+      console.log(gameState)
     } else {
       endGame();
     }
