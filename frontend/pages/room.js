@@ -6,7 +6,7 @@ import Image from 'next/future/image';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import { USER_KEY } from '../swr/user';
-import { Toast, toast } from 'loplat-ui';
+import { toast } from 'loplat-ui';
 
 export default function Room({ sessionId, team }) {
   useEffect(() => {
@@ -33,7 +33,6 @@ export default function Room({ sessionId, team }) {
 
   return (
     <>
-      <Toast mt={4} mx={2} />
       <NextSeo title="Room" description="BUILD YOUR POTENTIAL!" />
       <Main>
         <Image

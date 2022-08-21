@@ -21,20 +21,29 @@ export const axiosInstance3 = axios.create({
   headers: {},
 });
 
+const BACKEND_URL4 =
+  'https://vuab1f2onl.execute-api.ap-northeast-2.amazonaws.com';
+export const axiosInstance4 = axios.create({
+  baseURL: BACKEND_URL4,
+  headers: {},
+});
+
 function logout() {
   localStorage.removeItem('aws-google-oauth-token');
   location.href = 'https://cobuilding.vercel.app/';
 }
 
-[axiosInstance1, axiosInstance2, axiosInstance3].forEach((instance) => {
-  instance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      const status = error.response || error.response.status;
-      if (status >= 400) {
-        logout();
+[axiosInstance1, axiosInstance2, axiosInstance3, axiosInstance4].forEach(
+  (instance) => {
+    instance.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const status = error.response || error.response.status;
+        if (status >= 400) {
+          logout();
+        }
+        throw error;
       }
-      throw error;
-    }
-  );
-});
+    );
+  }
+);

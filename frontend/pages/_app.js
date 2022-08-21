@@ -8,6 +8,7 @@ import { Router, useRouter } from 'next/router';
 import Loading from '../foundations/Loading';
 import { USER_KEY } from '../swr/user';
 import jwtDecode from 'jwt-decode';
+import { Toast } from 'loplat-ui';
 
 function MyApp({ Component, pageProps }) {
   // authentication
@@ -58,6 +59,7 @@ function MyApp({ Component, pageProps }) {
       <DefaultSeo {...SEO} />
       <Component {...pageProps} />
       <Loading />
+      <Toast mt={4} mx={2} />
     </>
   );
 }

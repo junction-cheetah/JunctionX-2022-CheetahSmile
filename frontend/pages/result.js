@@ -7,6 +7,9 @@ import Image from 'next/future/image';
 import RankingComponent from '../containers/Ranking';
 import useSWR from 'swr';
 import { USER_KEY } from '../swr/user';
+import { useEffect } from 'react';
+import { axiosInstance4 } from '../api';
+import { toast } from 'loplat-ui';
 
 export default function Result({ sessionId, score, team }) {
   const { data: user } = useSWR(USER_KEY);
@@ -15,6 +18,20 @@ export default function Result({ sessionId, score, team }) {
     const sessionId = generateUniqueId();
     router.push(`/room?session=${sessionId}&team=${team}`);
   };
+
+  useEffect(() => {
+    if (user && score >= 10) {
+      axiosInstance4
+        .get(
+          `/default/set-achievement?name=${
+            user?.email?.split('@')?.[0]
+          }&achievement=butchered`
+        )
+        .finally(() => {
+          toast.info('Higher than 10 floor: Butchered!');
+        });
+    }
+  }, [score, user]);
 
   return (
     <>
