@@ -275,6 +275,7 @@ io.on("connection", (socket) => {
 
   function endGame() {
     clearInterval(timerId);
+      timeMicroSec = 0;
     gameState.stack.pop();
     gameState.isGaming = false;
     io.emit("end");
