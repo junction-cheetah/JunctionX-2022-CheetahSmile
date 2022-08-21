@@ -8,6 +8,7 @@
 a {
   text-decoration: none;
   color: #171717;
+
 }
 
 body {
@@ -20,7 +21,28 @@ body {
   cursor: pointer;
 }
 
-#instructions {}
+#startgame {
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 15px;
+  padding: 10px;
+  font-weight: bold;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  text-align: center;
+  border: none;
+  border-radius: 4px;
+  margin: 10px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+cursor: pointer;
+
+  transition: 0.5s;
+}
+button:hover{
+  color:#226af6;
+}
 
 #results,
 #instructions {
@@ -52,8 +74,8 @@ a:hover {
 
   font-size: 1.5em;
   font-weight: bold;
-  top: 30px;
-  right: 30px;
+  top: 10px;
+  right: 10px;
 }
 
 #results {
@@ -66,7 +88,7 @@ a:hover {
   background-color: rgba(255, 255, 255, 0.75);
   max-width: 300px;
   padding: 20px;
-  border-radius: 20px;
+  border-radius: 15px;
 }
 
 
@@ -76,6 +98,7 @@ a:hover {
   color: #171717;
   font-size: 2em;
   font-weight: bold;
-  top: 30px;
-  left: 30px;
+  top: 10px;
+  left: 10px;
+
 }

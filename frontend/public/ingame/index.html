@@ -13,20 +13,23 @@
 
   <div id="instructions">
     <div class="content">
- 
-      <p>Click, Tap or press space when a House is above the co-building.</p>
-      <p>Click, tap or press Game Start to start building!</p>
-           <a href="javascript:void(0);" onclick="start();">
-        <h3>GAME START</h3>
+
+      <p>Click, Tap or press space when a House is above the Co-building.</p>
+      <p>Click, Game Start to start building!</p>
+      <a href="javascript:void(0);" id="startgame" onclick="start();">
+        GAME START
       </a>
     </div>
   </div>
   <div id="results">
     <div class="content">
       <p>You missed the house!</p>
-      <a href="javascript:void(0);" onclick="retry();">
-        <h3>Check your result!</h3>
-      </a>
+      <button id="check" onclick="sendResult();" type="button">
+        Check your result!
+      </button>
+      <button id="restart" onclick="retry();" type="button">
+        Game Restart
+      </button>
     </div>
   </div>
   <div id="score">1 floor</div>

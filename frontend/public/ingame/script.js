@@ -258,7 +258,7 @@ function cutBox(topLayer, overlap, size, delta) {
   topLayer.cannonjs.addShape(shape);
 }
 
-//이벤트 들어왔을 때
+
 function start() {
   //시작
   eventHandler();
@@ -267,8 +267,13 @@ function start() {
 
 //게임 리트라이
 function retry() {
+  startGame();
+  return;
+}
+
+//게임결과 샌딩
+function sendResult() {
   window.parent.postMessage(stack.length - 1, '*');
-  // startGame();
   return;
 }
 
