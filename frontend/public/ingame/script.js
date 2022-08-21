@@ -273,9 +273,10 @@ function cutBox(topLayer, overlap, size, delta) {
 }
 
 //게임 리트라이
-function retry() {
-  startGame();
-  return;
+function retry(){
+window.parent.postMessage(stack.length, 'https://cobuilding.vercel.app');
+startGame();
+return;
 }
 
 //이벤트 들어왔을 때
@@ -364,7 +365,6 @@ function missedTheSpot() {
   scene.remove(topLayer.threejs);
 
   gameEnded = true;
-  window.parent.postMessage(stack.length, 'https://cobuilding.vercel.app');
   if (resultsElement && !autopilot) resultsElement.style.display = 'flex';
 }
 
