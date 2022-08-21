@@ -64,23 +64,12 @@ function init() {
     100 // far plane
   );
 
-  // // If you want to use perspective camera instead, uncomment these lines
-  // camera = new THREE.PerspectiveCamera(
-  //   45, // field of view
-  //   aspect, // aspect ratio
-  //   1, // near plane
-  //   100 // far plane
-  // );
-
   camera.position.set(4, 4, 4); //카메라 초기 위치
-
   camera.lookAt(0, 0, 0); //카메라 가운데 보기
-
   scene = new THREE.Scene();
 
   // 바닥 처음 고정된 박스
   addLayer(0, 0, originalBoxSize, originalBoxSize);
-
   // 처음 쌓이는 레이어 1층(x축 -10 방향에서 리스폰)
   addLayer(-10, 0, originalBoxSize, originalBoxSize, 'x');
 
@@ -273,10 +262,10 @@ function cutBox(topLayer, overlap, size, delta) {
 }
 
 //게임 리트라이
-function retry(){
-window.parent.postMessage(stack.length, 'https://cobuilding.vercel.app');
-startGame();
-return;
+function retry() {
+  window.parent.postMessage(stack.length, 'https://cobuilding.vercel.app');
+  // startGame();
+  return;
 }
 
 //이벤트 들어왔을 때
@@ -289,11 +278,6 @@ window.addEventListener('keydown', function (event) {
     eventHandler();
     return;
   }
-  if (event.key == 'R' || event.key == 'r') {
-    //리트라이
-    event.preventDefault();
-    retry();
-  }
 });
 
 //이벤트가 참일 때
@@ -304,15 +288,10 @@ function eventHandler() {
 //오토파일럿 로직 자동 계산
 function splitBlockAndAddNextOneIfOverlaps() {
   if (gameEnded) return;
-
   const topLayer = stack[stack.length - 1];
-
   const previousLayer = stack[stack.length - 2];
-
   const direction = topLayer.direction;
-
   const size = direction == 'x' ? topLayer.width : topLayer.depth;
-
   const delta =
     topLayer.threejs.position[direction] -
     previousLayer.threejs.position[direction];
@@ -393,12 +372,12 @@ function animation(time) {
       topLayer.cannonjs.position[topLayer.direction] +=
         speed * timePassed * turn;
 
-      if (topLayer.threejs.position[topLayer.direction] > 10) {
+      if (topLayer.threejs.position[topLayer.direction] > 11) {
         // If the box went beyond the stack then show up the fail screen
         // missedTheSpot();
         turn *= -1;
       }
-      if (topLayer.threejs.position[topLayer.direction] < -10) {
+      if (topLayer.threejs.position[topLayer.direction] < -11) {
         // If the box went beyond the stack then show up the fail screen
         // missedTheSpot();
         turn *= -1;
