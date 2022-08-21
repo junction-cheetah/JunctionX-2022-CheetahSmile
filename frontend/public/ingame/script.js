@@ -279,6 +279,7 @@ function sendResult() {
 
 window.addEventListener('mousedown', eventHandler);
 window.addEventListener('touchmove', eventHandler);
+window.addEventListener('touchstart', eventHandler);
 window.addEventListener('keydown', eventHandler);
 
 //이벤트가 참일 때 -> 자르기
