@@ -1,7 +1,11 @@
 import { NextSeo } from 'next-seo';
-import Link from 'next/link';
 import styled from '@emotion/styled';
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
+import axiosInstance from '../api';
+import { useRouter } from 'next/router';
+import { generateUniqueId } from '../utils/functions/generator';
+import useSWR from 'swr';
+import { USER_KEY } from '../swr/user';
 
 export default function Game({ sessionId }) {
   const [size, setSize] = useState({ width: 414, height: 736 });
@@ -12,12 +16,34 @@ export default function Game({ sessionId }) {
     });
   }, []);
 
+  const router = useRouter();
+  const { data: user } = useSWR(USER_KEY);
+  useEffect(() => {
+    window.addEventListener('message', function (e) {
+      if (e.origin === 'https://cobuilding.vercel.app/') {
+        console.log('child -> parent:', e.data);
+        axiosInstance
+          .get('/default/handleGameResult', {
+            params: {
+              id: generateUniqueId(),
+              username: user?.email?.split('@')?.[0],
+              score: e.data,
+            },
+          })
+          .then((result) => {
+            console.log(result);
+            router.push('/result');
+          });
+      }
+    });
+  }, [router, user]);
+
   return (
     <>
       <NextSeo title="Game" description="BUILD YOUR POTENTIAL!" />
       <Main>
         <iframe
-          id="iframeExample"
+          id="gameIframe"
           width={size.width + 'px'}
           height={size.height + 'px'}
           src="/ingame/index.html"
