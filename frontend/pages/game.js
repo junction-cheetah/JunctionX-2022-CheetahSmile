@@ -19,7 +19,7 @@ export default function Game({ sessionId }) {
   const router = useRouter();
   const { data: user } = useSWR(USER_KEY);
   useEffect(() => {
-    window.addEventListener('message', function (e) {
+    function listener(e) {
       axiosInstance2
         .get('/default/handleGameResult', {
           params: {
@@ -32,7 +32,11 @@ export default function Game({ sessionId }) {
           console.log(result);
           router.push('/result');
         });
-    });
+    }
+    window.addEventListener('message', listener);
+    return () => {
+      window.removeEventListener('message', listener);
+    };
   }, [router, user]);
 
   useEffect(() => {

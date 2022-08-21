@@ -7,6 +7,8 @@ export const axiosInstance1 = axios.create({
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept',
   },
 });
 
@@ -17,16 +19,20 @@ export const axiosInstance2 = axios.create({
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept',
   },
 });
 
 const BACKEND_URL3 =
-  'https://w03e0d6h2g.execute-api.ap-northeast-2.amazonaws.com';
+  'https://tsidvsloi7.execute-api.ap-northeast-2.amazonaws.com';
 export const axiosInstance3 = axios.create({
   baseURL: BACKEND_URL3,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept',
   },
 });
 
