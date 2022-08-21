@@ -29,7 +29,7 @@ export default function Game({ sessionId }) {
           },
         })
         .finally((result) => {
-          router.push('/result');
+          router.push(`/result?session=${sessionId}`);
         });
     }
     window.addEventListener('message', listener);
