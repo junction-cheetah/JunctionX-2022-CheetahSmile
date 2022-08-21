@@ -277,7 +277,7 @@ function sendResult() {
   return;
 }
 
-window.addEventListener('mousedown', eventHandler);
+// window.addEventListener('mousedown', eventHandler);
 window.addEventListener('touchmove', eventHandler);
 window.addEventListener('touchstart', eventHandler);
 window.addEventListener('keydown', eventHandler);
