@@ -166,7 +166,6 @@ function addLayer(x, z, width, depth, direction) {
   const layer = generateBox(x, y, z, width, depth, false); //현재 레이어에 넣는 새로운 박스 만들기
   layer.direction = direction;
   stack.push(layer); //스택에 현재 레이어 넣기
-
 }
 
 //바닥에 떨어지는 박스 (x,z방향, 너비, 층고높이)
@@ -263,7 +262,7 @@ function cutBox(topLayer, overlap, size, delta) {
 
 //게임 리트라이
 function retry() {
-  window.parent.postMessage((stack.length-1), 'https://cobuilding.vercel.app');
+  window.parent.postMessage(stack.length - 1, '*');
   // startGame();
   return;
 }
@@ -304,13 +303,13 @@ function splitBlockAndAddNextOneIfOverlaps() {
     // Overhang
     const overhangShift = (overlap / 2 + overhangSize / 2) * Math.sign(delta);
     const overhangX =
-      direction == 'x' ?
-      topLayer.threejs.position.x + overhangShift :
-      topLayer.threejs.position.x;
+      direction == 'x'
+        ? topLayer.threejs.position.x + overhangShift
+        : topLayer.threejs.position.x;
     const overhangZ =
-      direction == 'z' ?
-      topLayer.threejs.position.z + overhangShift :
-      topLayer.threejs.position.z;
+      direction == 'z'
+        ? topLayer.threejs.position.z + overhangShift
+        : topLayer.threejs.position.z;
     const overhangWidth = direction == 'x' ? overhangSize : topLayer.width;
     const overhangDepth = direction == 'z' ? overhangSize : topLayer.depth;
 
@@ -323,7 +322,7 @@ function splitBlockAndAddNextOneIfOverlaps() {
     const newDepth = topLayer.depth; // New layer has the same size as the cut top layer
     const nextDirection = direction == 'x' ? 'z' : 'x';
 
-    if (scoreElement) scoreElement.innerText = stack.length + " floor";
+    if (scoreElement) scoreElement.innerText = stack.length + ' floor';
     addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
   } else {
     missedTheSpot();
@@ -357,12 +356,13 @@ function animation(time) {
 
     // The top level box should move if the game has not ended AND
     // it's either NOT in autopilot or it is in autopilot and the box did not yet reach the robot position
-    const boxShouldMove = !gameEnded &&
+    const boxShouldMove =
+      !gameEnded &&
       (!autopilot ||
         (autopilot &&
           topLayer.threejs.position[topLayer.direction] <
-          previousLayer.threejs.position[topLayer.direction] +
-          robotPrecision));
+            previousLayer.threejs.position[topLayer.direction] +
+              robotPrecision));
 
     //
     if (boxShouldMove) {
