@@ -40,7 +40,7 @@ var initialGameState = {
     turn: 1,
     direction: "x",
   },
-  speed: 0.0007,
+  speed: 0.003,
   cameraHeight: 4,
 };
 
