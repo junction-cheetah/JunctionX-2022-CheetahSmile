@@ -276,38 +276,18 @@ function sendResult() {
   window.parent.postMessage(stack.length - 1, '*');
   return;
 }
-checkMobile();
-function checkMobile() {
 
-  var varUA = navigator.userAgent.toLowerCase(); //userAgent 값 얻기
+window.addEventListener('mousedown', eventHandler);
+window.addEventListener('touchstart', eventHandler);
+window.addEventListener('touchmove', eventHandler);
 
-  if (varUA.indexOf('android') > -1) {
-    //안드로이드
-    window.addEventListener('touchstart', eventHandler);
-
-    return "android";
-  } else if (varUA.indexOf("iphone") > -1 || varUA.indexOf("ipad") > -1 || varUA.indexOf("ipod") > -1) {
-    //IOS
-    window.addEventListener('touchmove', eventHandler);
-    return "ios";
-  } else {
-    //아이폰, 안드로이드 외
-    window.addEventListener('mousedown', eventHandler);
-    window.addEventListener('keydown', eventHandler);
-
-    return "other";
-
-  }
-
-}
-
+window.addEventListener('keydown', eventHandler);
 
 //이벤트가 참일 때 -> 자르기
 function eventHandler() {
   if (autopilot == true) startGame(); //오토파일럿이 참일때 게임 스타트
   else splitBlockAndAddNextOneIfOverlaps(); //아니면 오토파일럿 시작
 }
-
 function splitBlockAndAddNextOneIfOverlaps() {
   if (gameEnded) return;
   const topLayer = stack[stack.length - 1];
