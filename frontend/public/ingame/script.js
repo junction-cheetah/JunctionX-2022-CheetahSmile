@@ -278,16 +278,27 @@ function sendResult() {
 }
 
 window.addEventListener('mousedown', eventHandler);
-window.addEventListener('touchstart', eventHandler);
-window.addEventListener('touchmove', eventHandler);
-
 window.addEventListener('keydown', eventHandler);
+
+//DeviceOrientationEvent, DeviceMotionEvent
+if (
+  typeof DeviceOrientationEvent !== "undefined" &&
+  typeof DeviceOrientationEvent.requestPermission === "function"
+) {
+  //ios 13 device
+  window.addEventListener('touchstart', eventHandler);
+} else {
+  //non ios 13 device
+  window.addEventListener('touchmove', eventHandler);
+
+}
 
 //이벤트가 참일 때 -> 자르기
 function eventHandler() {
   if (autopilot == true) startGame(); //오토파일럿이 참일때 게임 스타트
   else splitBlockAndAddNextOneIfOverlaps(); //아니면 오토파일럿 시작
 }
+
 function splitBlockAndAddNextOneIfOverlaps() {
   if (gameEnded) return;
   const topLayer = stack[stack.length - 1];
