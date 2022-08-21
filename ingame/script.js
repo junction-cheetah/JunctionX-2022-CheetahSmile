@@ -63,7 +63,7 @@ socket.on("gameState", function (gameState) {
 });
 
 socket.on("cutBox", ({ topLayer, overlap, size, delta }) => {
-  // cutBox(topLayerObject, overlap, size, delta);
+  cutBox(topLayerObject, overlap, size, delta);
 });
 socket.on(
   "addOverhang",
@@ -292,27 +292,33 @@ function generateBox(x, y, z, width, depth, falls) {
 
 //박스 자르는 함수(탑레이어,쌓인 박스크기, 잘릴 박스크기, 전보다 이동한 차이값)
 function cutBox(topLayer, overlap, size, delta) {
-  const direction = topLayer.direction;
-  const newWidth = direction == "x" ? overlap : topLayer.width;
-  const newDepth = direction == "z" ? overlap : topLayer.depth;
+  console.log(globalGameState);
+  const previousLayerData =
+    globalGameState.stack[globalGameState.stack.length - 2]; //전 레이어
 
-  // Update metadata
-  topLayer.width = newWidth;
-  topLayer.depth = newDepth;
+  prevLayerObject = stack[stack.length - 2];
+  var updateData = previousLayerData;
+  console.log(updateData);
+  if (prevLayerObject && updateData) {
+    prevLayerObject.threejs.position.x = updateData.position.x;
+    prevLayerObject.threejs.position.y = updateData.position.y;
+    prevLayerObject.threejs.position.z = updateData.position.z;
 
-  // Update ThreeJS model
-  topLayer.threejs.scale[direction] = overlap / size;
-  topLayer.threejs.position[direction] -= delta / 2;
+    prevLayerObject.threejs.scale.x = updateData.scale.x;
+    prevLayerObject.threejs.scale.y = updateData.scale.y;
+    prevLayerObject.threejs.scale.z = updateData.scale.z;
 
-  // // Update CannonJS model
-  // topLayer.cannonjs.position[direction] -= delta / 2;
+    prevLayerObject.threejs.width = updateData.width;
+    prevLayerObject.threejs.depth = updateData.depth;
 
-  // // CannonJS 잘릴 박스를 리사이즈할 수 없어서 새로운 박스로 대체
-  // const shape = new CANNON.Box(
-  //   new CANNON.Vec3(newWidth / 2, boxHeight / 2, newDepth / 2)
-  // );
-  // topLayer.cannonjs.shapes = [];
-  // topLayer.cannonjs.addShape(shape);
+    // topLayerObject.cannonjs.position["x"] = topLayerData.position.x;
+    // topLayerObject.cannonjs.position["y"] = topLayerData.position.y;
+    // topLayerObject.cannonjs.position["z"] = topLayerData.position.z;
+    // topLayerObject.cannonjs.width = topLayerData.width;
+    // topLayerObject.cannonjs.depth = topLayerData.depth;
+
+    prevLayerObject.direction = updateData.direction;
+  }
 }
 
 //게임 리트라이
@@ -402,16 +408,16 @@ function animation(time) {
 
     topLayerObject = stack[stack.length - 1];
     var topLayerData = fetchedTopLayerData;
-    console.log(fetchedTopLayerData);
+    // console.log(fetchedTopLayerData);
     if (topLayerObject && topLayerData) {
       topLayerObject.threejs.position.x = topLayerData.position.x;
       topLayerObject.threejs.position.y = topLayerData.position.y;
       topLayerObject.threejs.position.z = topLayerData.position.z;
-      
+
       topLayerObject.threejs.scale.x = topLayerData.scale.x;
       topLayerObject.threejs.scale.y = topLayerData.scale.y;
       topLayerObject.threejs.scale.z = topLayerData.scale.z;
-      
+
       topLayerObject.threejs.width = topLayerData.width;
       topLayerObject.threejs.depth = topLayerData.depth;
 
