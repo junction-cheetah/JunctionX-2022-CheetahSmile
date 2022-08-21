@@ -21,8 +21,9 @@ export default function Game({ sessionId }) {
   useEffect(() => {
     function listener(e) {
       axiosInstance2
-        .get('/default/handleGameResult/' + generateUniqueId(), {
+        .get('/default/handlegameresult', {
           params: {
+            id: Math.floor(Math.random() * 1000000),
             username: user?.email?.split('@')?.[0],
             score: e.data,
           },
