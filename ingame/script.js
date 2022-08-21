@@ -296,23 +296,21 @@ function cutBox(topLayer, overlap, size, delta) {
   const previousLayerData =
     globalGameState.stack[globalGameState.stack.length - 2]; //전 레이어
 
-  prevLayerObject = stack[stack.length - 1];
+  prevLayerObject = stack[stack.length - 2];
+
   var updateData = previousLayerData;
   console.log(updateData);
   if (prevLayerObject && updateData) {
-
-    prevLayerObject.threejs.width = updateData.width;
-    prevLayerObject.threejs.depth = updateData.depth;
-
     prevLayerObject.threejs.scale.x = updateData.scale.x;
     prevLayerObject.threejs.scale.y = updateData.scale.y;
     prevLayerObject.threejs.scale.z = updateData.scale.z;
 
-    
+    prevLayerObject.threejs.width = updateData.width * updateData.scale.x;
+    prevLayerObject.threejs.depth = updateData.depth * updateData.scale.z;
+
     prevLayerObject.threejs.position.x = updateData.position.x;
     prevLayerObject.threejs.position.y = updateData.position.y;
     prevLayerObject.threejs.position.z = updateData.position.z;
-
 
     // topLayerObject.cannonjs.position["x"] = topLayerData.position.x;
     // topLayerObject.cannonjs.position["y"] = topLayerData.position.y;
@@ -321,6 +319,14 @@ function cutBox(topLayer, overlap, size, delta) {
     // topLayerObject.cannonjs.depth = topLayerData.depth;
 
     prevLayerObject.direction = updateData.direction;
+    prevLayerObject.threejs.direction = updateData.direction;
+
+    // const material = new THREE.MeshStandardMaterial({
+    //   color: "rgb(255,0,0)",
+    // });
+    // prevLayerObject.threejs.material = material;
+    console.log(prevLayerObject.threejs);
+    // scene.add(prevLayerObject.threejs);
   }
 }
 
