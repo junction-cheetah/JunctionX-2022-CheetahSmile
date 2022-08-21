@@ -11,15 +11,16 @@ import { USER_KEY } from '../swr/user';
 
 export default function Lobby() {
   const router = useRouter();
+  const [roomName, setRoomName] = useState('team23');
+
   const createRoom = () => {
     const sessionId = generateUniqueId();
-    router.push(`/room?session=${sessionId}`);
+    router.push(`/room?session=${sessionId}&team=${roomName}`);
   };
   useEffect(() => {
     router.prefetch('/room');
   }, [router]);
 
-  const [roomName, setRoomName] = useState('team23');
   const [open, setOpen] = useState(false);
 
   const logout = () => {

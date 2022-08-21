@@ -8,7 +8,7 @@ import useSWR from 'swr';
 import { USER_KEY } from '../swr/user';
 import { Toast, toast } from 'loplat-ui';
 
-export default function Room({ sessionId }) {
+export default function Room({ sessionId, team }) {
   useEffect(() => {
     const canvas = document.getElementById('roomCode');
     QRCode.toCanvas(canvas, location.href, { color: { dark: '#226AF6' } });
@@ -22,7 +22,7 @@ export default function Room({ sessionId }) {
 
   const startGame = () => {
     if (players.length >= 2) {
-      router.push({ pathname: '/game', query: { session: sessionId } });
+      router.push({ pathname: '/game', query: { session: sessionId, team } });
     } else {
       toast.warning('You need more than two people to start');
     }
@@ -50,7 +50,7 @@ export default function Room({ sessionId }) {
         <Team>
           <span>TEAM</span>
           <br />
-          <span>team23</span>
+          <span>{team}</span>
         </Team>
 
         <Players>
@@ -84,6 +84,7 @@ export default function Room({ sessionId }) {
 
 export async function getServerSideProps({ query }) {
   const sessionId = query.session;
+  const team = query.team;
 
   if (!sessionId) {
     return {
@@ -97,6 +98,7 @@ export async function getServerSideProps({ query }) {
   return {
     props: {
       sessionId,
+      team,
     },
   };
 }
