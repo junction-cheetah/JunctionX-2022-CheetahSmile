@@ -1,4 +1,3 @@
-
 window.focus(); // Capture keys right away (by default focus is on editor)
 
 let camera, scene, renderer; // ThreeJS globals
@@ -211,6 +210,8 @@ function generateBox(x, y, z, width, depth, falls) {
       map: textureLoader.load('./textures/cube/PNG/nz.png'),
     }),
   ];
+  textureCube3.minFilter = THREE.NearestFilter;
+  // textureCube3.magFilter = THREE.NearestFilter
 
   // ThreeJS 비주얼
   const geometry = new THREE.BoxGeometry(width, boxHeight, depth);
@@ -363,6 +364,7 @@ function missedTheSpot() {
   scene.remove(topLayer.threejs);
 
   gameEnded = true;
+  window.parent.postMessage(stack.length, 'https://cobuilding.vercel.app');
   if (resultsElement && !autopilot) resultsElement.style.display = 'flex';
 }
 
