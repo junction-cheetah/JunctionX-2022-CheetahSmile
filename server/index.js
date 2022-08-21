@@ -258,6 +258,14 @@ io.on("connection", (socket) => {
 
     // Update metadata
 
+
+    // setTopLayer({
+    //   width: newWidth,
+    //   depth : newDepth,
+    //   position: {
+
+    //   };
+    // })
     gameState.topLayer.width = newWidth;
     gameState.topLayer.depth = newDepth;
     gameState.topLayer.position[direction] -= delta / 2;
@@ -267,7 +275,8 @@ io.on("connection", (socket) => {
     console.log(overlap / size)
 
     topLayer = gameState.topLayer;
-    console.log(topLayer)
+    setTopLayer(topLayer)
+
 
     io.emit("cutBox", { topLayer, overlap, size, delta });
   }
