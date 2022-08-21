@@ -60,7 +60,6 @@ var fetchedTopLayerData;
 socket.on("gameState", function (gameState) {
   globalGameState = gameState;
   fetchedTopLayerData = gameState.topLayer;
-  // console.log(globalGameState);
 });
 
 socket.on("cutBox", ({ topLayer, overlap, size, delta }) => {
@@ -68,9 +67,9 @@ socket.on("cutBox", ({ topLayer, overlap, size, delta }) => {
 });
 socket.on(
   "addOverhang",
-  ({ overhangX,y, overhangZ, overhangWidth, overhangDepth }) => {
+  ({ overhangX, y, overhangZ, overhangWidth, overhangDepth }) => {
     console.log("ADD OVER HANG");
-    addOverhang(overhangX,y, overhangZ, overhangWidth, overhangDepth);
+    addOverhang(overhangX, y, overhangZ, overhangWidth, overhangDepth);
   }
 );
 socket.on("addLayer", ({ x, y, z, width, depth, direction }) => {
@@ -253,7 +252,7 @@ function addLayer(x, y, z, width, depth, direction) {
 }
 
 //바닥에 떨어지는 박스 (x,z방향, 너비, 층고높이)
-function addOverhang(x,y, z, width, depth) {
+function addOverhang(x, y, z, width, depth) {
   const overhang = generateBox(x, y, z, width, depth, true);
   overhangs.push(overhang); //오버행배열에 현재 오버행 박스 넣기
 }
@@ -395,31 +394,31 @@ function fireEndProcess() {
 function animation(time) {
   // console.log(camera)
 
-  topLayerObject = stack[stack.length - 1];
-  var topLayerData = fetchedTopLayerData;
-  console.log(fetchedTopLayerData);
-  if (topLayerObject && topLayerData) {
-    topLayerObject.threejs.position.x = topLayerData.position.x;
-    topLayerObject.threejs.position.y = topLayerData.position.y;
-    topLayerObject.threejs.position.z = topLayerData.position.z;
-
-    topLayerObject.threejs.width = topLayerData.width;
-    topLayerObject.threejs.depth = topLayerData.depth;
-
-    // topLayerObject.cannonjs.position["x"] = topLayerData.position.x;
-    // topLayerObject.cannonjs.position["y"] = topLayerData.position.y;
-    // topLayerObject.cannonjs.position["z"] = topLayerData.position.z;
-    // topLayerObject.cannonjs.width = topLayerData.width;
-    // topLayerObject.cannonjs.depth = topLayerData.depth;
-
-    topLayerObject.direction = topLayerData.direction;
-  }
-
   if (lastTime) {
     const timePassed = time - lastTime;
     topLayerObject = stack[stack.length - 1];
 
     const previousLayer = stack[stack.length - 2]; //전 레이어
+
+    topLayerObject = stack[stack.length - 1];
+    var topLayerData = fetchedTopLayerData;
+    console.log(fetchedTopLayerData);
+    if (topLayerObject && topLayerData) {
+      topLayerObject.threejs.position.x = topLayerData.position.x;
+      topLayerObject.threejs.position.y = topLayerData.position.y;
+      topLayerObject.threejs.position.z = topLayerData.position.z;
+
+      topLayerObject.threejs.width = topLayerData.width;
+      topLayerObject.threejs.depth = topLayerData.depth;
+
+      // topLayerObject.cannonjs.position["x"] = topLayerData.position.x;
+      // topLayerObject.cannonjs.position["y"] = topLayerData.position.y;
+      // topLayerObject.cannonjs.position["z"] = topLayerData.position.z;
+      // topLayerObject.cannonjs.width = topLayerData.width;
+      // topLayerObject.cannonjs.depth = topLayerData.depth;
+
+      topLayerObject.direction = topLayerData.direction;
+    }
 
     // The top level box should move if the game has not ended AND
     // it's either NOT in autopilot or it is in autopilot and the box did not yet reach the robot position
