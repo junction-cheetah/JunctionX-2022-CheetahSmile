@@ -34,7 +34,7 @@ var initialGameState = {
   timeMicroSec: 0,
   isGaming: false,
   topLayer: {
-    postion: { x: 0, y: 0, z: 0 },
+    position: { x: 0, y: 0, z: 0 },
     scale: { x: 1, y: 1, z: 1 },
     width: 0,
     depth: 0,
@@ -261,8 +261,13 @@ io.on("connection", (socket) => {
     gameState.topLayer.width = newWidth;
     gameState.topLayer.depth = newDepth;
     gameState.topLayer.position[direction] -= delta / 2;
+
     gameState.topLayer.scale[direction] = overlap / size;
+
+    console.log(overlap / size)
+
     topLayer = gameState.topLayer;
+    console.log(topLayer)
 
     io.emit("cutBox", { topLayer, overlap, size, delta });
   }
