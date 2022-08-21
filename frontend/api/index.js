@@ -26,13 +26,7 @@ function logout() {
   location.href = 'https://cobuilding.vercel.app/';
 }
 
-[axiosInstance1, axiosInstance2].forEach((instance) => {
-  instance.interceptors.request.use(async (request) => {
-    const accessToken = localStorage.getItem('aws-google-oauth-token');
-    request.headers.Authorization = `Bearer ${accessToken}`;
-    return request;
-  });
-
+[axiosInstance1, axiosInstance2, axiosInstance3].forEach((instance) => {
   instance.interceptors.response.use(
     (response) => response,
     async (error) => {
