@@ -28,8 +28,7 @@ export default function Game({ sessionId }) {
             score: e.data,
           },
         })
-        .then((result) => {
-          console.log(result);
+        .finally((result) => {
           router.push('/result');
         });
     }
