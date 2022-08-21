@@ -211,7 +211,7 @@ io.on("connection", (socket) => {
       const overhangWidth = direction == "x" ? overhangSize : topLayer.width;
       const overhangDepth = direction == "z" ? overhangSize : topLayer.depth;
 
-      addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
+      // addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
 
       // Next layer
       const nextX = direction == "x" ? topLayer.position.x : -10;
