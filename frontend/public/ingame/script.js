@@ -108,8 +108,6 @@ function init() {
     antialias: true,
     alpha: true,
   });
-  renderer.shadowMap.enabled = true;
-
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setAnimationLoop(animation);
   document.body.appendChild(renderer.domElement);
@@ -261,26 +259,25 @@ function cutBox(topLayer, overlap, size, delta) {
   topLayer.cannonjs.addShape(shape);
 }
 
+//이벤트 들어왔을 때
+function start() {
+  //시작
+  eventHandler();
+  return;
+}
+
 //게임 리트라이
 function retry() {
-  window.parent.postMessage((stack.length-1), 'https://cobuilding.vercel.app');
+  window.parent.postMessage((stack.length - 1), 'https://cobuilding.vercel.app');
   // startGame();
   return;
 }
 
-//이벤트 들어왔을 때
 window.addEventListener('mousedown', eventHandler);
 window.addEventListener('touchstart', eventHandler);
-window.addEventListener('keydown', function (event) {
-  if (event.key == ' ') {
-    //시작
-    event.preventDefault();
-    eventHandler();
-    return;
-  }
-});
+window.addEventListener('keydown', eventHandler);
 
-//이벤트가 참일 때
+//이벤트가 참일 때 -> 자르기
 function eventHandler() {
   if (autopilot) startGame(); //오토파일럿이 참일때 게임 스타트
   else splitBlockAndAddNextOneIfOverlaps(); //아니면 오토파일럿 시작
