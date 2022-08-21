@@ -277,6 +277,7 @@ io.on("connection", (socket) => {
     topLayer = gameState.topLayer;
     setTopLayer(topLayer)
     gameState.topLayer = deepCopy(topLayer);
+    gameState.stack[gameState.stack.length-1]  = deepCopy(topLayer)
 
     io.emit("cutBox", { topLayer, overlap, size, delta });
   }
