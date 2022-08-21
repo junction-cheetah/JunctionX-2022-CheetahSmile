@@ -38,12 +38,6 @@ export default function Game({ sessionId }) {
     };
   }, [router, user]);
 
-  useEffect(() => {
-    axiosInstance3
-      .get('/dev/getGameRanking')
-      .then((result) => console.log(result));
-  }, []);
-
   return (
     <>
       <NextSeo title="Game" description="BUILD YOUR POTENTIAL!" />
