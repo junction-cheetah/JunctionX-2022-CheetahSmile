@@ -263,7 +263,7 @@ function cutBox(topLayer, overlap, size, delta) {
 
 //게임 리트라이
 function retry() {
-  window.parent.postMessage(stack.length, 'https://cobuilding.vercel.app');
+  window.parent.postMessage((stack.length-1), 'https://cobuilding.vercel.app');
   // startGame();
   return;
 }
