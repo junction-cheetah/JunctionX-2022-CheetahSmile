@@ -283,10 +283,9 @@ window.addEventListener('keydown', eventHandler);
 
 //이벤트가 참일 때 -> 자르기
 function eventHandler() {
-  if (autopilot) startGame(); //오토파일럿이 참일때 게임 스타트
+  if (autopilot == true) startGame(); //오토파일럿이 참일때 게임 스타트
   else splitBlockAndAddNextOneIfOverlaps(); //아니면 오토파일럿 시작
 }
-//오토파일럿 로직 자동 계산
 function splitBlockAndAddNextOneIfOverlaps() {
   if (gameEnded) return;
   const topLayer = stack[stack.length - 1];
@@ -298,7 +297,7 @@ function splitBlockAndAddNextOneIfOverlaps() {
     previousLayer.threejs.position[direction];
   const overhangSize = Math.abs(delta);
   const overlap = size - overhangSize;
-  console.log(overlap);
+  // console.log(overlap);
   if (overlap > 0) {
     cutBox(topLayer, overlap, size, delta);
 
@@ -326,6 +325,7 @@ function splitBlockAndAddNextOneIfOverlaps() {
 
     if (scoreElement) scoreElement.innerText = stack.length + ' floor';
     addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
+
   } else {
     missedTheSpot();
   }
