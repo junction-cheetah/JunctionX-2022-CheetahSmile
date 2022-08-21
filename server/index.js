@@ -42,7 +42,7 @@ var initialGameState = {
     direction: "x",
   },
   speed: 0.006,
-  cameraHeight: 4,
+  cameraHeight: 5,
 };
 
 function deepCopy(object) {

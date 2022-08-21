@@ -75,6 +75,7 @@ socket.on(
 socket.on("addLayer", ({ x, y, z, width, depth, direction }) => {
   // console.log({ x, y, z, width, depth, direction });
   addLayer(x, y, z, width, depth, direction);
+  console.log("ADDED")
 });
 
 function setGameState(updateObject) {
@@ -157,7 +158,7 @@ function init() {
     100 // far plane
   );
 
-  camera.position.set(4, 4, 4); //카메라 초기 위치
+  camera.position.set(4, 5, 4); //카메라 초기 위치
 
   camera.lookAt(0, 0, 0); //카메라 가운데 보기
 
@@ -212,6 +213,7 @@ function fireGameStart() {
   autopilot = false;
   lastTime = 0;
   overhangs = [];
+  stack = [];
 
   //게임 스타트시 HTML스코어 관련 초기화
   if (instructionsElement) instructionsElement.style.display = "none";
@@ -246,6 +248,7 @@ function fireGameStart() {
 
 //레이어 추가하는 함수 (x좌표, z좌표, 층고높이, 방향(x/z))
 function addLayer(x, y, z, width, depth, direction) {
+  console.log("REAL ADDED")
   const layer = generateBox(x, y, z, width, depth, false); //현재 레이어에 넣는 새로운 박스 만들기
   layer.direction = direction;
   stack.push(layer);
@@ -294,9 +297,13 @@ function generateBox(x, y, z, width, depth, falls) {
 function cutBox(topLayer, overlap, size, delta) {
   console.log(globalGameState);
   const previousLayerData =
-    globalGameState.stack[globalGameState.stack.length - 2]; //전 레이어
+    globalGameState.stack[globalGameState.stack.length - 1]; //전 레이어
 
-  prevLayerObject = stack[stack.length - 2];
+  prevLayerObject = stack[stack.length - 1];
+
+  console.log(globalGameState.stack.length);
+  console.log(stack.length);
+
 
   var updateData = previousLayerData;
   console.log(updateData);
@@ -363,31 +370,33 @@ function eventHandler() {
 function splitBlockAndAddNextOneIfOverlaps() {
   if (!autopilot) {
     fireStack();
+  }else {
+    return
   }
 
-  topLayerObject = stack[stack.length - 1];
-  const previousLayer = stack[stack.length - 2];
-  const direction = topLayerObject ? topLayerObject.direction : "x";
-  const size = direction == "x" ? topLayerObject.width : topLayerObject.depth;
-  const delta =
-    topLayerObject.threejs.position[direction] -
-    previousLayer.threejs.position[direction];
-  const overhangSize = Math.abs(delta);
-  const overlap = size - overhangSize;
+  // topLayerObject = stack[stack.length - 1];
+  // const previousLayer = stack[stack.length - 2];
+  // const direction = topLayerObject ? topLayerObject.direction : "x";
+  // const size = direction == "x" ? topLayerObject.width : topLayerObject.depth;
+  // const delta =
+  //   topLayerObject.threejs.position[direction] -
+  //   previousLayer.threejs.position[direction];
+  // const overhangSize = Math.abs(delta);
+  // const overlap = size - overhangSize;
 
-  if (overlap > 0) {
-    // addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
+  // if (overlap > 0) {
+  //   // addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth);
 
-    // Next layer
-    const nextX = direction == "x" ? topLayerObject.threejs.position.x : -10;
-    const nextZ = direction == "z" ? topLayerObject.threejs.position.z : -10;
-    const newWidth = topLayerObject.width; // New layer has the same size as the cut top layer
-    const newDepth = topLayerObject.depth; // New layer has the same size as the cut top layer
-    const nextDirection = direction == "x" ? "z" : "x";
+  //   // Next layer
+  //   const nextX = direction == "x" ? topLayerObject.threejs.position.x : -10;
+  //   const nextZ = direction == "z" ? topLayerObject.threejs.position.z : -10;
+  //   const newWidth = topLayerObject.width; // New layer has the same size as the cut top layer
+  //   const newDepth = topLayerObject.depth; // New layer has the same size as the cut top layer
+  //   const nextDirection = direction == "x" ? "z" : "x";
 
-    if (scoreElement) scoreElement.innerText = stack.length - 1;
-    addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
-  }
+  //   if (scoreElement) scoreElement.innerText = stack.length - 1;
+  //   addLayer(nextX, nextZ, newWidth, newDepth, nextDirection);
+  // }
 }
 
 //쌓지 못하는 경우 - 게임 탈락 함수
