@@ -4,36 +4,21 @@ const BACKEND_URL1 =
   'https://b9otw2e9p0.execute-api.ap-northeast-2.amazonaws.com';
 export const axiosInstance1 = axios.create({
   baseURL: BACKEND_URL1,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept',
-  },
+  headers: {},
 });
 
 const BACKEND_URL2 =
   'https://2lckxcs1d6.execute-api.ap-northeast-2.amazonaws.com';
 export const axiosInstance2 = axios.create({
   baseURL: BACKEND_URL2,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept',
-  },
+  headers: {},
 });
 
 const BACKEND_URL3 =
-  'https://tsidvsloi7.execute-api.ap-northeast-2.amazonaws.com';
+  'https://wfy7agd20i.execute-api.ap-northeast-2.amazonaws.com';
 export const axiosInstance3 = axios.create({
   baseURL: BACKEND_URL3,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept',
-  },
+  headers: {},
 });
 
 function logout() {
@@ -41,7 +26,7 @@ function logout() {
   location.href = 'https://cobuilding.vercel.app/';
 }
 
-[axiosInstance1, axiosInstance2, axiosInstance3].forEach((instance) => {
+[axiosInstance1, axiosInstance2].forEach((instance) => {
   instance.interceptors.request.use(async (request) => {
     const accessToken = localStorage.getItem('aws-google-oauth-token');
     request.headers.Authorization = `Bearer ${accessToken}`;

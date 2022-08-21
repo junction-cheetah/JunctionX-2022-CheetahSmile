@@ -1,6 +1,6 @@
 import { NextSeo } from 'next-seo';
 import styled from '@emotion/styled';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { axiosInstance2, axiosInstance3 } from '../api';
 import { useRouter } from 'next/router';
 import { generateUniqueId } from '../utils/functions/generator';
@@ -9,7 +9,7 @@ import { USER_KEY } from '../swr/user';
 
 export default function Game({ sessionId }) {
   const [size, setSize] = useState({ width: 414, height: 736 });
-  useLayoutEffect(() => {
+  useEffect(() => {
     setSize({
       width: document.documentElement.clientWidth,
       height: document.documentElement.clientHeight,
@@ -21,9 +21,8 @@ export default function Game({ sessionId }) {
   useEffect(() => {
     function listener(e) {
       axiosInstance2
-        .get('/default/handleGameResult', {
+        .get('/default/handleGameResult/' + generateUniqueId(), {
           params: {
-            id: generateUniqueId(),
             username: user?.email?.split('@')?.[0],
             score: e.data,
           },
@@ -41,7 +40,7 @@ export default function Game({ sessionId }) {
 
   useEffect(() => {
     axiosInstance3
-      .get('/default/getGameRanking')
+      .get('/dev/getGameRanking')
       .then((result) => console.log(result));
   }, []);
 
