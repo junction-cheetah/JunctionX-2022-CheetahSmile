@@ -278,7 +278,7 @@ function sendResult() {
 }
 
 window.addEventListener('mousedown', eventHandler);
-window.addEventListener('touchstart', eventHandler);
+window.addEventListener('touchmove', eventHandler);
 window.addEventListener('keydown', eventHandler);
 
 //이벤트가 참일 때 -> 자르기
@@ -446,7 +446,7 @@ function updatePhysics(timePassed) {
 
 window.addEventListener('resize', () => {
   // Adjust camera
-  console.log('resize', window.innerWidth, window.innerHeight);
+  // console.log('resize', window.innerWidth, window.innerHeight);
   const aspect = window.innerWidth / window.innerHeight;
   const width = 10;
   const height = width / aspect;
