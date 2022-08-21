@@ -31,9 +31,11 @@ export default function Home() {
       localStorage.setItem('aws-google-oauth-token', token);
       // NOTE: QR 코드 로그인 후 바로 방으로 입장
       const tempSession = localStorage.getItem('temp-session');
-      if (tempSession) {
+      const tempTeam = localStorage.getItem('temp-team');
+      if (tempSession && tempTeam) {
         localStorage.removeItem('temp-session');
-        router.push(`/room?session=${tempSession}&team=junction`);
+        localStorage.removeItem('temp-team');
+        router.push(`/room?session=${tempSession}&team=${tempTeam}`);
       }
     } else {
       // 이미 로그인

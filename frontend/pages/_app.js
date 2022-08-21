@@ -21,8 +21,10 @@ function MyApp({ Component, pageProps }) {
         // NOTE: QR 코드 로그인 후 바로 방으로 입장
         if (router.pathname === '/room') {
           const sessionId = router.query.session;
+          const team = router.query.team;
           if (sessionId) {
             localStorage.setItem('temp-session', sessionId);
+            localStorage.setItem('temp-team', team);
           }
         }
         router.replace('/');
