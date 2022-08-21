@@ -257,13 +257,14 @@ io.on("connection", (socket) => {
     const newDepth = direction == "z" ? overlap : topLayer.depth;
 
     // Update metadata
-    
+
     gameState.topLayer.width = newWidth;
     gameState.topLayer.depth = newDepth;
     gameState.topLayer.position[direction] -= delta / 2;
     gameState.topLayer.scale[direction] = overlap / size;
+    topLayer = gameState.topLayer;
 
-    io.emit("cutBox", { gameState.topLayer, overlap, size, delta });
+    io.emit("cutBox", { topLayer, overlap, size, delta });
   }
 
   function addOverhang(overhangX, overhangZ, overhangWidth, overhangDepth) {
