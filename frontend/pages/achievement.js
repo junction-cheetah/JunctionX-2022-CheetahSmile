@@ -13,13 +13,16 @@ export default function Achievement() {
         <h1>ACHIEVEMENT</h1>
         <Badges>
           <div className="item">
-            <div className="circle">
+            <div className="circle" style={{ border: '3px solid #226af6' }}>
               <Image
                 src="/icons/arrival.png"
                 alt=""
                 width={110}
                 height={90}
-                style={{ marginRight: 10, marginTop: 10 }}
+                style={{
+                  marginRight: 10,
+                  marginTop: 10,
+                }}
               />
             </div>
             <p>Point of arrival</p>
