@@ -35,6 +35,7 @@ var initialGameState = {
   isGaming: false,
   topLayer: {
     postion: { x: 0, y: 0, z: 0 },
+    scale: { x: 1, y: 1, z: 1 },
     width: 0,
     depth: 0,
     turn: 1,
@@ -231,6 +232,7 @@ io.on("connection", (socket) => {
 
     const layer = {
       position: { x: nextX, y: y, z: nextZ },
+      scale: { x: 1, y: 1, z: 1 },
       width: newWidth,
       depth: newDepth,
       direction: nextDirection,
@@ -241,6 +243,7 @@ io.on("connection", (socket) => {
       x: nextX,
       y: y,
       z: nextZ,
+      scale: { x: 1, y: 1, z: 1 },
       width: newWidth,
       depth: newDepth,
       direction: nextDirection,
@@ -257,6 +260,7 @@ io.on("connection", (socket) => {
     topLayer.width = newWidth;
     topLayer.depth = newDepth;
     topLayer.position[direction] -= delta / 2;
+    topLayer.scale[direction] = overlap / size;
 
     io.emit("cutBox", { topLayer, overlap, size, delta });
   }
@@ -275,7 +279,7 @@ io.on("connection", (socket) => {
 
   function endGame() {
     clearInterval(timerId);
-      timeMicroSec = 0;
+    timeMicroSec = 0;
     gameState.stack.pop();
     gameState.isGaming = false;
     io.emit("end");

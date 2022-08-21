@@ -407,7 +407,11 @@ function animation(time) {
       topLayerObject.threejs.position.x = topLayerData.position.x;
       topLayerObject.threejs.position.y = topLayerData.position.y;
       topLayerObject.threejs.position.z = topLayerData.position.z;
-
+      
+      topLayerObject.threejs.scale.x = topLayerData.scale.x;
+      topLayerObject.threejs.scale.y = topLayerData.scale.y;
+      topLayerObject.threejs.scale.z = topLayerData.scale.z;
+      
       topLayerObject.threejs.width = topLayerData.width;
       topLayerObject.threejs.depth = topLayerData.depth;
 
