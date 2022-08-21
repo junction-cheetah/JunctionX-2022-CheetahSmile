@@ -1,22 +1,29 @@
 import styled from '@emotion/styled';
 import ordinal from 'ordinal';
+import { axiosInstance3 } from '../api';
+import { useEffect, useState } from 'react';
 
 const Ranking = () => {
+  const [rankings, setRankings] = useState([]);
+  useEffect(() => {
+    axiosInstance3
+      .get('/dev/getGameRanking')
+      .then((result) => setRankings(result.data.Items));
+  }, []);
+
   return (
     <Wrapper>
       <h1>RANKING</h1>
       <ul>
-        {[
-          { score: 34, name: 'team23' },
-          { score: 29, name: 'team233' },
-          { score: 15, name: 'susu' },
-        ].map(({ score, name }, index) => (
-          <li key={index}>
-            <span className="ranking">{ordinal(index + 1)}</span>
-            <span className="score">{score}</span>
-            <span className="name">{name}</span>
-          </li>
-        ))}
+        {rankings
+          .sort((a, b) => b.score - a.score)
+          .map(({ score, username }, index) => (
+            <li key={index}>
+              <span className="ranking">{ordinal(index + 1)}</span>
+              <span className="score">{score}</span>
+              <span className="name">{username}</span>
+            </li>
+          ))}
       </ul>
     </Wrapper>
   );
