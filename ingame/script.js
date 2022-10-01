@@ -1,7 +1,8 @@
-const socket = io("ws://15.164.221.178:8000/");
+const socket = io("ws://15.164.221.178:8000/", { secure: true });
 
 var timer = 0;
 var myEmail = "dodo4114@naver.com";
+var startPerson = false;
 
 var globalGameState = {};
 var isMyTurn = globalGameState.nowUser == myEmail;
@@ -26,6 +27,11 @@ socket.on("timer", function (time) {
 
 socket.on("started", function () {
   autopilot = false;
+
+  if (!startPerson) {
+    fireGameStart(viaServer);
+  }
+  startPerson = false;
 });
 socket.on("end", function () {
   fireEndProcess();
@@ -75,7 +81,7 @@ socket.on(
 socket.on("addLayer", ({ x, y, z, width, depth, direction }) => {
   // console.log({ x, y, z, width, depth, direction });
   addLayer(x, y, z, width, depth, direction);
-  console.log("ADDED")
+  console.log("ADDED");
 });
 
 function setGameState(updateObject) {
@@ -208,8 +214,12 @@ function init() {
 }
 
 //처음시작하는 스테이지 - 게임 스타트 함수
-function fireGameStart() {
-  socket.emit("start");
+function fireGameStart(viaServer = false) {
+  if (!viaServer) {
+    socket.emit("start");
+    startPerson = true;
+  }
+
   autopilot = false;
   lastTime = 0;
   overhangs = [];
@@ -234,7 +244,7 @@ function fireGameStart() {
       const mesh = scene.children.find((c) => c.type == "Mesh");
       scene.remove(mesh);
     }
-    serverInit();
+    if (!viaServer) serverInit();
   }
 
   //카메라도 제일 밑에서 다시 시작
@@ -248,7 +258,7 @@ function fireGameStart() {
 
 //레이어 추가하는 함수 (x좌표, z좌표, 층고높이, 방향(x/z))
 function addLayer(x, y, z, width, depth, direction) {
-  console.log("REAL ADDED")
+  console.log("REAL ADDED");
   const layer = generateBox(x, y, z, width, depth, false); //현재 레이어에 넣는 새로운 박스 만들기
   layer.direction = direction;
   stack.push(layer);
@@ -303,7 +313,6 @@ function cutBox(topLayer, overlap, size, delta) {
 
   console.log(globalGameState.stack.length);
   console.log(stack.length);
-
 
   var updateData = previousLayerData;
   console.log(updateData);
@@ -370,8 +379,8 @@ function eventHandler() {
 function splitBlockAndAddNextOneIfOverlaps() {
   if (!autopilot) {
     fireStack();
-  }else {
-    return
+  } else {
+    return;
   }
 
   // topLayerObject = stack[stack.length - 1];
